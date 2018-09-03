@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingRight="10dp"
+        android:background="@drawable/shape_item_calendar">
+
+        <TextView
+            android:id="@+id/subject_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Subject Date: "
+            android:textStyle="normal"/>
+
+        <TextView
+            android:id="@+id/subject_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Subject Name: "
+            android:textStyle="normal"/>
+
+        <TextView
+            android:id="@+id/subject_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Subject Time: "
+            android:textStyle="normal"/>
+
+        <TextView
+            android:id="@+id/subject_place"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Subject Place: "
+            android:textStyle="normal"/>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

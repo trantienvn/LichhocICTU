@@ -10,7 +10,9 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import com.indieteam.mytask.R
+import com.indieteam.mytask.adapter.CalendarListViewAdapter
 import com.indieteam.mytask.modeldata.CalendarData
+import com.indieteam.mytask.modeldata.CalendarFinal
 import com.indieteam.mytask.modeldata.OnlyCalendarData
 import com.indieteam.mytask.process.*
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -28,7 +30,7 @@ import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
-    val file = File(Environment.getExternalStorageDirectory(), "tkbk14.xls")
+    val file = File(Environment.getExternalStorageDirectory(), "tkb.xls")
 
     private val REQUEST_CODE = 1
     var nameSubject = ""
@@ -44,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private var calendarResult: JSONObject? = null
     private var parseCalendarJson: ParseCalendarJson? = null
     var listDate = ArrayList<CalendarDay>()
+    var calendarFileArr = ArrayList<CalendarFinal>()
 
     var readExelCallback = 0
     private var allPermission = 0
@@ -80,6 +83,7 @@ class MainActivity : AppCompatActivity() {
             val date = "${calendarDay.day}/${calendarDay.month+1}/${calendarDay.year}"
             //Toast.makeText(this, "$dateFormated", Toast.LENGTH_LONG).show()
             if (parseCalendarJson != null){
+                calendarFileArr.removeAll(calendarFileArr)
                 parseCalendarJson!!.apply {
                     getSubject(date)
 
@@ -90,12 +94,17 @@ class MainActivity : AppCompatActivity() {
                             for (j in 0 until subjectDate.size) {
                                 Log.d("result", "${subjectDate[j]}, ${subjectName[j]}, ${subjectTime[j]}, ${subjectPlace[j]}")
                                 result += "${subjectDate[j]}, ${subjectName[j]}, ${subjectTime[j]}, ${subjectPlace[j]} \n"
+                                calendarFileArr.add(CalendarFinal(subjectDate[j], subjectName[j], subjectTime[j], subjectPlace[j]))
                             }
-                            log.text = result
+                            //log.text = result
+                            calender_list_view.adapter = null
+                            calender_list_view.adapter = CalendarListViewAdapter(this@MainActivity, calendarFileArr)
                         }
                     } else {
                         Log.d("result", "$date Nghỉ")
-                        log.text = "$date Nghỉ"
+                        //log.text = "$date Nghỉ"
+                        calender_list_view.adapter = null
+                        calender_list_view.adapter = CalendarListViewAdapter(this@MainActivity, calendarFileArr)
                     }
                 }
             }
@@ -110,10 +119,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         init()
         calendarSetting()
-        checkPermission()
-        if(allPermission == 1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkPermission()
+            if (allPermission == 1) {
+                run()
+            }
+        }else
             run()
-        }
     }
 
     private fun run(){
