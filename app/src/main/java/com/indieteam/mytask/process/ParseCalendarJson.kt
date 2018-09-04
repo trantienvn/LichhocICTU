@@ -22,7 +22,7 @@ class ParseCalendarJson(val activity: MainActivity, val calendar: JSONObject){
         Log.d("key", key)
 
         for (i in 0 until calendarValue.length()){
-            Log.d("date_key", calendarValue.getJSONObject(i).getString("subjectDate"))
+            //Log.d("date_key", calendarValue.getJSONObject(i).getString("subjectDate"))
 
             if (key == calendarValue.getJSONObject(i).getString("subjectDate")) {
                 subjectDate.add(calendarValue.getJSONObject(i).getString("subjectDate"))

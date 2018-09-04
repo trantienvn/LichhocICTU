@@ -8,6 +8,7 @@ import android.widget.BaseAdapter
 import com.indieteam.mytask.R
 import com.indieteam.mytask.modeldata.CalendarFinal
 import com.indieteam.mytask.ui.MainActivity
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_calendar_list_view.view.*
 import java.util.*
 

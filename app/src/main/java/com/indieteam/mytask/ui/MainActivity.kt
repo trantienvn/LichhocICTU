@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.Toast
 import com.indieteam.mytask.R
 import com.indieteam.mytask.adapter.CalendarListViewAdapter
@@ -26,6 +27,7 @@ import org.json.JSONObject
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
+import com.github.pwittchen.swipe.library.rx2.Swipe
 
 
 class MainActivity : AppCompatActivity() {
@@ -46,24 +48,108 @@ class MainActivity : AppCompatActivity() {
     private var calendarResult: JSONObject? = null
     private var parseCalendarJson: ParseCalendarJson? = null
     var listDate = ArrayList<CalendarDay>()
-    var calendarFileArr = ArrayList<CalendarFinal>()
-
+    var calendarFinalArr = ArrayList<CalendarFinal>()
+    var calendarViewpagerDateArr = ArrayList<CalendarDay>()
+    val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR), 1, 1)
+    val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 12, 12)
     var readExelCallback = 0
     private var allPermission = 0
+    private val swipe = Swipe()
+    private lateinit var animation: Animation
+
+
+    inner class OnSwipeListener: com.github.pwittchen.swipe.library.rx2.SwipeListener{
+        override fun onSwipedUp(event: MotionEvent?): Boolean {
+            //Toast.makeText(this@MainActivity, "Swiped up", Toast.LENGTH_SHORT).show()
+            return true
+        }
+
+        override fun onSwipedDown(event: MotionEvent?): Boolean {
+            //Toast.makeText(this@MainActivity, "Swiped down", Toast.LENGTH_SHORT).show()
+            return true
+        }
+
+        override fun onSwipingUp(event: MotionEvent?) {
+            //Toast.makeText(this@MainActivity, "Swiping right", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onSwipedRight(event: MotionEvent?): Boolean {
+            //Toast.makeText(this@MainActivity, "Swiped right", Toast.LENGTH_SHORT).show()
+            if (event!!.y > content_layout.y) {
+                animation.right()
+            }
+            return true
+        }
+
+        override fun onSwipingLeft(event: MotionEvent?) {
+            //Toast.makeText(this@MainActivity, "Swiping left", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onSwipingRight(event: MotionEvent?) {
+            //Toast.makeText(this@MainActivity, "Swiping right", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onSwipingDown(event: MotionEvent?) {
+            //Toast.makeText(this@MainActivity, "Swiping down", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onSwipedLeft(event: MotionEvent?): Boolean {
+            //Toast.makeText(this@MainActivity, "Swipe left", Toast.LENGTH_SHORT).show()
+            if (event!!.y > content_layout.y) {
+                animation.left()
+            }
+            return true
+        }
+
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        swipe.dispatchTouchEvent(event)
+        return super.dispatchTouchEvent(event)
+    }
+
+    override fun onBackPressed() {
+        toDay()
+    }
+
+    fun preDate(){
+        val calendarSelected = Calendar.getInstance()
+        calendarSelected.set(calendarView.selectedDate.year, calendarView.selectedDate.month, calendarView.selectedDate.day)
+        calendarSelected.add(Calendar.DAY_OF_MONTH, -1)
+        val newCaldenderDate = CalendarDay.from(calendarSelected)
+        calendarView.currentDate = newCaldenderDate
+        calendarView.selectedDate = newCaldenderDate
+
+        val date = "${newCaldenderDate.day}/${newCaldenderDate.month + 1}/${newCaldenderDate.year}"
+        updateListView(date)
+    }
+
+    fun nextDate(){
+        val calendarSelected = Calendar.getInstance()
+        calendarSelected.set(calendarView.selectedDate.year, calendarView.selectedDate.month, calendarView.selectedDate.day)
+        calendarSelected.add(Calendar.DAY_OF_MONTH, 1)
+        val newCaldenderDate = CalendarDay.from(calendarSelected)
+        calendarView.currentDate = newCaldenderDate
+        calendarView.selectedDate = newCaldenderDate
+
+        val date = "${newCaldenderDate.day}/${newCaldenderDate.month + 1}/${newCaldenderDate.year}"
+        updateListView(date)
+    }
 
     private fun init(){
         readExel = ReadExel(this)
         handTkbData = HandTkbData(this)
         parseCalendar = ParseCalendarRaw(this)
         sqlLite = SqlLite(this)
+        animation = Animation(this)
         calenderEvents()
         title = ""
     }
 
     private fun calendarSetting(){
         calendarView.state().edit().
-                setMinimumDate(CalendarDay.from(2010, 1, 1))
-                .setMaximumDate(CalendarDay.from(2040, 12, 31))
+                setMinimumDate(dateStart)
+                .setMaximumDate(dateEnd)
                 .commit()
         calendarView.state().edit()
         calendarView.currentDate = CalendarDay.today()
@@ -71,6 +157,20 @@ class MainActivity : AppCompatActivity() {
         calendarView.selectionMode = SELECTION_MODE_SINGLE
 
         setCalendarDots()
+    }
+
+    private fun addToCalendarViewpagerDateArr(){
+        val calanderStart = Calendar.getInstance()
+        val calanderEnd = Calendar.getInstance()
+        calanderStart.set(dateStart.year, dateStart.month, dateStart.day)
+        calanderEnd.set(dateEnd.year, dateEnd.month, dateEnd.day)
+        while (calanderStart.time < calanderEnd.time){
+            calendarViewpagerDateArr.add(dateStart)
+//            Log.d("calanderStart ++ ", calanderStart.get(Calendar.YEAR).toString() +
+//                    calanderStart.get(Calendar.MONTH).toString() +
+//                    calanderStart.get(Calendar.DATE).toString())
+            calanderStart.add(Calendar.DAY_OF_MONTH, 1)
+        }
     }
 
 
@@ -82,35 +182,38 @@ class MainActivity : AppCompatActivity() {
         calendarView.setOnDateChangedListener { materialCalendarView, calendarDay, b ->
             val date = "${calendarDay.day}/${calendarDay.month+1}/${calendarDay.year}"
             //Toast.makeText(this, "$dateFormated", Toast.LENGTH_LONG).show()
-            if (parseCalendarJson != null){
-                calendarFileArr.removeAll(calendarFileArr)
-                parseCalendarJson!!.apply {
-                    getSubject(date)
-
-                    if (!subjectDate.isEmpty() && !subjectName.isEmpty() && !subjectTime.isEmpty() && !subjectPlace.isEmpty()) {
-                        var result = ""
-                        if (subjectDate.size == subjectName.size && subjectDate.size == subjectTime.size
-                                && subjectDate.size == subjectPlace.size) {
-                            for (j in 0 until subjectDate.size) {
-                                Log.d("result", "${subjectDate[j]}, ${subjectName[j]}, ${subjectTime[j]}, ${subjectPlace[j]}")
-                                result += "${subjectDate[j]}, ${subjectName[j]}, ${subjectTime[j]}, ${subjectPlace[j]} \n"
-                                calendarFileArr.add(CalendarFinal(subjectDate[j], subjectName[j], subjectTime[j], subjectPlace[j]))
-                            }
-                            //log.text = result
-                            calender_list_view.adapter = null
-                            calender_list_view.adapter = CalendarListViewAdapter(this@MainActivity, calendarFileArr)
-                        }
-                    } else {
-                        Log.d("result", "$date Nghỉ")
-                        //log.text = "$date Nghỉ"
-                        calender_list_view.adapter = null
-                        calender_list_view.adapter = CalendarListViewAdapter(this@MainActivity, calendarFileArr)
-                    }
-                }
-            }
+            updateListView(date)
         }
         calendarView.setOnMonthChangedListener { materialCalendarView, calendarDay ->
             calendarView.setTitleFormatter(TitleFormatter { "Tháng ${calendarDay.month+1} Năm ${calendarDay.year}" })
+        }
+    }
+
+    private fun updateListView(date: String){
+        if (parseCalendarJson != null){
+            calendarFinalArr.removeAll(calendarFinalArr)
+            parseCalendarJson!!.apply { getSubject(date)
+
+                if (!subjectDate.isEmpty() && !subjectName.isEmpty() && !subjectTime.isEmpty() && !subjectPlace.isEmpty()) {
+                    var result = ""
+                    if (subjectDate.size == subjectName.size && subjectDate.size == subjectTime.size
+                            && subjectDate.size == subjectPlace.size) {
+                        for (j in 0 until subjectDate.size) {
+                            Log.d("result", "${subjectDate[j]}, ${subjectName[j]}, ${subjectTime[j]}, ${subjectPlace[j]}")
+                            result += "${subjectDate[j]}, ${subjectName[j]}, ${subjectTime[j]}, ${subjectPlace[j]} \n"
+                            calendarFinalArr.add(CalendarFinal(subjectDate[j], subjectName[j], subjectTime[j], subjectPlace[j]))
+                        }
+                        //log.text = result
+                        calender_list_view.adapter = null
+                        calender_list_view.adapter = CalendarListViewAdapter(this@MainActivity, calendarFinalArr)
+                    }
+                } else {
+                    Log.d("result", "$date Nghỉ")
+                    //log.text = "$date Nghỉ"
+                    calender_list_view.adapter = null
+                    calender_list_view.adapter = CalendarListViewAdapter(this@MainActivity, calendarFinalArr)
+                }
+            }
         }
     }
 
@@ -128,7 +231,16 @@ class MainActivity : AppCompatActivity() {
             run()
     }
 
+    private fun toDay(){
+            calendarView.currentDate = CalendarDay.today()
+            calendarView.selectedDate = CalendarDay.today()
+            val date = "${CalendarDay.today().day}/${CalendarDay.today().month+1}/${CalendarDay.today().year}"
+            updateListView(date)
+    }
+
     private fun run(){
+        toDay()
+        swipe.setListener(OnSwipeListener())
         readExel.readTkbExel()
 
         while (readExelCallback == 0) {
@@ -150,8 +262,12 @@ class MainActivity : AppCompatActivity() {
             if (calendarResult != null) {
                 //log.text = calendarResult.toString()
                 parseCalendarJson = ParseCalendarJson(this, calendarResult!!)
+                //val date = "${CalendarDay.today().day}/${CalendarDay.today().month+1}/${CalendarDay.today().year}"
+                //updateListView(date)
+                toDay()
                 parseCalendarJson!!.addToArrDot()
                 setCalendarDots()
+                addToCalendarViewpagerDateArr()
             }
         }
     }

@@ -14,12 +14,13 @@
         android:layout_height="0dp"
         android:background="@color/colorPrimary"
         android:elevation="1.5dp"
+        android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="percent"
-        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintHeight_percent="0.25"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:mcv_arrowColor="@color/colorWhite"
+        app:mcv_arrowColor="@color/colorPrimary"
         app:mcv_calendarMode="week"
         app:mcv_firstDayOfWeek="sunday"
         app:mcv_headerTextAppearance="@color/colorAccent"
@@ -30,16 +31,28 @@
         app:mcv_titleAnimationOrientation="horizontal"
         app:mcv_weekDayTextAppearance="@color/colorWhite" />
 
-
-    <RelativeLayout
-        android:id="@+id/content_layout"
+    <View
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="percent"
-        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintHeight_percent="0.08"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView">
+        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+
+
+    <RelativeLayout
+        android:id="@+id/content_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent="0.67"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -57,9 +70,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@color/colorWhite"
-            android:dividerHeight="10dp"
-            android:layout_marginTop="50dp">
+            android:dividerHeight="10dp">
         </ListView>
+
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
