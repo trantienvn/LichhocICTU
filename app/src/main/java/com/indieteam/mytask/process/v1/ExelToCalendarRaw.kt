@@ -1,11 +1,11 @@
-package com.indieteam.mytask.process
+package com.indieteam.mytask.process.v1
 
 import android.util.Log
 import com.indieteam.mytask.modeldata.CalendarData
 import com.indieteam.mytask.modeldata.OnlyCalendarData
 import com.indieteam.mytask.ui.MainActivity
 
-class HandTkbData(val activity: MainActivity){
+class ExelToCalendarRaw(private val activity: MainActivity){
 
     fun trimTkbData(){
         var index2Add = -1
@@ -44,14 +44,14 @@ class HandTkbData(val activity: MainActivity){
                 val arrDate = ArrayList<String>()
                 val arrPlace = ArrayList<String>()
                 info = i.info
-                var nameSubj = ""
-                var dateTemp = ""
-                var placeTemp = ""
+                var nameSubj: String
+                var dateTemp: String
+                var placeTemp: String
                 var onlyCalendar: OnlyCalendarData
-                var indexDate = -1
-                var indexPlace = -1
-                var indexBreakLineDate = -1
-                var indexBreakLinePlace = -1
+                var indexDate: Int
+                var indexPlace: Int
+                var indexBreakLineDate: Int
+                var indexBreakLinePlace: Int
                 indexDate = info.indexOf("Từ")
                 indexPlace = info.indexOf("\n")
                 indexBreakLineDate = info.indexOf("\n")

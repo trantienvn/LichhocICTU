@@ -5,6 +5,7 @@ import com.indieteam.mytask.ui.MainActivity
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import org.json.JSONObject
 import java.text.SimpleDateFormat
+import java.util.*
 
 class ParseCalendarJson(val activity: MainActivity, val calendar: JSONObject){
     var subjectDate = ArrayList<String>()
@@ -19,7 +20,7 @@ class ParseCalendarJson(val activity: MainActivity, val calendar: JSONObject){
         subjectPlace = arrayListOf()
 
         val calendarValue = calendar.getJSONArray("calendar")
-        Log.d("key", key)
+        //Log.d("calendar", key)
 
         for (i in 0 until calendarValue.length()){
             //Log.d("date_key", calendarValue.getJSONObject(i).getString("subjectDate"))
@@ -33,14 +34,49 @@ class ParseCalendarJson(val activity: MainActivity, val calendar: JSONObject){
         }
     }
 
-    fun addToArrDot(){
+    fun addToMapDot(){
         val calendarValue = calendar.getJSONArray("calendar")
         for (i in 0 until calendarValue.length()){
             val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
-                val dateFormated = simpleDateFormat.parse(calendarValue.getJSONObject(i).getString("subjectDate"))
-                val calendarDay = CalendarDay.from(dateFormated)
-                activity.listDate.add(calendarDay)
+            val dateFormated = simpleDateFormat.parse(calendarValue.getJSONObject(i).getString("subjectDate"))
+            val calendar = Calendar.getInstance()
+            calendar.time = dateFormated
+            val calendarDay = CalendarDay.from(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH))
+            val calendarDayRaw = CalendarDay.from(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+            //Log.d("date_key", calendar.get(Calendar.YEAR).toString() + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DAY_OF_MONTH))
+            //Log.d("date_key", calendarDay.toString())
+            if(activity.mapDate.isEmpty()) {
+                activity.mapDate[calendarDayRaw] = "."
+            }else {
+                var check = 0
+                fun loop(){
+                    for (j in activity.mapDate) {
+                        check = 0
+                        val calendar2 = Calendar.getInstance()
+                        calendar2.set(j.key.year, j.key.month, j.key.day)
+                        val calendarDayFromKey = CalendarDay.from(calendar2.get(Calendar.YEAR), calendar2.get(Calendar.MONTH), calendar2.get(Calendar.DAY_OF_MONTH))
+                        if (calendarDayRaw == calendarDayFromKey && activity.mapDate[calendarDayRaw] != null) {
+                            check = 1
+                            var lastValue = activity.mapDate[calendarDayRaw]!!
+                            lastValue += "."
+                            activity.mapDate.remove(calendarDayRaw)
+                            activity.mapDate[calendarDayRaw] = lastValue
+                            break
+                        }
+                    }
+                    if (check == 0)
+                        activity.mapDate[calendarDayRaw] = "."
+                    }
+                loop()
+            }
         }
+
+        activity.addDotCallBack = 1
+
+        //debug use it
+//        for (i in activity.mapDate){
+//            Log.d("dots", "key: ${i.key}, value: ${i.value}")
+//        }
     }
 
 }

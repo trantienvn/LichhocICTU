@@ -2,11 +2,15 @@ package com.indieteam.mytask.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.support.v7.app.AppCompatActivity
+import android.text.style.LineBackgroundSpan
 import android.util.Log
 import android.view.MotionEvent
 import android.widget.Toast
@@ -16,18 +20,22 @@ import com.indieteam.mytask.modeldata.CalendarData
 import com.indieteam.mytask.modeldata.CalendarFinal
 import com.indieteam.mytask.modeldata.OnlyCalendarData
 import com.indieteam.mytask.process.*
-import com.prolificinteractive.materialcalendarview.CalendarDay
-import com.prolificinteractive.materialcalendarview.DayViewDecorator
-import com.prolificinteractive.materialcalendarview.DayViewFacade
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView.SELECTION_MODE_SINGLE
 import com.prolificinteractive.materialcalendarview.format.TitleFormatter
-import com.prolificinteractive.materialcalendarview.spans.DotSpan
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 import com.github.pwittchen.swipe.library.rx2.Swipe
+import com.indieteam.mytask.process.v1.ExelToCalendarRaw
+import com.indieteam.mytask.process.v1.ParseCalendarRaw
+import com.indieteam.mytask.process.v1.ReadExel
+import com.indieteam.mytask.sqlite.SqlLite
+import com.leinardi.android.speeddial.SpeedDialActionItem
+import com.leinardi.android.speeddial.SpeedDialView
+import com.prolificinteractive.materialcalendarview.*
+import kotlin.concurrent.scheduleAtFixedRate
 
 
 class MainActivity : AppCompatActivity() {
@@ -42,20 +50,21 @@ class MainActivity : AppCompatActivity() {
     var calendarMap = mutableMapOf<String, OnlyCalendarData>()
     var calendarDataTemp = ArrayList<CalendarData>()
     private lateinit var readExel: ReadExel
-    private lateinit var handTkbData: HandTkbData
-    private lateinit var parseCalendar: ParseCalendarRaw
+    private lateinit var exelToCalendarRaw: ExelToCalendarRaw
+    private lateinit var parseCalendarRaw: ParseCalendarRaw
     lateinit var sqlLite: SqlLite
     private var calendarResult: JSONObject? = null
     private var parseCalendarJson: ParseCalendarJson? = null
-    var listDate = ArrayList<CalendarDay>()
-    var calendarFinalArr = ArrayList<CalendarFinal>()
-    var calendarViewpagerDateArr = ArrayList<CalendarDay>()
-    val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR), 1, 1)
-    val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 12, 12)
+    var mapDate = mutableMapOf<CalendarDay, String>()
+    private var calendarFinalArr = ArrayList<CalendarFinal>()
+    private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR), 1, 1)
+    private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 12, 31)
     var readExelCallback = 0
     private var allPermission = 0
     private val swipe = Swipe()
     private lateinit var animation: Animation
+    private val splash = SplashFragment()
+    var addDotCallBack = 0
 
 
     inner class OnSwipeListener: com.github.pwittchen.swipe.library.rx2.SwipeListener{
@@ -138,8 +147,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun init(){
         readExel = ReadExel(this)
-        handTkbData = HandTkbData(this)
-        parseCalendar = ParseCalendarRaw(this)
+        exelToCalendarRaw = ExelToCalendarRaw(this)
+        parseCalendarRaw = ParseCalendarRaw(this)
         sqlLite = SqlLite(this)
         animation = Animation(this)
         calenderEvents()
@@ -159,23 +168,11 @@ class MainActivity : AppCompatActivity() {
         setCalendarDots()
     }
 
-    private fun addToCalendarViewpagerDateArr(){
-        val calanderStart = Calendar.getInstance()
-        val calanderEnd = Calendar.getInstance()
-        calanderStart.set(dateStart.year, dateStart.month, dateStart.day)
-        calanderEnd.set(dateEnd.year, dateEnd.month, dateEnd.day)
-        while (calanderStart.time < calanderEnd.time){
-            calendarViewpagerDateArr.add(dateStart)
-//            Log.d("calanderStart ++ ", calanderStart.get(Calendar.YEAR).toString() +
-//                    calanderStart.get(Calendar.MONTH).toString() +
-//                    calanderStart.get(Calendar.DATE).toString())
-            calanderStart.add(Calendar.DAY_OF_MONTH, 1)
-        }
-    }
-
-
     private fun setCalendarDots(){
-        calendarView.addDecorator(EventDecorator(Color.WHITE, listDate))
+        for(i in mapDate){
+            calendarView.addDecorator(EventDecorator(Color.WHITE, i.key, i.value))
+            Log.d("valuedot", i.value)
+        }
     }
 
     private fun calenderEvents(){
@@ -238,38 +235,90 @@ class MainActivity : AppCompatActivity() {
             updateListView(date)
     }
 
+    var floatClick = 0
+
+    private fun initFloatButton(){
+        float_button.addActionItem(
+                SpeedDialActionItem.Builder(R.id.fab_setting, R.drawable.ic_switch)
+                        .setLabel("Chuyển")
+                        .setFabBackgroundColor(resources.getColor(R.color.colorPrimary))
+                        .create()
+        )
+
+        float_button.setOnActionSelectedListener {
+            floatClick++
+            when(it.id){
+                R.id.fab_setting ->{
+                    //Toast.makeText(this@MainActivity, "Setting", Toast.LENGTH_SHORT).show()
+                    if(floatClick %2 == 0)
+                        calendarView.state().edit()
+                                .setCalendarDisplayMode(CalendarMode.WEEKS)
+                                .commit()
+                    else
+                        calendarView.state().edit()
+                                .setCalendarDisplayMode(CalendarMode.MONTHS)
+                                .commit()
+                }
+            }
+            false //false to close float button
+        }
+    }
+
     private fun run(){
+        var readDb: Int
+        var valueDb= ""
+        try{
+            valueDb = sqlLite.read()
+            readDb = 1
+            Log.d("readdb", "read db done")
+        }catch (e: Exception){
+            readDb = 0
+            Log.d("readdb", "db is not exits, cannot read")
+            Log.d("err", e.toString())
+        }
+
+        if(readDb == 0){
+            readExel.readTkbExel()
+
+            while (readExelCallback == 0) {
+                //wait ...
+                Log.d("wait", "wait")
+                if(readExelCallback == - 1)
+                    break
+            }
+
+            if(readExelCallback == 1) {
+
+                exelToCalendarRaw.apply {
+                    trimTkbData()
+                    addToMap()
+                }
+                parseCalendarRaw.parse()
+                calendarResult = JSONObject(sqlLite.read())
+                if (calendarResult != null) {
+                    //log.text = calendarResult.toString()
+                    parseCalendarJson = ParseCalendarJson(this, calendarResult!!)
+                }
+            }
+        }else{
+            calendarResult = JSONObject(valueDb)
+            parseCalendarJson = ParseCalendarJson(this, calendarResult!!)
+        }
+        initFloatButton()
         toDay()
+        parseCalendarJson!!.addToMapDot()
+        setCalendarDots()
         swipe.setListener(OnSwipeListener())
-        readExel.readTkbExel()
 
-        while (readExelCallback == 0) {
-            //wait ...
-            Log.d("wait", "wait")
-            if(readExelCallback == - 1)
-                break
-        }
-
-        if(readExelCallback == 1) {
-
-            handTkbData.apply {
-                trimTkbData()
-                addToMap()
-
-            }
-            parseCalendar.parse()
-            calendarResult = JSONObject(sqlLite.read())
-            if (calendarResult != null) {
-                //log.text = calendarResult.toString()
-                parseCalendarJson = ParseCalendarJson(this, calendarResult!!)
-                //val date = "${CalendarDay.today().day}/${CalendarDay.today().month+1}/${CalendarDay.today().year}"
-                //updateListView(date)
-                toDay()
-                parseCalendarJson!!.addToArrDot()
-                setCalendarDots()
-                addToCalendarViewpagerDateArr()
-            }
-        }
+        // try run in Thread
+//        object : Thread() {
+//            override fun run() {
+//                while (addDotCallBack == 0){}
+//                runOnUiThread { setCalendarDots() }
+//                Log.d("addDotCallBack", addDotCallBack.toString())
+//                this.join()
+//            }
+//        }.start()
     }
 
     private fun checkPermission(){
@@ -281,7 +330,7 @@ class MainActivity : AppCompatActivity() {
                 allPermission = 1
             }
         }else{
-            readExel.readTkbExel()
+            run()
         }
     }
 
@@ -301,16 +350,39 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    inner class EventDecorator(private val color: Int, dates: Collection<CalendarDay>) : DayViewDecorator {
-        private val dates = HashSet(dates)
+    inner class DrawLableForDate(private val radius: Float, private val color: Int, private val price: String) : LineBackgroundSpan {
 
+        override fun drawBackground(canvas: Canvas, paint: Paint,
+                                    left: Int, right: Int, top: Int,
+                                    baseline: Int, bottom: Int,
+                                    charSequence: CharSequence,
+                                    start: Int, end: Int, lineNum: Int) {
+            val oldColor = paint.color
+            val oldTextSize = paint.textSize
+            if (color != 0) {
+                paint.color = color
+            }
+            if (price != "") {
+                paint.textSize = 60f
+            }
+            val text = price
+            val bounds = Rect()
+            paint.getTextBounds(text, 0, text.length, bounds)
+            val x = right/2 - bounds.width()/2
+            val y = 1.5*bottom
+            canvas.drawText(text, x.toFloat(), y.toFloat(), paint)
+            paint.textSize = oldTextSize
+            paint.color = oldColor
+        }
+    }
+
+    inner class EventDecorator(private val color: Int, val date: CalendarDay, private val dot: String): DayViewDecorator {
         override fun shouldDecorate(day: CalendarDay): Boolean {
-            return dates.contains(day)
+            return date == day
         }
 
         override fun decorate(view: DayViewFacade) {
-            view.addSpan(DotSpan(4f, color))
-            view.addSpan(DotSpan(4f, color))
+            view.addSpan(DrawLableForDate(10f, color, dot))
         }
     }
 

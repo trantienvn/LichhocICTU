@@ -24,14 +24,16 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:28.0.0-rc02'
-    implementation 'com.android.support:animated-vector-drawable:28.0.0-rc02'
-    implementation 'com.android.support:support-media-compat:28.0.0-rc02'
-    implementation 'com.android.support:support-v4:28.0.0-rc02'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.android.support:appcompat-v7:28.0.0-rc01'
+    implementation 'com.android.support:animated-vector-drawable:28.0.0-rc01'
+    implementation 'com.android.support:support-media-compat:28.0.0-rc01'
+    implementation 'com.android.support:support-v4:28.0.0-rc01'
+    implementation 'com.android.support:design:28.0.0-rc01'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     implementation 'com.github.prolificinteractive:material-calendarview:1.6.0'
     implementation 'com.github.pwittchen:swipe-rx2:0.3.0'
+    implementation 'com.github.leinardi:FloatingActionButtonSpeedDial:master-SNAPSHOT'
 }
