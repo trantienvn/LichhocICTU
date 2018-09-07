@@ -3,9 +3,9 @@ package com.indieteam.mytask.ui
 import android.animation.ValueAnimator
 import android.graphics.Point
 import android.util.Log
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_week.*
 
-class Animation(private val activity: MainActivity){
+class Animation(private val activity: WeekActivity){
 
     private var screenW = 0
     private var screenY = 0

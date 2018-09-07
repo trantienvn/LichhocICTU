@@ -1,23 +1,25 @@
 package com.indieteam.mytask.process
 
-import android.util.Log
-import com.indieteam.mytask.ui.MainActivity
+import com.indieteam.mytask.ui.WeekActivity
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
-class ParseCalendarJson(val activity: MainActivity, val calendar: JSONObject){
-    var subjectDate = ArrayList<String>()
+class ParseCalendarJson(val activity: WeekActivity, val calendar: JSONObject){
+    //var subjectDate = ArrayList<String>()
     var subjectName = ArrayList<String>()
     var subjectTime = ArrayList<String>()
     var subjectPlace = ArrayList<String>()
+    var teacher = ArrayList<String>()
 
     fun getSubject(key: String){
-        subjectDate = arrayListOf()
+        //subjectDate = arrayListOf()
         subjectName = arrayListOf()
         subjectTime = arrayListOf()
         subjectPlace = arrayListOf()
+        teacher = arrayListOf()
 
         val calendarValue = calendar.getJSONArray("calendar")
         //Log.d("calendar", key)
@@ -26,10 +28,11 @@ class ParseCalendarJson(val activity: MainActivity, val calendar: JSONObject){
             //Log.d("date_key", calendarValue.getJSONObject(i).getString("subjectDate"))
 
             if (key == calendarValue.getJSONObject(i).getString("subjectDate")) {
-                subjectDate.add(calendarValue.getJSONObject(i).getString("subjectDate"))
+                //subjectDate.add(calendarValue.getJSONObject(i).getString("subjectDate"))
                 subjectName.add(calendarValue.getJSONObject(i).getString("subjectName"))
                 subjectTime.add(calendarValue.getJSONObject(i).getString("subjectTime"))
                 subjectPlace.add(calendarValue.getJSONObject(i).getString("subjectPlace"))
+                teacher.add(calendarValue.getJSONObject(i).getString("teacher"))
             }
         }
     }

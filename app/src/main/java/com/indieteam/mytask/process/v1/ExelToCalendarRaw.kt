@@ -1,26 +1,26 @@
 package com.indieteam.mytask.process.v1
 
 import android.util.Log
-import com.indieteam.mytask.modeldata.CalendarData
-import com.indieteam.mytask.modeldata.OnlyCalendarData
-import com.indieteam.mytask.ui.MainActivity
+import com.indieteam.mytask.modeldata.v1.CalendarRaw
+import com.indieteam.mytask.modeldata.v1.OnlyCalendar
+import com.indieteam.mytask.ui.WeekActivity
 
-class ExelToCalendarRaw(private val activity: MainActivity){
+class ExelToCalendarRaw(private val activity: WeekActivity){
 
     fun trimTkbData(){
         var index2Add = -1
         activity.apply {
-            for (i in 0 until calendarDataTemp.size) {
-                if(!calendarDataTemp[i].subjectName.isBlank() && !calendarDataTemp[i].tc.isBlank() && !calendarDataTemp[i].info.isBlank()){
-                    calendarRaw.add(CalendarData(calendarDataTemp[i].subjectName, calendarDataTemp[i].tc, calendarDataTemp[i].info))
+            for (i in 0 until calendarRawArr.size) {
+                if(!calendarRawArr[i].subjectName.isBlank() && !calendarRawArr[i].tc.isBlank() && !calendarRawArr[i].info.isBlank()){
+                    calendarRaw.add(CalendarRaw(calendarRawArr[i].subjectName, calendarRawArr[i].tc, calendarRawArr[i].info))
                     index2Add ++
                 }
 
-                if(calendarDataTemp[i].subjectName.isBlank() && calendarDataTemp[i].tc.isBlank() && !calendarDataTemp[i].info.isBlank()){
+                if(calendarRawArr[i].subjectName.isBlank() && calendarRawArr[i].tc.isBlank() && !calendarRawArr[i].info.isBlank()){
                     if(calendarRaw[index2Add].info.lastIndexOf("\n") == calendarRaw[index2Add].info.length - 3)
-                        calendarRaw[index2Add].info += calendarDataTemp[i].info + "\n"
+                        calendarRaw[index2Add].info += calendarRawArr[i].info + "\n"
                     else
-                        calendarRaw[index2Add].info += "\n" + calendarDataTemp[i].info + "\n"
+                        calendarRaw[index2Add].info += "\n" + calendarRawArr[i].info + "\n"
                 }
             }
         }
@@ -47,7 +47,7 @@ class ExelToCalendarRaw(private val activity: MainActivity){
                 var nameSubj: String
                 var dateTemp: String
                 var placeTemp: String
-                var onlyCalendar: OnlyCalendarData
+                var onlyCalendar: OnlyCalendar
                 var indexDate: Int
                 var indexPlace: Int
                 var indexBreakLineDate: Int
@@ -100,7 +100,7 @@ class ExelToCalendarRaw(private val activity: MainActivity){
                     }
                 }
                 //Log.d("___", "end item____________________")
-                onlyCalendar = OnlyCalendarData(arrDate, arrPlace)
+                onlyCalendar = OnlyCalendar(arrDate, arrPlace)
                 calendarMap[nameSubj] = onlyCalendar
             }
             // Debug use it:

@@ -2,14 +2,14 @@ package com.indieteam.mytask.process.v1
 
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
-import com.indieteam.mytask.ui.MainActivity
+import com.indieteam.mytask.ui.WeekActivity
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
-class ParseCalendarRaw(private val activity: MainActivity){
+class CalendarRawToJson(private val activity: WeekActivity){
 
     private var calendarJsonObj = JSONObject()
     private var calendarJsonArr = JSONArray()
