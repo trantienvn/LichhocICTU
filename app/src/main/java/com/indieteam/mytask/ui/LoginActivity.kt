@@ -144,8 +144,14 @@ class LoginActivity : AppCompatActivity() {
 
             }catch (e: Exception) {
                 Log.d("Err", "$e")
+                supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
+                    supportFragmentManager.beginTransaction().remove(it)
+                            .commit()
+                }
                 runOnUiThread {
-                    Toast.makeText(this@LoginActivity, "Err #03", Toast.LENGTH_SHORT).show()
+                    visibly()
+                    clickLogin = 0
+                    Toast.makeText(this@LoginActivity, "Err #03 (Not Internet, ...)", Toast.LENGTH_SHORT).show()
                 }
                 this.join()
             }
