@@ -216,12 +216,9 @@ class LoginActivity : AppCompatActivity() {
                                     process.text = "Lưu Exel...Ok"
                                 }
                             }
-                            runOnUiThread {
-                                Toast.makeText(this@LoginActivity, "Saved Exel", Toast.LENGTH_SHORT).show()
-                            }
                             val intent = Intent(this@LoginActivity, WeekActivity::class.java)
-                            this@LoginActivity.startActivity(intent)
-                            this@LoginActivity.finish()
+                            startActivity(intent)
+                            finish()
                         } catch (e: Exception) {
                             Log.d("Err", e.toString())
                             runOnUiThread {
