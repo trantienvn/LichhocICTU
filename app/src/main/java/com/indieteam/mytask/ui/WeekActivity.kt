@@ -2,6 +2,7 @@ package com.indieteam.mytask.ui
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.*
@@ -21,9 +22,9 @@ import com.indieteam.mytask.modeldata.v1.CalendarRaw
 import com.indieteam.mytask.modeldata.v1.OnlyCalendar
 import com.indieteam.mytask.modeldata.v2.CalendarFinalV2
 import com.indieteam.mytask.process.ParseCalendarJson
-import com.indieteam.mytask.process.v1.CalendarRawToJson
-import com.indieteam.mytask.process.v1.ExelToCalendarRaw
-import com.indieteam.mytask.process.v1.ReadExel
+import com.indieteam.mytask.process.calendar.v1.CalendarRawToJson
+import com.indieteam.mytask.process.calendar.v1.ExelToCalendarRaw
+import com.indieteam.mytask.process.calendar.v1.ReadExel
 import com.indieteam.mytask.sqlite.SqlLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -41,8 +42,8 @@ import kotlin.collections.ArrayList
 @Suppress("DEPRECATION")
 class WeekActivity : AppCompatActivity() {
 
-    val fileV1 = File(Environment.getExternalStorageDirectory(), "tkb_v1.xls")
-    val fileV2 = File(Environment.getExternalStorageDirectory(), "tkb_v2.xls")
+    val fileV1 = File(Environment.getExternalStorageDirectory(), "mytask/temp/tkb_v2.xls")
+    val fileV2 = File(Environment.getExternalStorageDirectory(), "mytask/temp/tkb_v2.xls")
 
     private val REQUEST_CODE = 1
     var nameSubject = ""
@@ -54,7 +55,7 @@ class WeekActivity : AppCompatActivity() {
     private lateinit var readExelV1: ReadExel
     private lateinit var exelToCalendarRawV1: ExelToCalendarRaw
     private lateinit var parseCalendarRawV1: CalendarRawToJson
-    private lateinit var readExelV2: com.indieteam.mytask.process.v2.ReadExel
+    private lateinit var readExelV2: com.indieteam.mytask.process.calendar.v2.ReadExel
     lateinit var sqlLite: SqlLite
     private var calendarResult: JSONObject? = null
     private var parseCalendarJson: ParseCalendarJson? = null
@@ -66,8 +67,7 @@ class WeekActivity : AppCompatActivity() {
     var readExelCallback = 0
     private var allPermission = 0
     private val swipe = Swipe()
-    private lateinit var animation: Animation
-    private val splash = SplashFragment()
+    private lateinit var customSwipe: CustomSwipe
     var addDotCallBack = 0
     private var screenHeight = 0
     private var statusBarHeight = 0
@@ -93,7 +93,7 @@ class WeekActivity : AppCompatActivity() {
         override fun onSwipedRight(event: MotionEvent?): Boolean {
             //Toast.makeText(this@WeekActivity, "Swiped right", Toast.LENGTH_SHORT).show()
             if (startTouchY > content_layout.y && event!!.y > content_layout.y) {
-                animation.right()
+                customSwipe.right()
             }
             countSwipeRight = 0
             return true
@@ -128,7 +128,7 @@ class WeekActivity : AppCompatActivity() {
         override fun onSwipedLeft(event: MotionEvent?): Boolean {
             //Toast.makeText(this@WeekActivity, "Swipe left", Toast.LENGTH_SHORT).show()
             if (startTouchY > content_layout.y && event!!.y > content_layout.y) {
-                animation.left()
+                customSwipe.left()
             }
             countSwipeLeft = 0
             return true
@@ -145,11 +145,11 @@ class WeekActivity : AppCompatActivity() {
         val calendarSelected = Calendar.getInstance()
         calendarSelected.set(calendarView.selectedDate.year, calendarView.selectedDate.month, calendarView.selectedDate.day)
         calendarSelected.add(Calendar.DAY_OF_MONTH, -1)
-        val newCaldenderDate = CalendarDay.from(calendarSelected)
-        calendarView.currentDate = newCaldenderDate
-        calendarView.selectedDate = newCaldenderDate
+        val newCalendarDate = CalendarDay.from(calendarSelected)
+        calendarView.currentDate = newCalendarDate
+        calendarView.selectedDate = newCalendarDate
 
-        val date = "${newCaldenderDate.day}/${newCaldenderDate.month + 1}/${newCaldenderDate.year}"
+        val date = "${newCalendarDate.day}/${newCalendarDate.month + 1}/${newCalendarDate.year}"
         updateListView(date)
     }
 
@@ -157,11 +157,11 @@ class WeekActivity : AppCompatActivity() {
         val calendarSelected = Calendar.getInstance()
         calendarSelected.set(calendarView.selectedDate.year, calendarView.selectedDate.month, calendarView.selectedDate.day)
         calendarSelected.add(Calendar.DAY_OF_MONTH, 1)
-        val newCaldenderDate = CalendarDay.from(calendarSelected)
-        calendarView.currentDate = newCaldenderDate
-        calendarView.selectedDate = newCaldenderDate
+        val newCalendarDate = CalendarDay.from(calendarSelected)
+        calendarView.currentDate = newCalendarDate
+        calendarView.selectedDate = newCalendarDate
 
-        val date = "${newCaldenderDate.day}/${newCaldenderDate.month + 1}/${newCaldenderDate.year}"
+        val date = "${newCalendarDate.day}/${newCalendarDate.month + 1}/${newCalendarDate.year}"
         updateListView(date)
     }
 
@@ -169,9 +169,9 @@ class WeekActivity : AppCompatActivity() {
         readExelV1 = ReadExel(this)
         exelToCalendarRawV1 = ExelToCalendarRaw(this)
         parseCalendarRawV1 = CalendarRawToJson(this)
-        readExelV2 = com.indieteam.mytask.process.v2.ReadExel(this)
+        readExelV2 = com.indieteam.mytask.process.calendar.v2.ReadExel(this)
         sqlLite = SqlLite(this)
-        animation = Animation(this)
+        customSwipe = CustomSwipe(this)
         calenderEvents()
         title = ""
         val point = Point()
@@ -267,12 +267,16 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun initFloatButton(){
-        float_button.addActionItem(
-                SpeedDialActionItem.Builder(R.id.fab_setting, R.drawable.ic_switch)
-                        .setLabel("Chuyển")
+        val listItem = listOf(SpeedDialActionItem.Builder(R.id.fab_setting, R.drawable.ic_switch)
+                .setLabel("Chuyển")
+                .setFabBackgroundColor(resources.getColor(R.color.colorAccent))
+                .create(),
+                SpeedDialActionItem.Builder(R.id.fab_logout, R.drawable.ic_logout)
+                        .setLabel("Thoát")
                         .setFabBackgroundColor(resources.getColor(R.color.colorAccent))
                         .create()
         )
+        float_button.addAllActionItems(listItem)
 
         float_button.setOnActionSelectedListener {
             when(it.id){
@@ -305,6 +309,12 @@ class WeekActivity : AppCompatActivity() {
                         }
                         calendarMode = sharedPref.getInt("CalendarMode", 0)
                     }
+                }
+                R.id.fab_logout ->{
+                    sqlLite.delete()
+                    val intent = Intent(this@WeekActivity, LoginActivity::class.java)
+                    startActivity(intent)
+                    finish()
                 }
             }
             false //false to close float button
@@ -404,10 +414,9 @@ class WeekActivity : AppCompatActivity() {
             if(grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
             && grantResults[1] == PackageManager.PERMISSION_GRANTED){
                 run()
-                Toast.makeText(this@WeekActivity, "Permissions is granted", Toast.LENGTH_LONG).show()
+                //Toast.makeText(this@WeekActivity, "Permissions is granted", Toast.LENGTH_LONG).show()
             }else{
                 Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
-                finish()
             }
         }else{
             Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
@@ -415,7 +424,7 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
-    inner class DrawLableForDate(private val color: Int, private val text: String) : LineBackgroundSpan {
+    inner class DrawLabelForDate(private val color: Int, private val text: String) : LineBackgroundSpan {
 
         override fun drawBackground(canvas: Canvas, paint: Paint,
                                     left: Int, right: Int, top: Int,
@@ -442,7 +451,7 @@ class WeekActivity : AppCompatActivity() {
         }
 
         override fun decorate(view: DayViewFacade) {
-            view.addSpan(DrawLableForDate(color, dot))
+            view.addSpan(DrawLabelForDate(color, dot))
         }
     }
 

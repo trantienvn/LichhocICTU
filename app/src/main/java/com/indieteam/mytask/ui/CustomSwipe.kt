@@ -5,7 +5,7 @@ import android.graphics.Point
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_week.*
 
-class Animation(private val activity: WeekActivity){
+class CustomSwipe(private val activity: WeekActivity){
 
     private var screenW = 0
     private var screenY = 0

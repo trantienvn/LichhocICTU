@@ -1,4 +1,4 @@
-package com.indieteam.mytask.process.v2
+package com.indieteam.mytask.process.calendar.v2
 
 import android.util.Log
 import com.indieteam.mytask.modeldata.v2.CalendarRawV2
