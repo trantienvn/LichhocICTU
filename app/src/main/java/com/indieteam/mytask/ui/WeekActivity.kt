@@ -270,14 +270,14 @@ class WeekActivity : AppCompatActivity() {
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_logout, R.drawable.ic_logout)
                         .setLabel("Đăng xuất")
-                        .setFabBackgroundColor(resources.getColor(R.color.colorAccent))
+                        .setFabBackgroundColor(resources.getColor(R.color.colorPrimaryDark))
                         .create(),
                         SpeedDialActionItem.Builder(R.id.fab_setting, R.drawable.ic_switch)
-                                .setLabel("Chuyển")
-                                .setFabBackgroundColor(resources.getColor(R.color.colorOrange))
+                                .setLabel("Tuần/Tháng")
+                                .setFabBackgroundColor(resources.getColor(R.color.colorAccent))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_info)
-                                .setLabel("Thông tin")
+                                .setLabel("Cá nhân")
                                 .setFabBackgroundColor(resources.getColor(R.color.colorGreen))
                                 .create()
 
@@ -321,7 +321,9 @@ class WeekActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.fab_logout ->{
-                    sqlLite.delete()
+                    try {
+                        sqlLite.delete()
+                    }catch (e: Exception){ Log.d("Err", e.toString()) }
                     val intent = Intent(this@WeekActivity, LoginActivity::class.java)
                     startActivity(intent)
                     finish()

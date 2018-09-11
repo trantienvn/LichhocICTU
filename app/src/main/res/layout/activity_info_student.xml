@@ -34,6 +34,7 @@
             android:text="Name: "
             android:textSize="18sp"
             android:textStyle="bold"
+            android:layout_gravity="center"
             android:background="@drawable/shap_profile"
             android:textColor="@color/colorWhite"
             android:paddingTop="2dp"
@@ -66,7 +67,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:layout_marginTop="15dp"
                 android:gravity="center_horizontal">
@@ -79,6 +80,7 @@
                     android:text="Name: "
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    android:layout_gravity="center"
                     android:background="@drawable/shap_profile"
                     android:textColor="@color/colorWhite"
                     android:paddingTop="2dp"
@@ -95,6 +97,7 @@
                     android:text="Class Name: "
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    android:layout_gravity="center"
                     android:background="@drawable/shap_profile"
                     android:textColor="@color/colorWhite"
                     android:paddingTop="2dp"
@@ -111,6 +114,7 @@
                     android:text="Course Name: "
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    android:layout_gravity="center"
                     android:background="@drawable/shap_profile"
                     android:textColor="@color/colorWhite"
                     android:paddingTop="2dp"
@@ -127,6 +131,7 @@
                     android:text="Majors Name: "
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    android:layout_gravity="center"
                     android:background="@drawable/shap_profile"
                     android:textColor="@color/colorWhite"
                     android:paddingTop="2dp"
@@ -138,6 +143,7 @@
             </LinearLayout>
 
         </ScrollView>
+
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

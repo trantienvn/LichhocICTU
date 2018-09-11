@@ -35,8 +35,6 @@ class LoginActivity : AppCompatActivity() {
     private var pageHeader1drpNgonNgu = "010527EFBEB84BCA8919321CFD5C3A34"
     private var pageHeader1hidisNotify = ""
     private var pageHeader1hidValueNotify = ""
-    private var txtUserName = "DTC155D4802010020"
-    private var txtPassword = "0a28b0718dd7bc79326342a70f3cfd1e"
     private var btnSubmit = "Đăng nhập"
     private var hidUserId = ""
     private var hidUserFullName = ""
@@ -218,7 +216,8 @@ class LoginActivity : AppCompatActivity() {
                     this.join()
                 }
 
-                if(sessionUrl.isNotBlank() && dataMap.isNotEmpty()) {
+                if(sessionUrl.isNotBlank() && dataMap.isNotEmpty() &&
+                        drpSemester.isNotBlank() && drpTerm.isNotBlank()) {
                     val resDownloadExel = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/(S($sessionUrl))/Reports/Form/StudentTimeTable.aspx")
                             //.data("hidAcademicYearId", "C63BA53030A54AA490637046CCE5FFDC")
                             .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
