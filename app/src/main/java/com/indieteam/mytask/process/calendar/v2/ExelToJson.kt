@@ -7,7 +7,7 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ExelToJson(val calendarRawV2Arr: ArrayList<CalendarRawV2>){
+class ExelToJson(val calendarRawV2Arr: ArrayList<CalendarRawV2>, val infoJson: JSONObject){
 
     val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private var dayOfWeekMap = mutableMapOf("2" to Calendar.MONDAY,
@@ -77,6 +77,7 @@ class ExelToJson(val calendarRawV2Arr: ArrayList<CalendarRawV2>){
                 dateStartCalendar.add(Calendar.DAY_OF_MONTH, 1)
             }
         }
+        jsonObject.put("info", infoJson)
         jsonObject.put("calendar", jsonArray)
         Log.d("exelToJson", jsonObject.toString())
         return jsonObject

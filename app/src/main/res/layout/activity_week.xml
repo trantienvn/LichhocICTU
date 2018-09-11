@@ -35,6 +35,7 @@
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/colorWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="0.05"
@@ -48,6 +49,7 @@
         android:layout_height="0dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        android:background="@color/colorWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="0.7"
@@ -70,7 +72,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@color/colorWhite"
-            android:dividerHeight="10dp">
+            android:dividerHeight="10dp"
+            android:background="@color/colorWhite">
         </ListView>
 
     </RelativeLayout>

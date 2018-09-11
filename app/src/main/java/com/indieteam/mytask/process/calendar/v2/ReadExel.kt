@@ -5,14 +5,35 @@ import android.util.Log
 import android.widget.Toast
 import com.indieteam.mytask.modeldata.v2.CalendarRawV2
 import com.indieteam.mytask.ui.WeekActivity
+import jxl.Sheet
 import jxl.Workbook
+import org.json.JSONObject
 import java.util.*
 
 class ReadExel(private val activity: WeekActivity){
 
     private var calendarRawV2Arr = ArrayList<CalendarRawV2>()
+    private var infoJson = JSONObject()
 
-    fun readTkbExel(){
+    fun readInfo(sheet: Sheet){
+        val studentName = sheet.getCell(2, 5).contents
+        val studentId = sheet.getCell(5, 5).contents
+        val className = sheet.getCell(2, 6).contents
+        val courseName = sheet.getCell(2, 7).contents
+        val majorsName = sheet.getCell(5, 7).contents
+        Log.d("infoStudent", studentName + "\n" +
+                studentId + "\n" +
+                className  + "\n" +
+                courseName + "\n" +
+                majorsName + "\n")
+        infoJson.put("studentName", studentName)
+        infoJson.put("studentId", studentId)
+        infoJson.put("className", className)
+        infoJson.put("courseName", courseName)
+        infoJson.put("majorsName", majorsName)
+    }
+
+    fun readTkb(){
         object : Thread(){
             override fun run() {
                 activity.apply {
@@ -20,6 +41,7 @@ class ReadExel(private val activity: WeekActivity){
                         Log.d("filev2", "exits")
                         val workbook = Workbook.getWorkbook(fileV2)
                         val sheet = workbook.getSheet(0)
+                        readInfo(sheet)
                         //Hàm CELL để tra cứu thông tin của một ô trong Excel
                         // Code duoi day tra cuu tung hang (trong moi hang tra cuu tung cot)
                         // getCell(collum, row)
@@ -49,7 +71,7 @@ class ReadExel(private val activity: WeekActivity){
                                     subjectPlace,
                                     teacher))
                         }
-                        val exelToJson = ExelToJson(calendarRawV2Arr).parse()
+                        val exelToJson = ExelToJson(calendarRawV2Arr, infoJson).parse()
                         Log.d("Json", exelToJson.toString())
                         try {
                             sqlLite.insert(exelToJson.toString())

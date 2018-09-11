@@ -11,15 +11,13 @@ import android.text.Html
 import android.util.Log
 import android.widget.Toast
 import com.indieteam.mytask.R
-import kotlinx.android.synthetic.main.activity_login_acivity.*
+import kotlinx.android.synthetic.main.activity_login.*
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import java.io.File
 import java.io.FileOutputStream
-import android.provider.SyncStateContract.Helpers.update
 import android.view.View
 import com.indieteam.mytask.sqlite.SqlLite
-import kotlinx.android.synthetic.main.activity_week.*
 import kotlinx.android.synthetic.main.fragment_process_bar.*
 import java.security.NoSuchAlgorithmException
 
@@ -161,7 +159,8 @@ class LoginActivity : AppCompatActivity() {
 
     inner class DomDownloadExel(val signIn: String): Thread() {
 
-        private val a = ""
+        private var drpSemester = ""
+        private var drpTerm = ""
         // miss drpSemester,drpTerm, drpType
 
         override fun run() {
@@ -177,11 +176,40 @@ class LoginActivity : AppCompatActivity() {
                             .cookie("SignIn", signIn)
                             .method(Connection.Method.GET)
                             .execute()
-                    for (i in resFirst.parse().select("input")) {
-//                    Log.d("name", i.attr("name"))
-//                    Log.d("value", i.`val`())
-                        if (i.attr("name") != "hidAcademicYearId")
-                            dataMap[i.attr("name")] = i.`val`()
+                    val resFirstParse = resFirst.parse()
+                    for(i in resFirstParse.select("select")){
+                        //Hoc ky
+                        if(i.attr("name") == "drpSemester"){
+                            for (j in i.select("option")){
+                                if(j.attr("selected") == "selected"){
+                                    drpSemester = j.attr("value")
+                                }
+                            }
+                        }
+                        //Dot hoc
+                        if(i.attr("name") == "drpTerm"){
+                            for (j in i.select("option")){
+                                if (j.attr("selected") == "selected"){
+                                    drpTerm = j.attr("value")
+                                }
+                            }
+                        }
+                        //Nam hoc
+                        if(i.attr("name") == "drpSemester"){
+                            for (j in i.select("option")){
+                                if (j.attr("selected") == "selected"){
+                                    drpTerm = j.attr("value")
+                                }
+                            }
+                        }
+                    }
+//                    Log.d("drpSemester", drpSemester)
+//                    Log.d("drpTerm", drpTerm)
+                    for (i in resFirstParse.select("input")) {
+//                        Log.d("name", i.attr("name"))
+//                        Log.d("value", i.`val`())
+                        //if (i.attr("name") != "hidAcademicYearId")
+                        dataMap[i.attr("name")] = i.`val`()
                     }
                 }else{
                     runOnUiThread {
@@ -192,10 +220,10 @@ class LoginActivity : AppCompatActivity() {
 
                 if(sessionUrl.isNotBlank() && dataMap.isNotEmpty()) {
                     val resDownloadExel = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/(S($sessionUrl))/Reports/Form/StudentTimeTable.aspx")
-                            .data("hidAcademicYearId", "C63BA53030A54AA490637046CCE5FFDC")
+                            //.data("hidAcademicYearId", "C63BA53030A54AA490637046CCE5FFDC")
                             .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
-                            .data("drpSemester", "4d57b94fd0514197ae7b2c287d76c6d0")
-                            .data("drpTerm", "1")
+                            .data("drpSemester", drpSemester)
+                            .data("drpTerm", drpTerm)
                             .data("drpType", "B")
                             .data(dataMap)
                             .cookie("SignIn", signIn)
@@ -261,7 +289,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login_acivity)
+        setContentView(R.layout.activity_login)
         init()
         try {
             sqlLite.read()

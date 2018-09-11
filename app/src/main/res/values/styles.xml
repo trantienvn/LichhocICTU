@@ -8,6 +8,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="InfoStudentTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorGreen</item>
+        <item name="colorPrimaryDark">@color/colorGreenDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
     <style name="colorProcessBar" parent="ThemeOverlay.AppCompat.Light">
         <item name="colorAccent">@color/colorPrimaryDark</item>
     </style>

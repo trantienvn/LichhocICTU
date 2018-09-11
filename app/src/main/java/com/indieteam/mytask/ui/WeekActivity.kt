@@ -267,14 +267,20 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun initFloatButton(){
-        val listItem = listOf(SpeedDialActionItem.Builder(R.id.fab_setting, R.drawable.ic_switch)
-                .setLabel("Chuyển")
-                .setFabBackgroundColor(resources.getColor(R.color.colorAccent))
-                .create(),
-                SpeedDialActionItem.Builder(R.id.fab_logout, R.drawable.ic_logout)
-                        .setLabel("Thoát")
+        val listItem =
+                listOf(SpeedDialActionItem.Builder(R.id.fab_logout, R.drawable.ic_logout)
+                        .setLabel("Đăng xuất")
                         .setFabBackgroundColor(resources.getColor(R.color.colorAccent))
-                        .create()
+                        .create(),
+                        SpeedDialActionItem.Builder(R.id.fab_setting, R.drawable.ic_switch)
+                                .setLabel("Chuyển")
+                                .setFabBackgroundColor(resources.getColor(R.color.colorOrange))
+                                .create(),
+                        SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_info)
+                                .setLabel("Thông tin")
+                                .setFabBackgroundColor(resources.getColor(R.color.colorGreen))
+                                .create()
+
         )
         float_button.addAllActionItems(listItem)
 
@@ -309,6 +315,10 @@ class WeekActivity : AppCompatActivity() {
                         }
                         calendarMode = sharedPref.getInt("CalendarMode", 0)
                     }
+                }
+                R.id.fab_info ->{
+                    val intent = Intent(this@WeekActivity, InfoStudentActivity::class.java)
+                    startActivity(intent)
                 }
                 R.id.fab_logout ->{
                     sqlLite.delete()
@@ -356,7 +366,7 @@ class WeekActivity : AppCompatActivity() {
         }
 
         if(readDb == 0){
-            readExelV2.readTkbExel()
+            readExelV2.readTkb()
             while (readExelCallback == 0) {
                 //wait ...
                 Log.d("wait", "wait")

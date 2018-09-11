@@ -2,6 +2,6 @@
 <resources>
     <item name="fab_setting" type="id" />
     <item name="fab_logout" type="id" />
-    <item name="fab_action3" type="id" />
+    <item name="fab_info" type="id" />
     <item name="fab_action4" type="id" />
 </resources>
