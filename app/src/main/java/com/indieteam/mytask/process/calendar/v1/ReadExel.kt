@@ -1,12 +1,15 @@
 package com.indieteam.mytask.process.calendar.v1
 
+import android.os.Environment
 import android.widget.Toast
 import com.indieteam.mytask.modeldata.v1.CalendarRaw
 import com.indieteam.mytask.ui.WeekActivity
 import jxl.Workbook
+import java.io.File
 
 class ReadExel(val activity: WeekActivity){
 
+    val fileV1 = File(Environment.getExternalStorageDirectory(), "mytask/temp/tkb_v2.xls")
 
     fun readTkbExel() {
         object : Thread() {

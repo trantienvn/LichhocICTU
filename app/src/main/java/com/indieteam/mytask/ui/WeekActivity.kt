@@ -22,9 +22,6 @@ import com.indieteam.mytask.modeldata.v1.CalendarRaw
 import com.indieteam.mytask.modeldata.v1.OnlyCalendar
 import com.indieteam.mytask.modeldata.v2.CalendarFinalV2
 import com.indieteam.mytask.process.ParseCalendarJson
-import com.indieteam.mytask.process.calendar.v1.CalendarRawToJson
-import com.indieteam.mytask.process.calendar.v1.ExelToCalendarRaw
-import com.indieteam.mytask.process.calendar.v1.ReadExel
 import com.indieteam.mytask.sqlite.SqlLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -42,9 +39,6 @@ import kotlin.collections.ArrayList
 @Suppress("DEPRECATION")
 class WeekActivity : AppCompatActivity() {
 
-    val fileV1 = File(Environment.getExternalStorageDirectory(), "mytask/temp/tkb_v2.xls")
-    val fileV2 = File(Environment.getExternalStorageDirectory(), "mytask/temp/tkb_v2.xls")
-
     private val REQUEST_CODE = 1
     var nameSubject = ""
     lateinit var tc: String
@@ -52,9 +46,9 @@ class WeekActivity : AppCompatActivity() {
     var calendarRaw = ArrayList<CalendarRaw>()
     var calendarMap = mutableMapOf<String, OnlyCalendar>()
     var calendarRawArr = ArrayList<CalendarRaw>()
-    private lateinit var readExelV1: ReadExel
-    private lateinit var exelToCalendarRawV1: ExelToCalendarRaw
-    private lateinit var parseCalendarRawV1: CalendarRawToJson
+//    private lateinit var readExelV1: ReadExel
+//    private lateinit var exelToCalendarRawV1: ExelToCalendarRaw
+//    private lateinit var parseCalendarRawV1: CalendarRawToJson
     private lateinit var readExelV2: com.indieteam.mytask.process.calendar.v2.ReadExel
     lateinit var sqlLite: SqlLite
     private var calendarResult: JSONObject? = null
@@ -166,9 +160,9 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun init(){
-        readExelV1 = ReadExel(this)
-        exelToCalendarRawV1 = ExelToCalendarRaw(this)
-        parseCalendarRawV1 = CalendarRawToJson(this)
+        //readExelV1 = ReadExel(this)
+        //exelToCalendarRawV1 = ExelToCalendarRaw(this)
+        //parseCalendarRawV1 = CalendarRawToJson(this)
         readExelV2 = com.indieteam.mytask.process.calendar.v2.ReadExel(this)
         sqlLite = SqlLite(this)
         customSwipe = CustomSwipe(this)

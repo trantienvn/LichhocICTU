@@ -232,16 +232,16 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("response", resDownloadExel.contentType())
                     if (resDownloadExel.contentType() == "application/vnd.ms-excel; charset=utf-8") {
                         try {
-                            val dir = File(Environment.getExternalStorageDirectory(), "mytask/temp")
+                            val dir = File(filesDir, "exel")
                             if (!dir.exists()) {
                                 dir.mkdirs()
                             }
 
-                            val file = File(Environment.getExternalStorageDirectory(), "mytask/temp/tkb_v2.xls")
+                            val file = File(filesDir, "exel/tkb_v2.xls")
                             if (file.exists())
                                 file.delete()
 
-                            val fos = FileOutputStream(File(Environment.getExternalStorageDirectory(), "mytask/temp/tkb_v2.xls"))
+                            val fos = FileOutputStream(file)
                             fos.write(resDownloadExel.bodyAsBytes())
                             fos.close()
                             supportFragmentManager.findFragmentByTag("processBarFragment")?.let {

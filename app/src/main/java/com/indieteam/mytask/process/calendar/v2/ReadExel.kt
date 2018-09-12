@@ -1,6 +1,7 @@
 package com.indieteam.mytask.process.calendar.v2
 
 import android.database.sqlite.SQLiteConstraintException
+import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import com.indieteam.mytask.modeldata.v2.CalendarRawV2
@@ -8,9 +9,12 @@ import com.indieteam.mytask.ui.WeekActivity
 import jxl.Sheet
 import jxl.Workbook
 import org.json.JSONObject
+import java.io.File
 import java.util.*
 
 class ReadExel(private val activity: WeekActivity){
+
+    val fileV2 = File(activity.filesDir, "exel/tkb_v2.xls")
 
     private var calendarRawV2Arr = ArrayList<CalendarRawV2>()
     private var infoJson = JSONObject()
