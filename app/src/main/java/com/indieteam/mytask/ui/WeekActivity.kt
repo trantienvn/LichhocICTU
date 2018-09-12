@@ -8,11 +8,11 @@ import android.content.pm.PackageManager
 import android.graphics.*
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.support.v7.app.AppCompatActivity
 import android.text.style.LineBackgroundSpan
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View.*
 import android.view.ViewTreeObserver
 import android.widget.Toast
 import com.github.pwittchen.swipe.library.rx2.Swipe
@@ -22,6 +22,7 @@ import com.indieteam.mytask.modeldata.v1.CalendarRaw
 import com.indieteam.mytask.modeldata.v1.OnlyCalendar
 import com.indieteam.mytask.modeldata.v2.CalendarFinalV2
 import com.indieteam.mytask.process.ParseCalendarJson
+import com.indieteam.mytask.process.domHTML.DomUpdateCalendar
 import com.indieteam.mytask.sqlite.SqlLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -30,8 +31,8 @@ import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView.SELECTION_MODE_SINGLE
 import kotlinx.android.synthetic.main.activity_week.*
+import kotlinx.android.synthetic.main.fragment_process_bar.*
 import org.json.JSONObject
-import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -49,7 +50,6 @@ class WeekActivity : AppCompatActivity() {
 //    private lateinit var readExelV1: ReadExel
 //    private lateinit var exelToCalendarRawV1: ExelToCalendarRaw
 //    private lateinit var parseCalendarRawV1: CalendarRawToJson
-    private lateinit var readExelV2: com.indieteam.mytask.process.calendar.v2.ReadExel
     lateinit var sqlLite: SqlLite
     private var calendarResult: JSONObject? = null
     private var parseCalendarJson: ParseCalendarJson? = null
@@ -163,7 +163,6 @@ class WeekActivity : AppCompatActivity() {
         //readExelV1 = ReadExel(this)
         //exelToCalendarRawV1 = ExelToCalendarRaw(this)
         //parseCalendarRawV1 = CalendarRawToJson(this)
-        readExelV2 = com.indieteam.mytask.process.calendar.v2.ReadExel(this)
         sqlLite = SqlLite(this)
         customSwipe = CustomSwipe(this)
         calenderEvents()
@@ -270,6 +269,10 @@ class WeekActivity : AppCompatActivity() {
                                 .setLabel("Tuần/Tháng")
                                 .setFabBackgroundColor(resources.getColor(R.color.colorAccent))
                                 .create(),
+                        SpeedDialActionItem.Builder(R.id.fab_update, R.drawable.ic_update)
+                                .setLabel("Cập nhật lịch")
+                                .setFabBackgroundColor(resources.getColor(R.color.colorOrangeDark))
+                                .create(),
                         SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_info)
                                 .setLabel("Cá nhân")
                                 .setFabBackgroundColor(resources.getColor(R.color.colorGreen))
@@ -314,17 +317,48 @@ class WeekActivity : AppCompatActivity() {
                     val intent = Intent(this@WeekActivity, InfoStudentActivity::class.java)
                     startActivity(intent)
                 }
+                R.id.fab_update ->{
+                    supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
+                            .commit()
+                    supportFragmentManager.executePendingTransactions()
+                    supportFragmentManager.findFragmentByTag("processBarUpdate")?.apply{
+                        progressBar.progressDrawable = resources.getDrawable(R.color.colorOrangeDark)
+                        process?.text = "Cập nhật..."
+                    }
+                    gone()
+                    try {
+                        DomUpdateCalendar(this, sqlLite.readCookie()).start()
+                    }catch (e: Exception){
+                        visible()
+                        supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
+                            supportFragmentManager.beginTransaction().remove(it).commit()
+                        }
+                        Toast.makeText(this, "Err update", Toast.LENGTH_SHORT).show()
+                        Log.d("Err", e.toString())
+                    }
+                }
                 R.id.fab_logout ->{
                     try {
-                        sqlLite.delete()
+                        sqlLite.deleteCalendar()
+                        sqlLite.deteteInfo()
                     }catch (e: Exception){ Log.d("Err", e.toString()) }
-                    val intent = Intent(this@WeekActivity, LoginActivity::class.java)
-                    startActivity(intent)
-                    finish()
+                    moveToLogin()
                 }
             }
             false //false to close float button
         }
+    }
+
+    private fun gone(){
+        calendarView.visibility = GONE
+        view.visibility = GONE
+        content_layout.visibility = GONE
+    }
+
+    fun visible(){
+        calendarView.visibility = VISIBLE
+        view.visibility = VISIBLE
+        content_layout.visibility = VISIBLE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -341,6 +375,12 @@ class WeekActivity : AppCompatActivity() {
             run()
     }
 
+    private fun moveToLogin(){
+        val intent = Intent(this@WeekActivity, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
     private fun toDay(){
             calendarView.currentDate = CalendarDay.today()
             calendarView.selectedDate = CalendarDay.today()
@@ -352,31 +392,17 @@ class WeekActivity : AppCompatActivity() {
         var readDb: Int
         var valueDb= ""
         try{
-            valueDb = sqlLite.read()
+            valueDb = sqlLite.readCalendar()
             readDb = 1
-            Log.d("readdb", "read db done")
+            Log.d("readdb", "readCalendar db done")
         }catch (e: Exception){
             readDb = 0
-            Log.d("readdb", "db is not exits, cannot read")
+            Log.d("readdb", "db is not exits, cannot readCalendar")
             Log.d("err", e.toString())
         }
 
         if(readDb == 0){
-            readExelV2.readTkb()
-            while (readExelCallback == 0) {
-                //wait ...
-                Log.d("wait", "wait")
-                if(readExelCallback == - 1)
-                    break
-            }
-
-            if(readExelCallback == 1) {
-                calendarResult = JSONObject(sqlLite.read())
-                if (calendarResult != null) {
-                    //log.text = calendarResult.toString()
-                    parseCalendarJson = ParseCalendarJson(this, calendarResult!!)
-                }
-            }
+            moveToLogin()
         }else{
             calendarResult = JSONObject(valueDb)
             parseCalendarJson = ParseCalendarJson(this, calendarResult!!)
@@ -386,16 +412,6 @@ class WeekActivity : AppCompatActivity() {
         parseCalendarJson!!.addToMapDot()
         setCalendarDots()
         swipe.setListener(OnSwipeListener())
-
-        // try run in Thread
-//        object : Thread() {
-//            override fun run() {
-//                while (addDotCallBack == 0){}
-//                runOnUiThread { setCalendarDots() }
-//                Log.d("addDotCallBack", addDotCallBack.toString())
-//                this.join()
-//            }
-//        }.start()
     }
 
     override fun onBackPressed() {

@@ -28,12 +28,12 @@ class InfoStudentActivity : AppCompatActivity() {
         var valueDb= ""
         sqlLite = SqlLite(this)
         try{
-            valueDb = sqlLite.read()
+            valueDb = sqlLite.readCalendar()
             readDb = 1
-            Log.d("readdb", "read db done")
+            Log.d("readdb", "readCalendar db done")
         }catch (e: Exception){
             readDb = 0
-            Log.d("readdb", "db is not exits, cannot read")
+            Log.d("readdb", "db is not exits, cannot readCalendar")
             Log.d("err", e.toString())
         }
 

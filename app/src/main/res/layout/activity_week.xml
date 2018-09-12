@@ -2,7 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root_view"
+    android:id="@+id/calendar_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
@@ -84,9 +84,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/root_view"
-        app:layout_constraintLeft_toLeftOf="@id/root_view"
-        app:layout_constraintRight_toRightOf="@id/root_view" />
+        app:layout_constraintBottom_toTopOf="@+id/calendar_root_view"
+        app:layout_constraintLeft_toLeftOf="@id/calendar_root_view"
+        app:layout_constraintRight_toRightOf="@id/calendar_root_view" />
 
     <RelativeLayout
         android:layout_width="match_parent"

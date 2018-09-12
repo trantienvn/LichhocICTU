@@ -98,12 +98,12 @@ class CalendarRawToJson(private val activity: WeekActivity){
             Log.d("calenderJsonObj", calendarJsonObj.toString())
             //log.text = calendarJsonObj.toString()
             try {
-                sqlLite.insert(calendarJsonObj.toString())
+                sqlLite.insertCalender(calendarJsonObj.toString())
             }catch (e: SQLiteConstraintException){
                 Log.d("err", e.toString())
             }
             try {
-                sqlLite.update(calendarJsonObj.toString())
+                sqlLite.updateCalendar(calendarJsonObj.toString())
             }catch (e: SQLiteConstraintException){
                 Log.d("err", e.toString())
             }

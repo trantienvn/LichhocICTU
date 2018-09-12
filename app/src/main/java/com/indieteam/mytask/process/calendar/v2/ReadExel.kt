@@ -1,23 +1,26 @@
 package com.indieteam.mytask.process.calendar.v2
 
+import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
-import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import com.indieteam.mytask.modeldata.v2.CalendarRawV2
-import com.indieteam.mytask.ui.WeekActivity
+import com.indieteam.mytask.sqlite.SqlLite
+import com.indieteam.mytask.ui.LoginActivity
 import jxl.Sheet
 import jxl.Workbook
 import org.json.JSONObject
 import java.io.File
 import java.util.*
 
-class ReadExel(private val activity: WeekActivity){
+class ReadExel(private val context: Context){
 
-    val fileV2 = File(activity.filesDir, "exel/tkb_v2.xls")
+    val fileV2 = File(context.filesDir, "exel/tkb_v2.xls")
 
     private var calendarRawV2Arr = ArrayList<CalendarRawV2>()
     private var infoJson = JSONObject()
+    var readExelCallBack = 0
+    val sqlLite = SqlLite(context)
 
     fun readInfo(sheet: Sheet){
         val studentName = sheet.getCell(2, 5).contents
@@ -40,7 +43,6 @@ class ReadExel(private val activity: WeekActivity){
     fun readTkb(){
         object : Thread(){
             override fun run() {
-                activity.apply {
                     if (fileV2.exists()) {
                         Log.d("filev2", "exits")
                         val workbook = Workbook.getWorkbook(fileV2)
@@ -77,24 +79,25 @@ class ReadExel(private val activity: WeekActivity){
                         }
                         val exelToJson = ExelToJson(calendarRawV2Arr, infoJson).parse()
                         Log.d("Json", exelToJson.toString())
+                        var insertCallback = 0
                         try {
-                            sqlLite.insert(exelToJson.toString())
+                            sqlLite.insertCalender(exelToJson.toString())
+                            insertCallback = 1
                         }catch (e: SQLiteConstraintException){
                             Log.d("err", e.toString())
                         }
-                        try {
-                            sqlLite.update(exelToJson.toString())
-                        }catch (e: SQLiteConstraintException){
-                            Log.d("err", e.toString())
+                        if(insertCallback == 0) {
+                            try {
+                                sqlLite.updateCalendar(exelToJson.toString())
+                            } catch (e: SQLiteConstraintException) {
+                                Log.d("err", e.toString())
+                            }
                         }
-                        readExelCallback = 1
-                    }  else{
-                        readExelCallback = -1
-                        activity.runOnUiThread {
-                            Toast.makeText(this, "fileV2 is not exists", Toast.LENGTH_LONG).show()
-                        }
+                        readExelCallBack = 1
+                    } else{
+                        readExelCallBack = -1
+                        Log.d("err", "file V2 is not exists")
                     }
-                }
                 this.join()
             }
         }.start()
