@@ -117,8 +117,10 @@ class DomUpdateCalendar(val context: Context, val signIn: String): Thread() {
 //                            weekActivity.runOnUiThread {
 //                                Toast.makeText(weekActivity, "Đã cập nhật", Toast.LENGTH_SHORT).show()
 //                            }
-                            val intent = Intent(weekActivity, WeekActivity::class.java)
-                            weekActivity.startActivity(intent)
+                            weekActivity.supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
+                                weekActivity.supportFragmentManager.beginTransaction().remove(it)
+                            }
+                            weekActivity.startActivity(weekActivity.intent)
                             weekActivity.finish()
                         }
                     } catch (e: Exception) {
