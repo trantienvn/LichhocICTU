@@ -210,7 +210,7 @@ class WeekActivity : AppCompatActivity() {
     private fun setCalendarDots(){
         for(i in mapDate){
             calendarView.addDecorator(EventDecorator(Color.WHITE, i.key, i.value))
-            Log.d("valuedot", i.value)
+            //Log.d("valuedot", i.value)
         }
     }
 
@@ -339,7 +339,7 @@ class WeekActivity : AppCompatActivity() {
                 R.id.fab_logout ->{
                     try {
                         sqlLite.deleteCalendar()
-                        sqlLite.deteteInfo()
+                        sqlLite.deleteInfo()
                     }catch (e: Exception){ Log.d("Err", e.toString()) }
                     moveToLogin()
                 }

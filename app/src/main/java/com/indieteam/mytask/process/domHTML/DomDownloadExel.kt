@@ -103,10 +103,9 @@ class DomDownloadExel(val context: Context, val signIn: String): Thread() {
                         val fos = FileOutputStream(file)
                         fos.write(resDownloadExel.bodyAsBytes())
                         fos.close()
-                        // read and save to sqlite
+                        // read and save to sqlLite
                         val readExel = ReadExel(loginActivity)
                         readExel.readTkb()
-                        while (readExel.readExelCallBack == 0){ }
                         if(readExel.readExelCallBack == -1){
                             loginActivity.runOnUiThread {
                                 Toast.makeText(loginActivity, "Err #05", Toast.LENGTH_SHORT).show()

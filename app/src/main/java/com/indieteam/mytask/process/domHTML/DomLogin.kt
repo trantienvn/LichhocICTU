@@ -102,7 +102,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
                         try {
                             loginActivity.sqlLite.insertInfo(userName, passWord, cookie)
                             insertCallback = 1
-                        }catch (e: SQLiteConstraintException){ Log.d("err", e.toString()) }
+                        }catch (e: Exception){ Log.d("err", e.toString()) }
                         if(insertCallback == 0){
                             try {
                                 loginActivity.sqlLite.updateInfo(userName, passWord, cookie)

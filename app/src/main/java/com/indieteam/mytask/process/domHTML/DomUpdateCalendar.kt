@@ -105,10 +105,10 @@ class DomUpdateCalendar(val context: Context, val signIn: String): Thread() {
                         val fos = FileOutputStream(file)
                         fos.write(resDownloadExel.bodyAsBytes())
                         fos.close()
-                        // read and save to sqlite
+                        // read and save to sqlLite
                         val readExel = ReadExel(weekActivity)
                         readExel.readTkb()
-                        while (readExel.readExelCallBack == 0){ }
+                        Log.d("readExelCallBack", readExel.readExelCallBack.toString())
                         if(readExel.readExelCallBack == -1){
                             weekActivity.runOnUiThread {
                                 Toast.makeText(weekActivity, "Err #05", Toast.LENGTH_SHORT).show()

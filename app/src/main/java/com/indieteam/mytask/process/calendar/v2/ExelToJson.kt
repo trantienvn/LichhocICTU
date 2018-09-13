@@ -51,15 +51,15 @@ class ExelToJson(val calendarRawV2Arr: ArrayList<CalendarRawV2>, val infoJson: J
             while (dateStartCalendar.time <= dateEndCalendar.time){
                 //Log.d("date", calendar.time.toString())
                 if(dateStartCalendar.get(Calendar.DAY_OF_WEEK) == dayOfWeekMap[i.subjectDayOfWeek]){
-                    Log.d("size", size.toString())
-                    Log.d("subjectName", i.subjectName)
-                    Log.d("subjectDate", "${dateStartCalendar.get(Calendar.DAY_OF_MONTH)}/"+
-                            "${dateStartCalendar.get(Calendar.MONTH) + 1}/" +
-                            "${dateStartCalendar.get(Calendar.YEAR)}")
-                    Log.d("subjectDayOfWeek", i.subjectDayOfWeek)
-                    Log.d("subjectTime", i.subjectTime)
-                    Log.d("subjectPlace", i.subjectPlace)
-                    Log.d("teacher", i.teacher)
+//                    Log.d("size", size.toString())
+//                    Log.d("subjectName", i.subjectName)
+//                    Log.d("subjectDate", "${dateStartCalendar.get(Calendar.DAY_OF_MONTH)}/"+
+//                            "${dateStartCalendar.get(Calendar.MONTH) + 1}/" +
+//                            "${dateStartCalendar.get(Calendar.YEAR)}")
+//                    Log.d("subjectDayOfWeek", i.subjectDayOfWeek)
+//                    Log.d("subjectTime", i.subjectTime)
+//                    Log.d("subjectPlace", i.subjectPlace)
+//                    Log.d("teacher", i.teacher)
 
                     val jsonObjectChild = JSONObject()
                     jsonObjectChild.put("subjectName", i.subjectName)
@@ -79,7 +79,7 @@ class ExelToJson(val calendarRawV2Arr: ArrayList<CalendarRawV2>, val infoJson: J
         }
         jsonObject.put("info", infoJson)
         jsonObject.put("calendar", jsonArray)
-        Log.d("exelToJson", jsonObject.toString())
+        //Log.d("exelToJson", jsonObject.toString())
         return jsonObject
     }
 

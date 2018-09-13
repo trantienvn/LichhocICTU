@@ -77,7 +77,7 @@ class SqlLite(context: Context): SQLiteOpenHelper(context, "calendar.db", null, 
         dbWrite.delete("userCalendar", "id=1", null)
     }
 
-    fun deteteInfo(){
+    fun deleteInfo(){
         val dbWrite = writableDatabase
         dbWrite.delete("userInfo", "id=1", null)
     }
