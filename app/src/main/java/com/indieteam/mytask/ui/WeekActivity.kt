@@ -322,7 +322,6 @@ class WeekActivity : AppCompatActivity() {
                             .commit()
                     supportFragmentManager.executePendingTransactions()
                     supportFragmentManager.findFragmentByTag("processBarUpdate")?.apply{
-                        progressBar.progressDrawable = resources.getDrawable(R.color.colorOrangeDark)
                         process?.text = "Cập nhật..."
                     }
                     gone()

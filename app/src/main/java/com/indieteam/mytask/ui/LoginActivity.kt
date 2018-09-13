@@ -20,11 +20,10 @@ class LoginActivity : AppCompatActivity() {
 
     private val REQUEST_CODE = 1
     private var allPermission= 0
-    private var characterDolla = Html.fromHtml("&#36;")
     var sessionUrl = ""
     var pageHeader1drpNgonNgu = "010527EFBEB84BCA8919321CFD5C3A34"
     lateinit var sqlLite: SqlLite
-    var readDb = 0
+    private var readDb = 0
 
     private fun init(){
         sqlLite = SqlLite(this)
@@ -52,7 +51,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    fun toMD5(s: String): String {
+    private fun toMD5(s: String): String {
         val MD5 = "MD5"
         try {
             // Create MD5 Hash
