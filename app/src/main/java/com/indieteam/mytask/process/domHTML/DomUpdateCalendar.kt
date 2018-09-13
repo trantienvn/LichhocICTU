@@ -114,9 +114,9 @@ class DomUpdateCalendar(val context: Context, val signIn: String): Thread() {
                                 Toast.makeText(weekActivity, "Err #05", Toast.LENGTH_SHORT).show()
                             }
                         }else {
-                            weekActivity.runOnUiThread {
-                                Toast.makeText(weekActivity, "Đã cập nhật", Toast.LENGTH_SHORT).show()
-                            }
+//                            weekActivity.runOnUiThread {
+//                                Toast.makeText(weekActivity, "Đã cập nhật", Toast.LENGTH_SHORT).show()
+//                            }
                             val intent = Intent(weekActivity, WeekActivity::class.java)
                             weekActivity.startActivity(intent)
                             weekActivity.finish()
