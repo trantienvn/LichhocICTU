@@ -126,7 +126,6 @@ class DomLogin(val context: Context, private val userName: String, private val p
                 loginActivity.runOnUiThread {
                     Toast.makeText(loginActivity, "Err #02", Toast.LENGTH_SHORT).show()
                 }
-                this.join()
             }
 
         }catch (e: Exception) {
@@ -140,7 +139,6 @@ class DomLogin(val context: Context, private val userName: String, private val p
                 loginActivity.clickLogin = 0
                 Toast.makeText(loginActivity, "Err #03 (Not Internet, ...)", Toast.LENGTH_SHORT).show()
             }
-            this.join()
         }
         this.join()
     }

@@ -50,99 +50,125 @@
         android:id="@+id/content_profile"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="percent"
-        app:layout_constraintHeight_percent="0.6"
+        app:layout_constraintHeight_percent="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_profile">
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingRight="15dp"
+            android:paddingBottom="15dp"
             android:paddingLeft="15dp"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp">
+            android:paddingRight="15dp"
+            android:paddingTop="15dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
                 android:layout_marginTop="15dp"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/student_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:elevation="1dp"
-                    android:text="Name: "
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/shap_profile"
-                    android:textColor="@color/colorWhite"
-                    android:paddingTop="2dp"
+                    android:elevation="1dp"
                     android:paddingBottom="2dp"
                     android:paddingLeft="6dp"
                     android:paddingRight="6dp"
-                    android:layout_marginTop="10dp" />
+                    android:paddingTop="2dp"
+                    android:text="Id: "
+                    android:textColor="@color/colorWhite"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/class_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:elevation="1dp"
-                    android:text="Class Name: "
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/shap_profile"
-                    android:textColor="@color/colorWhite"
-                    android:paddingTop="2dp"
+                    android:elevation="1dp"
                     android:paddingBottom="2dp"
                     android:paddingLeft="6dp"
                     android:paddingRight="6dp"
-                    android:layout_marginTop="10dp" />
+                    android:paddingTop="2dp"
+                    android:text="Class Name: "
+                    android:textColor="@color/colorWhite"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/course_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:elevation="1dp"
-                    android:text="Course Name: "
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/shap_profile"
-                    android:textColor="@color/colorWhite"
-                    android:paddingTop="2dp"
+                    android:elevation="1dp"
                     android:paddingBottom="2dp"
                     android:paddingLeft="6dp"
                     android:paddingRight="6dp"
-                    android:layout_marginTop="10dp" />
+                    android:paddingTop="2dp"
+                    android:text="Course Name: "
+                    android:textColor="@color/colorWhite"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/majors_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:elevation="1dp"
-                    android:text="Majors Name: "
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/shap_profile"
-                    android:textColor="@color/colorWhite"
-                    android:paddingTop="2dp"
+                    android:elevation="1dp"
                     android:paddingBottom="2dp"
                     android:paddingLeft="6dp"
                     android:paddingRight="6dp"
-                    android:layout_marginTop="10dp" />
+                    android:paddingTop="2dp"
+                    android:text="Majors Name: "
+                    android:textColor="@color/colorWhite"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
         </ScrollView>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/gen_qr"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/content_profile"
+        android:paddingRight="15dp">
+
+        <Button
+            android:id="@+id/gen_qr_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tạo QR"
+            android:elevation="1dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:background="@drawable/shape_button__gen_qr"
+            android:textColor="@color/colorWhite"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
 

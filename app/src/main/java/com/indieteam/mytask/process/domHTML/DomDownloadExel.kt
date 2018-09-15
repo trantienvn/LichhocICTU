@@ -73,7 +73,6 @@ class DomDownloadExel(val context: Context, val signIn: String): Thread() {
                 loginActivity.runOnUiThread {
                     Toast.makeText(loginActivity, "Err #04", Toast.LENGTH_SHORT).show()
                 }
-                this.join()
             }
 
             if(loginActivity.sessionUrl.isNotBlank() && dataMap.isNotEmpty() &&
@@ -125,26 +124,22 @@ class DomDownloadExel(val context: Context, val signIn: String): Thread() {
                         loginActivity.runOnUiThread {
                             Toast.makeText(loginActivity, "Err #06", Toast.LENGTH_SHORT).show()
                         }
-                        this.join()
                     }
                 }else{
                     loginActivity.runOnUiThread {
                         Toast.makeText(loginActivity, "Err #07", Toast.LENGTH_SHORT).show()
                     }
-                    this.join()
                 }
             }else{
                 loginActivity.runOnUiThread {
                     Toast.makeText(loginActivity, "Err #08", Toast.LENGTH_SHORT).show()
                 }
-                this.join()
             }
         }catch (e: Exception){
             Log.d("err", e.toString())
             loginActivity.runOnUiThread {
                 Toast.makeText(loginActivity, "Err #09", Toast.LENGTH_SHORT).show()
             }
-            this.join()
         }
         this.join()
     }

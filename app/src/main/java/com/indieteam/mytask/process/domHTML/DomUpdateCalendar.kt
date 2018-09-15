@@ -128,19 +128,16 @@ class DomUpdateCalendar(val context: Context, val signIn: String): Thread() {
                         weekActivity.runOnUiThread {
                             Toast.makeText(weekActivity, "Err #06", Toast.LENGTH_SHORT).show()
                         }
-                        this.join()
                     }
                 }else{
                     weekActivity.runOnUiThread {
                         Toast.makeText(weekActivity, "Err #07", Toast.LENGTH_SHORT).show()
                     }
-                    this.join()
                 }
             }else{
                 weekActivity.runOnUiThread {
                     Toast.makeText(weekActivity, "Err #08", Toast.LENGTH_SHORT).show()
                 }
-                this.join()
             }
         }catch (e: Exception){
             Log.d("err", e.toString())
@@ -151,7 +148,6 @@ class DomUpdateCalendar(val context: Context, val signIn: String): Thread() {
                 weekActivity.visible()
                 Toast.makeText(weekActivity, "Err #09 (Not Internet, ...)", Toast.LENGTH_SHORT).show()
             }
-            this.join()
         }
         this.join()
     }
