@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import com.indieteam.mytask.R
-import com.indieteam.mytask.modeldata.v1.CalendarFinal
 import com.indieteam.mytask.modeldata.v2.CalendarFinalV2
 import com.indieteam.mytask.modeldata.v2.CalendarRawV2
 import com.indieteam.mytask.ui.WeekActivity

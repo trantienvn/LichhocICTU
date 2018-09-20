@@ -1,7 +1,6 @@
 package com.indieteam.mytask.process.domHTML
 
 import android.content.Context
-import android.database.sqlite.SQLiteConstraintException
 import android.text.Html
 import android.util.Log
 import android.widget.Toast

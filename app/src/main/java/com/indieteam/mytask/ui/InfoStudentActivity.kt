@@ -8,7 +8,9 @@ import android.view.View.VISIBLE
 import android.widget.Toast
 import com.indieteam.mytask.R
 import com.indieteam.mytask.sqlite.SqlLite
+import com.leinardi.android.speeddial.SpeedDialActionItem
 import kotlinx.android.synthetic.main.activity_info_student.*
+import kotlinx.android.synthetic.main.activity_week.*
 import kotlinx.android.synthetic.main.fragment_qr.*
 import org.json.JSONObject
 
@@ -34,33 +36,47 @@ class InfoStudentActivity : AppCompatActivity() {
     private fun gone(){
         header_profile.visibility = GONE
         content_profile.visibility = GONE
-        gen_qr.visibility = GONE
+        gen_qr_btn.visibility = GONE
     }
 
     private fun visible(){
         header_profile.visibility = VISIBLE
         content_profile.visibility = VISIBLE
-        gen_qr.visibility = VISIBLE
+        gen_qr_btn.visibility = VISIBLE
     }
 
     private var countClick = 0
     private fun genQr(){
-        gen_qr_btn.setOnClickListener {
-            countClick++
-            if (!studentId.isNullOrBlank()) {
-                if(countClick == 1){
-                    gone()
-                    bundle.putString("studentId", studentId)
-                    qrFragment.arguments = bundle
-                    supportFragmentManager.beginTransaction().add(R.id.info_root_view, qrFragment, "qrFragment")
-                            .commit()
-                    supportFragmentManager.executePendingTransactions()
+
+        val listItem =
+                listOf(SpeedDialActionItem.Builder(R.id.fab_gen_qr, R.drawable.ic_gen_qr_code)
+                        .setLabel("Tạo QR")
+                        .setFabBackgroundColor(resources.getColor(R.color.colorGreenDark))
+                        .create()
+                )
+        gen_qr_btn.addAllActionItems(listItem)
+
+        gen_qr_btn.setOnActionSelectedListener{
+            when (it.id){
+                R.id.fab_gen_qr ->{
+                    countClick++
+                    if (!studentId.isNullOrBlank()) {
+                        if(countClick == 1){
+                            gone()
+                            bundle.putString("studentId", studentId)
+                            qrFragment.arguments = bundle
+                            supportFragmentManager.beginTransaction().add(R.id.info_root_view, qrFragment, "qrFragment")
+                                    .commit()
+                            supportFragmentManager.executePendingTransactions()
+                        }
+                    } else {
+                        countClick = 0
+                        visible()
+                        Toast.makeText(this, "Err #01, Không thể tạo mã QR", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            } else {
-                countClick = 0
-                visible()
-                Toast.makeText(this, "Err #01, Không thể tạo mã QR", Toast.LENGTH_SHORT).show()
             }
+            false
         }
     }
 

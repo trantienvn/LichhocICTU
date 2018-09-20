@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="480dp"
+    android:viewportWidth="288"
+    android:viewportHeight="480">
+    <path
+        android:fillColor="#ffffff"
+        android:name="Forma 1"
+        android:pathData="m112 32v16h64v-16zm-71.92 0c-4.42 0.02 -7.98 3.62 -7.96 8.04c0.02 4.4 3.6 7.96 8 7.96c0.01 0 0.03 -0 0.04 -0c4.42 0 8 -3.58 8 -8c0 -4.42 -3.58 -8 -8 -8zm32 0c-4.42 0.02 -7.98 3.62 -7.96 8.04c0.02 4.4 3.6 7.96 8 7.96c0.01 0 0.03 -0 0.04 -0c4.42 0 8 -3.58 8 -8c0 -4.42 -3.58 -8 -8 -8zm199.92 -16v48h-256v-48zm-192 160v24h24v-24zm104 0v24h24v-24zm-64 -16v56h-56v-56zm104 0v56h-56v-56zm-176 -16v88h88v-88zm104 0v88h88v-88zm0 104v16h56v-16zm72 0v16h16v-16zm-144 32v24h24v-24zm104 0v24h24v-24zm-64 -16v56h-56v-56zm-72 -16v88h88v-88zm104 32v56h16v-56zm72 0v40h-40v16h56v-56zm48 -200v320h-256v-320zm-144 352v16h32v-16zm144 -16v48h-256v-48zm-256 -416c-8.84 0 -16 7.16 -16 16v448c0 8.84 7.16 16 16 16h256c8.84 0 16 -7.16 16 -16v-448c0 -8.84 -7.16 -16 -16 -16z" />
+</vector>

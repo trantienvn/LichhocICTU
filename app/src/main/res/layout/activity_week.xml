@@ -106,8 +106,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_gravity="bottom|end"
-            app:sdMainFabClosedSrc="@drawable/ic_more">
-        </com.leinardi.android.speeddial.SpeedDialView>
+            app:sdMainFabClosedSrc="@drawable/ic_more" />
     </RelativeLayout>
 
 

@@ -1,7 +1,6 @@
 package com.indieteam.mytask.process.domHTML
 
 import android.content.Context
-import android.content.Intent
 import android.text.Html
 import android.util.Log
 import android.widget.Toast
@@ -19,7 +18,7 @@ class DomUpdateCalendar(val context: Context, val signIn: String): Thread() {
     private var weekActivity = context as WeekActivity
     private var characterDolla = Html.fromHtml("&#36;")
     private var sessionUrl = ""
-    var pageHeader1drpNgonNgu = "010527EFBEB84BCA8919321CFD5C3A34"
+    private var pageHeader1drpNgonNgu = "010527EFBEB84BCA8919321CFD5C3A34"
     // miss drpSemester,drpTerm, drpType
 
     override fun run() {
@@ -118,7 +117,7 @@ class DomUpdateCalendar(val context: Context, val signIn: String): Thread() {
 //                                Toast.makeText(weekActivity, "Đã cập nhật", Toast.LENGTH_SHORT).show()
 //                            }
                             weekActivity.supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
-                                weekActivity.supportFragmentManager.beginTransaction().remove(it)
+                                weekActivity.supportFragmentManager.beginTransaction().remove(it).commit()
                             }
                             weekActivity.startActivity(weekActivity.intent)
                             weekActivity.finish()

@@ -1,26 +1,22 @@
 package com.indieteam.mytask.process.calendar.v2
 
 import android.content.Context
-import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
-import android.widget.Toast
 import com.indieteam.mytask.modeldata.v2.CalendarRawV2
-import com.indieteam.mytask.sqlite.SqlLite
-import com.indieteam.mytask.ui.LoginActivity
 import jxl.Sheet
 import jxl.Workbook
 import org.json.JSONObject
 import java.io.File
 import java.util.*
 
-class ReadExel(private val context: Context){
+class ReadExel(context: Context){
 
     val fileV2 = File(context.filesDir, "exel/tkb_v2.xls")
 
-    private var calendarRawV2Arr = ArrayList<CalendarRawV2>()
-    private var infoJson = JSONObject()
+    var calendarRawV2Arr = ArrayList<CalendarRawV2>()
+    var infoObj = JSONObject()
     var readExelCallBack = 0
-    val sqlLite = SqlLite(context)
+    var exelToJson = ExelToJson()
 
     fun readInfo(sheet: Sheet){
         val studentName = sheet.getCell(2, 5).contents
@@ -33,14 +29,15 @@ class ReadExel(private val context: Context){
                 className  + "\n" +
                 courseName + "\n" +
                 majorsName + "\n")
-        infoJson.put("studentName", studentName)
-        infoJson.put("studentId", studentId)
-        infoJson.put("className", className)
-        infoJson.put("courseName", courseName)
-        infoJson.put("majorsName", majorsName)
+        infoObj.put("studentName", studentName)
+        infoObj.put("studentId", studentId)
+        infoObj.put("className", className)
+        infoObj.put("courseName", courseName)
+        infoObj.put("majorsName", majorsName)
     }
 
     fun readTkb(){
+        readExelCallBack = 0
         if (fileV2.exists()) {
             Log.d("filev2", "exits")
             val workbook = Workbook.getWorkbook(fileV2)
@@ -76,16 +73,7 @@ class ReadExel(private val context: Context){
                         teacher))
             }
             workbook.close()
-            val exelToJson = ExelToJson(calendarRawV2Arr, infoJson).parse()
-            Log.d("Json", exelToJson.toString())
-            try {
-                sqlLite.deleteCalendar()
-                sqlLite.insertCalender(exelToJson.toString())
-            }catch (e: Exception){
-                Log.d("err", e.toString())
-            }
             readExelCallBack = 1
-            //Log.d("readExelCallBack", readExelCallBack.toString())
         } else{
             readExelCallBack = -1
             Log.d("err", "file V2 is not exists")

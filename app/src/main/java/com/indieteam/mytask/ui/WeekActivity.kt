@@ -18,8 +18,6 @@ import android.widget.Toast
 import com.github.pwittchen.swipe.library.rx2.Swipe
 import com.indieteam.mytask.R
 import com.indieteam.mytask.adapter.CalendarListViewAdapter
-import com.indieteam.mytask.modeldata.v1.CalendarRaw
-import com.indieteam.mytask.modeldata.v1.OnlyCalendar
 import com.indieteam.mytask.modeldata.v2.CalendarFinalV2
 import com.indieteam.mytask.process.ParseCalendarJson
 import com.indieteam.mytask.process.domHTML.DomUpdateCalendar
@@ -41,24 +39,14 @@ import kotlin.collections.ArrayList
 class WeekActivity : AppCompatActivity() {
 
     private val REQUEST_CODE = 1
-    var nameSubject = ""
-    lateinit var tc: String
-    lateinit var info: String
-    var calendarRaw = ArrayList<CalendarRaw>()
-    var calendarMap = mutableMapOf<String, OnlyCalendar>()
-    var calendarRawArr = ArrayList<CalendarRaw>()
-//    private lateinit var readExelV1: ReadExel
-//    private lateinit var exelToCalendarRawV1: ExelToCalendarRaw
-//    private lateinit var parseCalendarRawV1: CalendarRawToJson
-    lateinit var sqlLite: SqlLite
+    private lateinit var sqlLite: SqlLite
     private var calendarResult: JSONObject? = null
     private var parseCalendarJson: ParseCalendarJson? = null
     var mapDate = mutableMapOf<CalendarDay, String>()
     //private var calendarFinalArr = ArrayList<CalendarFinal>()
     private var calendarFinalArrV2 = ArrayList<CalendarFinalV2>()
-    private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR), 0, 1)
+    private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
     private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
-    var readExelCallback = 0
     private var allPermission = 0
     private val swipe = Swipe()
     private lateinit var customSwipe: CustomSwipe
@@ -414,7 +402,10 @@ class WeekActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        toDay()
+        if (calendarView.selectedDate == CalendarDay.today())
+            super.onBackPressed()
+        else
+            toDay()
     }
 
     private fun checkPermission(){
