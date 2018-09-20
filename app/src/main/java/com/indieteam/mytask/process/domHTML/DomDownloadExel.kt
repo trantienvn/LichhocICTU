@@ -95,7 +95,7 @@ class DomDownloadExel(val context: Context, private val signIn: String): Thread(
                     if (i.attr("name") == "drpTerm") {
                         for (j in i.select("option")) {
                             drpTermArr.add(j.attr("value"))
-                            //Log.d("drpTerm", j.attr("value"))
+                            Log.d("drpTerm", j.attr("value"))
                         }
                     }
                 }
@@ -118,12 +118,13 @@ class DomDownloadExel(val context: Context, private val signIn: String): Thread(
                             .data("drpSemester", /*"73FB2DDC455D410C978AB31459812122"*/ drpSemester)
                             .data("drpTerm", drpTerm)
                             .data("drpType", "B")
+                            .data("btnView", "Xuất file Excel")
                             .data(dataMap)
                             .cookie("SignIn", signIn)
                             .method(Connection.Method.POST)
                             .ignoreContentType(true)
                             .execute()
-                    Log.d("response", resDownloadExel.contentType())
+                    Log.d("contentType", resDownloadExel.contentType())
                     if (resDownloadExel.contentType() == "application/vnd.ms-excel; charset=utf-8") {
                         try {
                             val dir = File(loginActivity.filesDir, "exel")

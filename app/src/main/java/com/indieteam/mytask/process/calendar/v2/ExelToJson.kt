@@ -11,10 +11,10 @@ class ExelToJson{
 
     val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private var dayOfWeekMap = mutableMapOf("2" to Calendar.MONDAY,
-            "3" to Calendar.TUESDAY,
-            "4" to Calendar.WEDNESDAY,
+            "bg_a" to Calendar.TUESDAY,
+            "bg_b" to Calendar.WEDNESDAY,
             "5" to Calendar.THURSDAY,
-            "6" to Calendar.FRIDAY,
+            "bg_c" to Calendar.FRIDAY,
             "7" to Calendar.SATURDAY,
             "CN" to Calendar.SUNDAY)
     var jsonObject = JSONObject()

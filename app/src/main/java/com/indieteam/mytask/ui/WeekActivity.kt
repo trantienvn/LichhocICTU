@@ -197,7 +197,7 @@ class WeekActivity : AppCompatActivity() {
 
     private fun setCalendarDots(){
         for(i in mapDate){
-            calendarView.addDecorator(EventDecorator(Color.WHITE, i.key, i.value))
+            calendarView.addDecorator(EventDecorator(resources.getColor(R.color.colorOrangeDark), i.key, i.value))
             //Log.d("valuedot", i.value)
         }
     }
