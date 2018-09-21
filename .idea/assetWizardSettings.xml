@@ -24,6 +24,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="ffffff" />
+                                                <entry key="scalingPercent" value="62" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -34,7 +35,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="fontFamily" value="Droid Sans" />
+                                                <entry key="fontFamily" value="Droid Sans Mono" />
                                                 <entry key="text" value="TKB" />
                                               </map>
                                             </option>
