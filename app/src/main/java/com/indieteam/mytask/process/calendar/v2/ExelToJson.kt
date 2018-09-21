@@ -22,7 +22,7 @@ class ExelToJson{
     var jsonArray = JSONArray()
     var size = 0
 
-    fun toJson(calendarRawV2Arr: ArrayList<CalendarRawV2>): JSONObject {
+    fun toJson(calendarRawV2Arr: ArrayList<CalendarRawV2>) {
         for (i in calendarRawV2Arr){
             //debug use it
 //            Log.d("subjectName", i.subjectName)
@@ -78,7 +78,6 @@ class ExelToJson{
             }
         }
         //Log.d("exelToJson", jsonObject.toString())
-        return jsonObject
     }
 
 }
