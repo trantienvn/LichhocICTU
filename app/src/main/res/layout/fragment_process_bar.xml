@@ -17,7 +17,7 @@
         android:layout_centerInParent="true"
         android:indeterminate="true"
         android:theme="@style/colorProcessBar"
-        android:progressDrawable="@color/colorPrimaryDark"/>
+        android:progressDrawable="@color/colorBlue"/>
 
     <TextView
         android:id="@+id/process"

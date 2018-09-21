@@ -351,12 +351,14 @@ class WeekActivity : AppCompatActivity() {
         calendarView.visibility = GONE
         view.visibility = GONE
         content_layout.visibility = GONE
+        float_button.visibility = GONE
     }
 
     fun visible(){
         calendarView.visibility = VISIBLE
         view.visibility = VISIBLE
         content_layout.visibility = VISIBLE
+        float_button.visibility = VISIBLE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

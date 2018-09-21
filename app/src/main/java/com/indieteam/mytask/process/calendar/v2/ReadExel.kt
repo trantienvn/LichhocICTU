@@ -65,6 +65,7 @@ class ReadExel(context: Context){
                         10 -> subjectDate = cell
                     }
                 }
+
                 calendarRawV2Arr.add(CalendarRawV2(subjectName,
                         subjectDate,
                         subjectDayOfWeek,

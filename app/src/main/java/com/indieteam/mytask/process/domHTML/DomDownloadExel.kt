@@ -23,11 +23,8 @@ class DomDownloadExel(val context: Context, private val signIn: String): Thread(
     private var loginActivity = context as LoginActivity
     private var characterDolla = Html.fromHtml("&#36;")
     private var err = 0
-
     private val sqlLite = SqlLite(context)
-
     var readExel = ReadExel(loginActivity)
-    // miss drpSemester,drpTerm, drpType
 
     override fun run() {
         try {
@@ -72,7 +69,6 @@ class DomDownloadExel(val context: Context, private val signIn: String): Thread(
                 }
             }else{
                 loginActivity.runOnUiThread {
-                    err = 1
                     Toast.makeText(loginActivity, "Err #04", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -80,7 +76,7 @@ class DomDownloadExel(val context: Context, private val signIn: String): Thread(
             if(loginActivity.sessionUrl.isNotBlank()) {
                 val resSecond = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/(S(${loginActivity.sessionUrl}))/Reports/Form/StudentTimeTable.aspx")
                         .data("PageHeader1${characterDolla}drpNgonNgu", loginActivity.pageHeader1drpNgonNgu)
-                        .data("drpSemester", /*"73FB2DDC455D410C978AB31459812122"*/drpSemester)
+                        .data("drpSemester", /*"73FB2DDC455D410C978AB31459812122"*/ drpSemester)
                         .data("drpTerm", drpTerm)
                         .data("drpType", "B")
                         .data(dataMap)
@@ -201,8 +197,7 @@ class DomDownloadExel(val context: Context, private val signIn: String): Thread(
             sqlLite.deleteCalendar()
             sqlLite.insertCalender(readExel.exelToJson.jsonObject.toString())
         }catch (e: Exception){
-            Log.d("err", e.toString())
+            Log.d("Err save", e.toString())
         }
-
     }
 }

@@ -30,28 +30,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:backgroundTint="@color/colorPrimaryDark"
+            android:backgroundTint="@color/colorBlue"
             android:ems="10"
             android:hint="Mã sinh viên"
             android:theme="@style/colorTintEditText"
             android:inputType="textCapCharacters"
             android:textAllCaps="true"
-            android:textColor="@color/colorPrimary"
-            android:textColorHint="@color/colorPrimaryDark"
-            android:textCursorDrawable="@color/colorPrimaryDark"/>
+            android:textColor="@color/colorBlue"
+            android:textColorHint="@color/colorBlue"
+            android:textCursorDrawable="@color/colorBlue"/>
 
         <EditText
             android:id="@+id/text_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
-            android:backgroundTint="@color/colorPrimaryDark"
+            android:backgroundTint="@color/colorBlue"
             android:hint="Mật khẩu"
             android:theme="@style/colorTintEditText"
             android:inputType="textPassword"
-            android:textColor="@color/colorPrimaryDark"
-            android:textColorHint="@color/colorPrimaryDark"
-            android:textCursorDrawable="@color/colorPrimaryDark" />
+            android:textColor="@color/colorBlue"
+            android:textColorHint="@color/colorBlue"
+            android:textCursorDrawable="@color/colorBlue" />
     </LinearLayout>
 
     <Button
@@ -76,7 +76,7 @@
         android:layout_centerHorizontal="true"
         android:gravity="center"
         android:text="IndieTeam"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorBlue"
         android:textSize="10sp" />
 
 </RelativeLayout>

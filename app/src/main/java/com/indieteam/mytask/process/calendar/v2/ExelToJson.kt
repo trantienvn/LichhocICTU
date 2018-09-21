@@ -11,18 +11,18 @@ class ExelToJson{
 
     val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private var dayOfWeekMap = mutableMapOf("2" to Calendar.MONDAY,
-            "bg_a" to Calendar.TUESDAY,
-            "bg_b" to Calendar.WEDNESDAY,
+            "3" to Calendar.TUESDAY,
+            "4" to Calendar.WEDNESDAY,
             "5" to Calendar.THURSDAY,
-            "bg_c" to Calendar.FRIDAY,
+            "6" to Calendar.FRIDAY,
             "7" to Calendar.SATURDAY,
             "CN" to Calendar.SUNDAY)
+
     var jsonObject = JSONObject()
     var jsonArray = JSONArray()
     var size = 0
 
-    fun toJson( calendarRawV2Arr: ArrayList<CalendarRawV2>) {
-
+    fun toJson(calendarRawV2Arr: ArrayList<CalendarRawV2>): JSONObject {
         for (i in calendarRawV2Arr){
             //debug use it
 //            Log.d("subjectName", i.subjectName)
@@ -51,7 +51,7 @@ class ExelToJson{
             while (dateStartCalendar.time <= dateEndCalendar.time){
                 //Log.d("date", calendar.time.toString())
                 if(dateStartCalendar.get(Calendar.DAY_OF_WEEK) == dayOfWeekMap[i.subjectDayOfWeek]){
-//                    Log.d("size", size.toString())
+                    Log.d("size", size.toString())
 //                    Log.d("subjectName", i.subjectName)
 //                    Log.d("subjectDate", "${dateStartCalendar.get(Calendar.DAY_OF_MONTH)}/"+
 //                            "${dateStartCalendar.get(Calendar.MONTH) + 1}/" +
@@ -77,6 +77,8 @@ class ExelToJson{
                 dateStartCalendar.add(Calendar.DAY_OF_MONTH, 1)
             }
         }
+        //Log.d("exelToJson", jsonObject.toString())
+        return jsonObject
     }
 
 }
