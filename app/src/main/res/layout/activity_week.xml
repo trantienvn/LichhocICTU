@@ -35,12 +35,16 @@
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginRight="15dp"
         android:background="@color/colorWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="0.05"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+        app:layout_constraintTop_toBottomOf="@+id/calendarView"
+        android:layout_marginLeft="15dp" />
 
 
     <RelativeLayout
@@ -49,7 +53,7 @@
         android:layout_height="0dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:background="@drawable/bg_a"
+        android:background="@color/colorWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="0.7"
@@ -59,7 +63,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_a">
+            android:background="@color/colorWhite">
 
             <TextView
                 android:id="@+id/log"
@@ -74,7 +78,7 @@
             android:layout_height="match_parent"
             android:divider="@color/colorWhite"
             android:dividerHeight="10dp"
-            android:background="@color/colorWhite">
+            android:background="@drawable/bg_a">
         </ListView>
 
     </RelativeLayout>

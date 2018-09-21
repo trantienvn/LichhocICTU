@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import com.indieteam.mytask.R
 import com.indieteam.mytask.modeldata.v2.CalendarFinalV2
-import com.indieteam.mytask.modeldata.v2.CalendarRawV2
 import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.item_calendar_list_view.view.*
 import java.util.*
@@ -26,12 +25,11 @@ class CalendarListViewAdapter(val activity: WeekActivity, val data: ArrayList<Ca
 
         }else {
             //layout.subject_date.text = "Ngày: ${data[p0].subjectDate}"
-            layout.subject_name.text = "Môn: ${data[p0].subjectName}"
+            layout.subject_name.text = "${data[p0].subjectName}"
             layout.subject_time.text = "Tiết: ${data[p0].subjectTime}"
-            layout.subject_place.text = "Địa điểm" +
-                    "" +
-                    ": ${data[p0].subjectPlace}"
-            layout.teacher.text = "Giảng viên: ${data[p0].teacher}"
+            layout.subject_place.text = "Tại: " +
+                    "${data[p0].subjectPlace}"
+            layout.teacher.text = "GV: ${data[p0].teacher}"
         }
 
         return layout

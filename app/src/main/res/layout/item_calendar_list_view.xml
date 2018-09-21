@@ -3,8 +3,7 @@
     android:id="@+id/item_calendar_list_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorWhite">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,8 +24,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:background="@drawable/shape_item_calendar">
+            android:gravity="center_vertical">
 
            <!-- <ImageView
                 android:layout_width="wrap_content"
@@ -42,7 +40,7 @@
                 android:elevation="1dp"
                 android:text="Subject Name: "
                 android:textColor="@color/colorBlack"
-                android:textStyle="normal"/>
+                android:textStyle="bold"/>
             <TextView
                 android:id="@+id/subject_time"
                 android:layout_width="match_parent"

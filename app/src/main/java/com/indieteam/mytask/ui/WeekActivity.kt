@@ -195,6 +195,17 @@ class WeekActivity : AppCompatActivity() {
         calendarView.selectionMode = SELECTION_MODE_SINGLE
     }
 
+    val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_d,
+            R.drawable.bg_e, R.drawable.bg_f, R.drawable.bg_i)
+
+    fun changeBackground(){
+        calender_list_view.background = resources.getDrawable(background[random(0, background.size - 1)])
+    }
+
+    private fun random(from: Int, to: Int): Int{
+        return Random().nextInt(to - from) + from
+    }
+
     private fun setCalendarDots(){
         for(i in mapDate){
             calendarView.addDecorator(EventDecorator(resources.getColor(R.color.colorOrangeDark), i.key, i.value))
@@ -376,6 +387,7 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun run(){
+        changeBackground()
         var readDb: Int
         var valueDb= ""
         try{
