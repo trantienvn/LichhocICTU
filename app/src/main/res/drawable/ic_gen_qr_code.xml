@@ -4,7 +4,7 @@
     android:viewportWidth="512"
     android:viewportHeight="512">
     <path
-        android:fillColor="#ffffff"
+        android:fillColor="#000000"
         android:name="Forma 1"
         android:pathData="m240 0v40h40v-40zm-175 65v40h40v-40zm342 0v40h40v-40zm-207 -25v77h40v-77zm80 37v40h40v-40zm-150 -37v90h-90v-90zm342 0v90h-90v-90zm-472 -40v170h170v-170zm342 0v170h170v-170zm-102 117v40h-40v40h80v-80zm-200 80v40h40v-40zm80 0v40h80v-40zm352 40v39h-72v-39zm-192 -40v80h40v-80zm119 0v40h-39v40h40v39h112v-80h-40v-39zm-399 40v80h40v-80zm80 0v40h39v40h40v-40h-39v-40zm240 40v40h40v-40zm-120 -40v80h40v39h40v39h80v-40h-80v-39h-40v-79zm200 118v40h40v-40zm-200 1v76h40v-76zm160 39v40h40v-40zm112 -40v80h40v-80zm-407 52v40h40v-40zm65 -25v90h-90v-90zm-130 -40v170h170v-170zm240 90v80h40v-40h39v40h40v-40h-39v-40zm160 3v77h40v-37h32v-40z" />
 </vector>

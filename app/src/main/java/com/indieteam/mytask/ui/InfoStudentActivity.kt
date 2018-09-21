@@ -51,7 +51,7 @@ class InfoStudentActivity : AppCompatActivity() {
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_gen_qr, R.drawable.ic_gen_qr_code)
                         .setLabel("Tạo QR")
-                        .setFabBackgroundColor(resources.getColor(R.color.colorGreenDark))
+                        .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                         .create()
                 )
         gen_qr_btn.addAllActionItems(listItem)

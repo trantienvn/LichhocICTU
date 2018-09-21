@@ -3,15 +3,15 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/colorBlue</item>
         <item name="colorPrimaryDark">@color/colorGray</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="InfoStudentTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorGreen</item>
-        <item name="colorPrimaryDark">@color/colorGreenDark</item>
+        <item name="colorPrimary">@color/colorBlue</item>
+        <item name="colorPrimaryDark">@color/colorBlueDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 

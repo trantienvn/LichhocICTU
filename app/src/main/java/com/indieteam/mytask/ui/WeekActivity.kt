@@ -198,7 +198,7 @@ class WeekActivity : AppCompatActivity() {
     val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_d,
             R.drawable.bg_e, R.drawable.bg_f, R.drawable.bg_i)
 
-    fun changeBackground(){
+    private fun changeBackground(){
         calender_list_view.background = resources.getDrawable(background[random(0, background.size - 1)])
     }
 
@@ -208,7 +208,7 @@ class WeekActivity : AppCompatActivity() {
 
     private fun setCalendarDots(){
         for(i in mapDate){
-            calendarView.addDecorator(EventDecorator(resources.getColor(R.color.colorOrangeDark), i.key, i.value))
+            calendarView.addDecorator(EventDecorator(listOf(resources.getColor(R.color.colorGreen), resources.getColor(R.color.colorOrangeDark), resources.getColor(R.color.colorRedDark)), i.key, i.value))
             //Log.d("valuedot", i.value)
         }
     }
@@ -220,7 +220,7 @@ class WeekActivity : AppCompatActivity() {
             updateListView(date)
         }
         calendarView.setOnMonthChangedListener { /*materialCalendarView*/_, calendarDay ->
-            calendarView.setTitleFormatter/*(TitleFormatter */{ "Tháng ${calendarDay.month+1} Năm ${calendarDay.year}" }/*)*/
+            calendarView.setTitleFormatter{ "Tháng ${calendarDay.month+1} Năm ${calendarDay.year}" }
         }
     }
 
@@ -262,11 +262,11 @@ class WeekActivity : AppCompatActivity() {
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_logout, R.drawable.ic_logout)
                         .setLabel("Đăng xuất")
-                        .setFabBackgroundColor(resources.getColor(R.color.colorPrimaryDark))
+                        .setFabBackgroundColor(resources.getColor(R.color.colorBlue))
                         .create(),
                         SpeedDialActionItem.Builder(R.id.fab_setting, R.drawable.ic_switch)
                                 .setLabel("Tuần/Tháng")
-                                .setFabBackgroundColor(resources.getColor(R.color.colorAccent))
+                                .setFabBackgroundColor(resources.getColor(R.color.colorPurple))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_update, R.drawable.ic_update)
                                 .setLabel("Cập nhật lịch")
@@ -274,7 +274,7 @@ class WeekActivity : AppCompatActivity() {
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_info)
                                 .setLabel("Cá nhân")
-                                .setFabBackgroundColor(resources.getColor(R.color.colorGreen))
+                                .setFabBackgroundColor(resources.getColor(R.color.colorBlue))
                                 .create()
 
         )
@@ -450,7 +450,9 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
-    inner class DrawLabelForDate(private val color: Int, private val text: String) : LineBackgroundSpan {
+    inner class DrawDot(private val color: List<Int>, private val text: String) : LineBackgroundSpan {
+
+        private val bounds = Rect()
 
         override fun drawBackground(canvas: Canvas, paint: Paint,
                                     left: Int, right: Int, top: Int,
@@ -459,25 +461,32 @@ class WeekActivity : AppCompatActivity() {
                                     start: Int, end: Int, lineNum: Int) {
             val lastColor = paint.color
             val lastTextSize = paint.textSize
-            paint.color = color
+            if (text.length == 1)
+                paint.color = color[0]
+            if (text.length == 2)
+                paint.color = color[1]
+            if (text.length >= 3)
+                paint.color = color[2]
             paint.textSize = 50f
-            val bounds = Rect()
             paint.getTextBounds(text, 0, text.length, bounds)
             val x = right/2 - bounds.width()/1.8
             val y = 1.3*bottom
             canvas.drawText(text, x.toFloat(), y.toFloat(), paint)
             paint.textSize = lastTextSize
             paint.color = lastColor
+            for (char in text){
+
+            }
         }
     }
 
-    inner class EventDecorator(private val color: Int, val date: CalendarDay, private val dot: String): DayViewDecorator {
+    inner class EventDecorator(private val color: List<Int>, val date: CalendarDay, private val dot: String): DayViewDecorator {
         override fun shouldDecorate(day: CalendarDay): Boolean {
             return date == day
         }
 
         override fun decorate(view: DayViewFacade) {
-            view.addSpan(DrawLabelForDate(color, dot))
+            view.addSpan(DrawDot(color, dot))
         }
     }
 

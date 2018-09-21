@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:elevation="2dp"
-        android:background="@color/colorGreen"
+        android:background="@color/colorBlue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="0.4"
@@ -35,7 +35,7 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_gravity="center"
-            android:background="@drawable/shape_profile"
+            android:background="@color/colorBlue"
             android:textColor="@color/colorWhite"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
@@ -153,8 +153,8 @@
             android:gravity="center"
             app:sdMainFabClosedSrc="@drawable/ic_more"
             android:layout_alignParentEnd="true"
-            app:sdMainFabOpenedBackgroundColor="@color/colorGreen"
-            app:sdMainFabClosedBackgroundColor="@color/colorGreen"/>
+            app:sdMainFabOpenedBackgroundColor="@color/colorBlue"
+            app:sdMainFabClosedBackgroundColor="@color/colorBlue"/>
 
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

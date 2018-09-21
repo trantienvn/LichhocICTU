@@ -111,7 +111,9 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_gravity="bottom|end"
-            app:sdMainFabClosedSrc="@drawable/ic_more" />
+            app:sdMainFabClosedSrc="@drawable/ic_more"
+            app:sdMainFabOpenedBackgroundColor="@color/colorBlue"
+            app:sdMainFabClosedBackgroundColor="@color/colorBlue"/>
     </RelativeLayout>
 
 
