@@ -1,9 +1,10 @@
 package com.indieteam.mytask.process.domHTML
 
 import android.content.Context
-import android.text.Html
+import android.text.Html.fromHtml
 import android.util.Log
 import android.widget.Toast
+import com.indieteam.mytask.address.UrlAddress
 import com.indieteam.mytask.process.calendar.v2.ReadExel
 import com.indieteam.mytask.sqlite.SqlLite
 import com.indieteam.mytask.ui.WeekActivity
@@ -12,22 +13,25 @@ import org.jsoup.Jsoup
 import java.io.File
 import java.io.FileOutputStream
 
-class DomUpdateCalendar(val context: Context, val signIn: String): Thread() {
+@Suppress("DEPRECATION")
+class DomUpdateCalendar(val context: Context, private val signIn: String): Thread() {
+
+    private val urlAddress = UrlAddress()
 
     private var drpSemester = ""
     private var drpTerm = ""
     private var drpTermArr = ArrayList<String>()
     private var weekActivity = context as WeekActivity
-    private var characterDolla = Html.fromHtml("&#36;")
+    private var characterDolla = fromHtml("&#36;")
     private var sessionUrl = ""
     private var pageHeader1drpNgonNgu = "010527EFBEB84BCA8919321CFD5C3A34"
     private var err = 0
-    val readExel = ReadExel(weekActivity)
+    private val readExel = ReadExel(weekActivity)
     private val sqlLite = SqlLite(context)
 
     override fun run() {
         try {
-            val res = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/login.aspx")
+            val res = Jsoup.connect(urlAddress.urlLoginClean)
                     .followRedirects(false)
                     .method(Connection.Method.GET)
                     .execute()
@@ -36,7 +40,7 @@ class DomUpdateCalendar(val context: Context, val signIn: String): Thread() {
 
             val dataMap = mutableMapOf<String, String>()
             if(sessionUrl.isNotBlank()) {
-                val resFirst = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/(S($sessionUrl))/Reports/Form/StudentTimeTable.aspx")
+                val resFirst = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
                         .cookie("SignIn", signIn)
                         .method(Connection.Method.GET)
                         .execute()
@@ -74,7 +78,7 @@ class DomUpdateCalendar(val context: Context, val signIn: String): Thread() {
             }
 
             if(sessionUrl.isNotBlank()) {
-                val resSecond = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/(S($sessionUrl))/Reports/Form/StudentTimeTable.aspx")
+                val resSecond = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
                         .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
                         .data("drpSemester", drpSemester)
                         .data("drpTerm", drpTerm)
@@ -109,7 +113,7 @@ class DomUpdateCalendar(val context: Context, val signIn: String): Thread() {
                     drpSemester.isNotBlank() && drpTermArr.isNotEmpty()) {
 
                 for (drpTerm in drpTermArr) {
-                    val resDownloadExel = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/(S($sessionUrl))/Reports/Form/StudentTimeTable.aspx")
+                    val resDownloadExel = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
                             .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
                             .data("drpSemester", drpSemester)
                             .data("drpTerm", drpTerm)
@@ -179,7 +183,7 @@ class DomUpdateCalendar(val context: Context, val signIn: String): Thread() {
     }
 
     private fun save(){
-        readExel.exelToJson.toJson(readExel.calendarRawV2Arr)
+        readExel.exelToJson.toJson(readExel.rawCalendarObjArr)
         readExel.exelToJson.jsonObject.put("info", readExel.infoObj)
         readExel.exelToJson.jsonObject.put("calendar", readExel.exelToJson.jsonArray)
         try {

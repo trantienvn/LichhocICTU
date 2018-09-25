@@ -25,12 +25,16 @@ class InfoStudentActivity : AppCompatActivity() {
     private val bundle = Bundle()
     private val qrFragment = QrFragment()
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_info_student)
-        readInfo()
-        genQr()
+    override fun onBackPressed() {
+        if (supportFragmentManager.findFragmentByTag("qrFragment") != null){
+            supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("qrFragment"))
+                    .commit()
+            visible()
+            countClick = 0
+        }else {
+            super.onBackPressed()
+            finish()
+        }
     }
 
     private fun gone(){
@@ -110,15 +114,10 @@ class InfoStudentActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        if (supportFragmentManager.findFragmentByTag("qrFragment") != null){
-            supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("qrFragment"))
-                    .commit()
-            visible()
-            countClick = 0
-        }else {
-            super.onBackPressed()
-            finish()
-        }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_info_student)
+        readInfo()
+        genQr()
     }
 }

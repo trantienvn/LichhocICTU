@@ -18,7 +18,8 @@ import android.widget.Toast
 import com.github.pwittchen.swipe.library.rx2.Swipe
 import com.indieteam.mytask.R
 import com.indieteam.mytask.adapter.CalendarListViewAdapter
-import com.indieteam.mytask.modeldata.v2.CalendarFinalV2
+import com.indieteam.mytask.dataObj.v2.TimeDetails
+import com.indieteam.mytask.dataObj.v2.StudentCalendarObj
 import com.indieteam.mytask.process.ParseCalendarJson
 import com.indieteam.mytask.process.domHTML.DomUpdateCalendar
 import com.indieteam.mytask.sqlite.SqlLite
@@ -31,6 +32,7 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView.SELECTI
 import kotlinx.android.synthetic.main.activity_week.*
 import kotlinx.android.synthetic.main.fragment_process_bar.*
 import org.json.JSONObject
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -42,21 +44,26 @@ class WeekActivity : AppCompatActivity() {
     private lateinit var sqlLite: SqlLite
     private var calendarResult: JSONObject? = null
     private var parseCalendarJson: ParseCalendarJson? = null
-    var mapDate = mutableMapOf<CalendarDay, String>()
+    var mapDateForDots = mutableMapOf<CalendarDay, String>()
     //private var calendarFinalArr = ArrayList<CalendarFinal>()
-    private var calendarFinalArrV2 = ArrayList<CalendarFinalV2>()
+    private var studentCalendarObjArr = ArrayList<StudentCalendarObj>()
     private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
     private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
     private var allPermission = 0
     private val swipe = Swipe()
     private lateinit var customSwipe: CustomSwipe
-    var addDotCallBack = 0
+    var addDotsCallBack = 0
     private var screenHeight = 0
     private var statusBarHeight = 0
     private var navigationBarHeight = 0
     private var calendarMode = 0
     private lateinit var sharedPref: SharedPreferences
     private var startTouchY = 0f
+    private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_d,
+            R.drawable.bg_e, R.drawable.bg_f, R.drawable.bg_i)
+    private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
+    private val timeDetails = TimeDetails()
+
 
     inner class OnSwipeListener: com.github.pwittchen.swipe.library.rx2.SwipeListener{
         override fun onSwipedUp(event: MotionEvent?): Boolean {
@@ -118,9 +125,103 @@ class WeekActivity : AppCompatActivity() {
 
     }
 
+    inner class DrawDots(private val colors: List<Int>, private val text: String) : LineBackgroundSpan {
+
+        private val bounds = Rect()
+
+        override fun drawBackground(c: Canvas, p: Paint,
+                                    left: Int, right: Int, top: Int,
+                                    baseline: Int, bottom: Int,
+                                    charSequence: CharSequence,
+                                    start: Int, end: Int, lineNum: Int) {
+            val lastColor = p.color
+            val lastTextSize = p.textSize
+            if (text.length == 1)
+                p.color = colors[0]
+            if (text.length == 2)
+                p.color = colors[1]
+            if (text.length >= 3)
+                p.color = colors[2]
+            p.textSize = 50f
+            p.getTextBounds(text, 0, text.length, bounds)
+            val x = right/2 - bounds.width()/1.8
+            val y = 1.3*bottom
+            c.drawText(text, x.toFloat(), y.toFloat(), p)
+            p.textSize = lastTextSize
+            p.color = lastColor
+        }
+    }
+
+    inner class EventDecorator(private val mode: String, private val colors: List<Int>, val date: CalendarDay, private val dot: String): DayViewDecorator {
+        override fun shouldDecorate(day: CalendarDay): Boolean {
+            return date == day
+        }
+
+        override fun decorate(view: DayViewFacade) {
+            if (mode == "Dots")
+                view.addSpan(DrawDots(colors, dot))
+            if (mode == "ToDay")
+                view.setBackgroundDrawable(resources.getDrawable(R.drawable.shape_bg_cal_today))
+        }
+    }
+
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         swipe.dispatchTouchEvent(event)
         return super.dispatchTouchEvent(event)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if(requestCode == REQUEST_CODE){
+            if(grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                run()
+                //Toast.makeText(this@WeekActivity, "Permissions is granted", Toast.LENGTH_LONG).show()
+            }else{
+                Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
+            }
+        }else{
+            Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
+            finish()
+        }
+    }
+
+    override fun onBackPressed() {
+        if (calendarView.selectedDate == CalendarDay.today())
+            super.onBackPressed()
+        else
+            toDay()
+    }
+
+    private fun checkPermission(){
+        if(Build.VERSION.SDK_INT >= 23) {
+            if(checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE)
+            }else{
+                allPermission = 1
+            }
+        }else{
+            run()
+        }
+    }
+
+    private fun init(){
+        //readExelV1 = ReadExel(this)
+        //exelToCalendarRawV1 = ExelToCalendarRaw(this)
+        //parseCalendarRawV1 = CalendarRawToJson(this)
+        sqlLite = SqlLite(this)
+        customSwipe = CustomSwipe(this)
+        calenderEvents()
+        title = ""
+        val point = Point()
+        windowManager.defaultDisplay.getSize(point)
+        screenHeight = point.y
+        val resourcesId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        statusBarHeight = resources.getDimensionPixelSize(resourcesId)
+        val resourcesId2 = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        navigationBarHeight = resources.getDimensionPixelSize(resourcesId2)
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        calendarMode = sharedPref.getInt("CalendarMode", 0)
     }
 
     fun preDate(){
@@ -145,25 +246,6 @@ class WeekActivity : AppCompatActivity() {
 
         val date = "${newCalendarDate.day}/${newCalendarDate.month + 1}/${newCalendarDate.year}"
         updateListView(date)
-    }
-
-    private fun init(){
-        //readExelV1 = ReadExel(this)
-        //exelToCalendarRawV1 = ExelToCalendarRaw(this)
-        //parseCalendarRawV1 = CalendarRawToJson(this)
-        sqlLite = SqlLite(this)
-        customSwipe = CustomSwipe(this)
-        calenderEvents()
-        title = ""
-        val point = Point()
-        windowManager.defaultDisplay.getSize(point)
-        screenHeight = point.y
-        val resourcesId = resources.getIdentifier("status_bar_height", "dimen", "android")
-        statusBarHeight = resources.getDimensionPixelSize(resourcesId)
-        val resourcesId2 = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        navigationBarHeight = resources.getDimensionPixelSize(resourcesId2)
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE)
-        calendarMode = sharedPref.getInt("CalendarMode", 0)
     }
 
     private fun calendarSetting(){
@@ -195,9 +277,6 @@ class WeekActivity : AppCompatActivity() {
         calendarView.selectionMode = SELECTION_MODE_SINGLE
     }
 
-    val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_d,
-            R.drawable.bg_e, R.drawable.bg_f, R.drawable.bg_i)
-
     private fun changeBackground(){
         calender_list_view.background = resources.getDrawable(background[random(0, background.size - 1)])
     }
@@ -207,10 +286,14 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun setCalendarDots(){
-        for(i in mapDate){
-            calendarView.addDecorator(EventDecorator(listOf(resources.getColor(R.color.colorGreen), resources.getColor(R.color.colorOrangeDark), resources.getColor(R.color.colorRedDark)), i.key, i.value))
+        for(i in mapDateForDots){
+            calendarView.addDecorator(EventDecorator("Dots", listOf(resources.getColor(R.color.colorGreen), resources.getColor(R.color.colorOrangeDark), resources.getColor(R.color.colorRedDark)), i.key, i.value))
             //Log.d("valuedot", i.value)
         }
+    }
+
+    private fun drawBackgroundToday(){
+        calendarView.addDecorator(EventDecorator("ToDay", listOf(resources.getColor(R.color.colorGrayDark)), CalendarDay.today(), "null"))
     }
 
     private fun calenderEvents(){
@@ -226,7 +309,7 @@ class WeekActivity : AppCompatActivity() {
 
     private fun updateListView(date: String){
         if (parseCalendarJson != null){
-            calendarFinalArrV2.removeAll(calendarFinalArrV2)
+            studentCalendarObjArr.removeAll(studentCalendarObjArr)
             parseCalendarJson!!.apply {
                 getSubject(date)
                 if (/*!subjectDate.isEmpty() &&*/
@@ -242,17 +325,23 @@ class WeekActivity : AppCompatActivity() {
                         for (j in 0 until subjectName.size) {
                             //Log.d("result", "${subjectDate[j]}, ${subjectName[j]}, ${subjectTime[j]}, ${subjectPlace[j]}")
                             //result += "${subjectDate[j]}, ${subjectName[j]}, ${subjectTime[j]}, ${subjectPlace[j]} \n"
-                            calendarFinalArrV2.add(CalendarFinalV2(subjectName[j], /*subjectDate[j]*/"", subjectTime[j], subjectPlace[j], teacher[j]))
+                            val firstTime = subjectTime[j].substring(0, subjectTime[j].indexOf(",")).toInt() -1
+                            val endTime = subjectTime[j].substring(subjectTime[j].lastIndexOf(",") + 1, subjectTime[j].length).toInt() - 1
+                            if (simpleDateFormat.parse(date) >= CalendarDay.from(CalendarDay().year, 3, 15).date &&
+                                    simpleDateFormat.parse(date) < CalendarDay.from(CalendarDay().year, 9, 15).date)
+                                studentCalendarObjArr.add(StudentCalendarObj(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
+                            else
+                                studentCalendarObjArr.add(StudentCalendarObj(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
                         }
                         //log.text = result
                         calender_list_view.adapter = null
-                        calender_list_view.adapter = CalendarListViewAdapter(this@WeekActivity, calendarFinalArrV2)
+                        calender_list_view.adapter = CalendarListViewAdapter(this@WeekActivity, studentCalendarObjArr)
                     }
                 } else {
                     Log.d("result", "$date Nghỉ")
                     //log.text = "$date Nghỉ"
                     calender_list_view.adapter = null
-                    calender_list_view.adapter = CalendarListViewAdapter(this@WeekActivity, calendarFinalArrV2)
+                    calender_list_view.adapter = CalendarListViewAdapter(this@WeekActivity, studentCalendarObjArr)
                 }
             }
         }
@@ -361,20 +450,6 @@ class WeekActivity : AppCompatActivity() {
         float_button.visibility = VISIBLE
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_week)
-        init()
-        calendarSetting()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkPermission()
-            if (allPermission == 1) {
-                run()
-            }
-        }else
-            run()
-    }
-
     private fun moveToLogin(){
         val intent = Intent(this@WeekActivity, LoginActivity::class.java)
         startActivity(intent)
@@ -410,84 +485,24 @@ class WeekActivity : AppCompatActivity() {
         }
         initFloatButton()
         toDay()
-        parseCalendarJson!!.addToMapDot()
+        drawBackgroundToday()
+        parseCalendarJson!!.addToMapDots()
         setCalendarDots()
         swipe.setListener(OnSwipeListener())
     }
 
-    override fun onBackPressed() {
-        if (calendarView.selectedDate == CalendarDay.today())
-            super.onBackPressed()
-        else
-            toDay()
-    }
-
-    private fun checkPermission(){
-        if(Build.VERSION.SDK_INT >= 23) {
-            if(checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-            || checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE)
-            }else{
-                allPermission = 1
-            }
-        }else{
-            run()
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if(requestCode == REQUEST_CODE){
-            if(grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-            && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_week)
+        init()
+        calendarSetting()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkPermission()
+            if (allPermission == 1) {
                 run()
-                //Toast.makeText(this@WeekActivity, "Permissions is granted", Toast.LENGTH_LONG).show()
-            }else{
-                Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
             }
-        }else{
-            Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
-            finish()
-        }
-    }
-
-    inner class DrawDot(private val color: List<Int>, private val text: String) : LineBackgroundSpan {
-
-        private val bounds = Rect()
-
-        override fun drawBackground(canvas: Canvas, paint: Paint,
-                                    left: Int, right: Int, top: Int,
-                                    baseline: Int, bottom: Int,
-                                    charSequence: CharSequence,
-                                    start: Int, end: Int, lineNum: Int) {
-            val lastColor = paint.color
-            val lastTextSize = paint.textSize
-            if (text.length == 1)
-                paint.color = color[0]
-            if (text.length == 2)
-                paint.color = color[1]
-            if (text.length >= 3)
-                paint.color = color[2]
-            paint.textSize = 50f
-            paint.getTextBounds(text, 0, text.length, bounds)
-            val x = right/2 - bounds.width()/1.8
-            val y = 1.3*bottom
-            canvas.drawText(text, x.toFloat(), y.toFloat(), paint)
-            paint.textSize = lastTextSize
-            paint.color = lastColor
-            for (char in text){
-
-            }
-        }
-    }
-
-    inner class EventDecorator(private val color: List<Int>, val date: CalendarDay, private val dot: String): DayViewDecorator {
-        override fun shouldDecorate(day: CalendarDay): Boolean {
-            return date == day
-        }
-
-        override fun decorate(view: DayViewFacade) {
-            view.addSpan(DrawDot(color, dot))
-        }
+        }else
+            run()
     }
 
 }

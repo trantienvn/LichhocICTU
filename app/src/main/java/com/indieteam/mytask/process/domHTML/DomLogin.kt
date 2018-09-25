@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.Html
 import android.util.Log
 import android.widget.Toast
+import com.indieteam.mytask.address.UrlAddress
 import com.indieteam.mytask.ui.LoginActivity
 import kotlinx.android.synthetic.main.fragment_process_bar.*
 import org.jsoup.Connection
@@ -11,6 +12,10 @@ import org.jsoup.Jsoup
 
 class DomLogin(val context: Context, private val userName: String, private val passWord: String): Thread(){
 
+    private val urlAddress = UrlAddress()
+    private var sessionUrl = ""
+
+    var pageHeader1drpNgonNgu = "010527EFBEB84BCA8919321CFD5C3A34"
     private var __EVENTTARGET = ""
     private var __EVENTARGUMENT = ""
     private var __LASTFOCUS = ""
@@ -28,17 +33,17 @@ class DomLogin(val context: Context, private val userName: String, private val p
 
     override fun run() {
         try{
-            val res = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/login.aspx")
+            val res = Jsoup.connect(urlAddress.urlLoginClean)
                     .followRedirects(false)
                     .method(Connection.Method.GET)
                     .execute()
             val location = res.header("Location")
-            loginActivity.sessionUrl = location.substring(location.indexOf("S(") + 2, location.indexOf("))"))
+            sessionUrl = location.substring(location.indexOf("S(") + 2, location.indexOf("))"))
 //            Log.d("location", res.header("Location"))
 //            Log.d("sessionUrl", loginActivity.sessionUrl)
 
-            if(loginActivity.sessionUrl.isNotBlank()) {
-                val resFirst = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/(S(${loginActivity.sessionUrl}))/login.aspx")
+            if(sessionUrl.isNotBlank()) {
+                val resFirst = Jsoup.connect(urlAddress.urlLoginSession(sessionUrl))
                         .method(Connection.Method.GET)
                         .execute()
 
@@ -53,7 +58,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
                         "__VIEWSTATE" -> __VIEWSTATE = i.`val`()
                         "__VIEWSTATEGENERATOR" -> __VIEWSTATEGENERATOR = i.`val`()
                         "__EVENTVALIDATION" -> __EVENTVALIDATION = i.`val`()
-                        "PageHeader1${characterDolla}drpNgonNgu" -> loginActivity.pageHeader1drpNgonNgu = i.`val`()
+                        "PageHeader1${characterDolla}drpNgonNgu" -> pageHeader1drpNgonNgu = i.`val`()
                         "PageHeader1${characterDolla}hidisNotify" -> pageHeader1hidisNotify = i.`val`()
                         "PageHeader1${characterDolla}hidValueNotify" -> pageHeader1hidValueNotify = i.`val`()
                         "hidUserId" -> hidUserId = i.`val`()
@@ -68,8 +73,8 @@ class DomLogin(val context: Context, private val userName: String, private val p
                 this.join()
             }
 
-            if(loginActivity.sessionUrl.isNotBlank()) {
-                val resLogin = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/(S(${loginActivity.sessionUrl}))/login.aspx")
+            if(sessionUrl.isNotBlank()) {
+                val resLogin = Jsoup.connect(urlAddress.urlLoginSession(sessionUrl))
                         .data("__EVENTTARGET", __EVENTTARGET)
                         .data("__EVENTARGUMENT", __EVENTARGUMENT)
                         .data("__LASTFOCUS", __LASTFOCUS)
@@ -107,7 +112,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
                                 loginActivity.sqlLite.updateInfo(userName, passWord, cookie)
                             }catch (e: Exception){ Log.d("err", e.toString()) }
                         }
-                        DomDownloadExel(loginActivity, cookie).start()
+                        DomDownloadExel(loginActivity, sessionUrl, cookie).start()
                     }
                 } else {
                     loginActivity.supportFragmentManager.findFragmentByTag("processBarFragment")?.let {

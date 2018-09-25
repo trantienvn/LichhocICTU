@@ -2,9 +2,11 @@ package com.indieteam.mytask.process.domHTML
 
 import android.content.Context
 import android.content.Intent
+import android.hardware.camera2.CameraCaptureSession
 import android.text.Html
 import android.util.Log
 import android.widget.Toast
+import com.indieteam.mytask.address.UrlAddress
 import com.indieteam.mytask.process.calendar.v2.ReadExel
 import com.indieteam.mytask.sqlite.SqlLite
 import com.indieteam.mytask.ui.LoginActivity
@@ -15,8 +17,12 @@ import org.jsoup.Jsoup
 import java.io.File
 import java.io.FileOutputStream
 
-class DomDownloadExel(val context: Context, private val signIn: String): Thread() {
+@Suppress("DEPRECATION")
+class DomDownloadExel(val context: Context, val sessionUrl: String, private val signIn: String): Thread() {
 
+    private var urlAddress = UrlAddress()
+
+    var pageHeader1drpNgonNgu = "010527EFBEB84BCA8919321CFD5C3A34"
     private var drpSemester = ""
     private var drpTerm = ""
     private var drpTermArr = ArrayList<String>()
@@ -24,7 +30,7 @@ class DomDownloadExel(val context: Context, private val signIn: String): Thread(
     private var characterDolla = Html.fromHtml("&#36;")
     private var err = 0
     private val sqlLite = SqlLite(context)
-    var readExel = ReadExel(loginActivity)
+    private var readExel = ReadExel(loginActivity)
 
     override fun run() {
         try {
@@ -34,8 +40,8 @@ class DomDownloadExel(val context: Context, private val signIn: String): Thread(
                 }
             }
             val dataMap = mutableMapOf<String, String>()
-            if(loginActivity.sessionUrl.isNotBlank()) {
-                val resFirst = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/(S(${loginActivity.sessionUrl}))/Reports/Form/StudentTimeTable.aspx")
+            if(sessionUrl.isNotBlank()) {
+                val resFirst = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
                         .cookie("SignIn", signIn)
                         .method(Connection.Method.GET)
                         .execute()
@@ -73,9 +79,9 @@ class DomDownloadExel(val context: Context, private val signIn: String): Thread(
                 }
             }
 
-            if(loginActivity.sessionUrl.isNotBlank()) {
-                val resSecond = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/(S(${loginActivity.sessionUrl}))/Reports/Form/StudentTimeTable.aspx")
-                        .data("PageHeader1${characterDolla}drpNgonNgu", loginActivity.pageHeader1drpNgonNgu)
+            if(sessionUrl.isNotBlank()) {
+                val resSecond = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
+                        .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
                         .data("drpSemester", /*"73FB2DDC455D410C978AB31459812122"*/ drpSemester)
                         .data("drpTerm", drpTerm)
                         .data("drpType", "B")
@@ -104,13 +110,13 @@ class DomDownloadExel(val context: Context, private val signIn: String): Thread(
 
             }
 
-            if(loginActivity.sessionUrl.isNotBlank() && dataMap.isNotEmpty() &&
+            if(sessionUrl.isNotBlank() && dataMap.isNotEmpty() &&
                     drpSemester.isNotBlank() && drpTermArr.isNotEmpty()) {
 
                 //loop all dot hoc
                 for (drpTerm in drpTermArr) {
-                    val resDownloadExel = Jsoup.connect("http://dangkytinchi.ictu.edu.vn/kcntt/(S(${loginActivity.sessionUrl}))/Reports/Form/StudentTimeTable.aspx")
-                            .data("PageHeader1${characterDolla}drpNgonNgu", loginActivity.pageHeader1drpNgonNgu)
+                    val resDownloadExel = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
+                            .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
                             .data("drpSemester", /*"73FB2DDC455D410C978AB31459812122"*/ drpSemester)
                             .data("drpTerm", drpTerm)
                             .data("drpType", "B")
@@ -190,7 +196,7 @@ class DomDownloadExel(val context: Context, private val signIn: String): Thread(
     }
 
     private fun save(){
-        readExel.exelToJson.toJson(readExel.calendarRawV2Arr)
+        readExel.exelToJson.toJson(readExel.rawCalendarObjArr)
         readExel.exelToJson.jsonObject.put("info", readExel.infoObj)
         readExel.exelToJson.jsonObject.put("calendar", readExel.exelToJson.jsonArray)
         try {

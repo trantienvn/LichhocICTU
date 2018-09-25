@@ -4,15 +4,14 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Html
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.indieteam.mytask.R
-import kotlinx.android.synthetic.main.activity_login.*
-import android.view.View
 import com.indieteam.mytask.sqlite.SqlLite
+import kotlinx.android.synthetic.main.activity_login.*
 import java.security.NoSuchAlgorithmException
 
 
@@ -21,34 +20,35 @@ class LoginActivity : AppCompatActivity() {
     private val REQUEST_CODE = 1
     private var allPermission= 0
     var sessionUrl = ""
-    var pageHeader1drpNgonNgu = "010527EFBEB84BCA8919321CFD5C3A34"
     lateinit var sqlLite: SqlLite
     private var readDb = 0
 
-    private fun init(){
-        sqlLite = SqlLite(this)
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if(requestCode == REQUEST_CODE){
+            if(grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                run()
+            }
+        }else{
+            Toast.makeText(this@LoginActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
+        }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
-        init()
-        try {
-            sqlLite.readCalendar()
-            readDb = 1
-        }catch (e: Exception){ Log.d("Err", e.toString()) }
-
-        if(readDb == 0) {
-            checkPermission()
-            if (allPermission == 1)
-                run()
-            else
-                checkPermission()
+    private fun checkPermission(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    || checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE)
+            }else{
+                allPermission = 1
+            }
         }else{
-            val intent = Intent(this@LoginActivity, WeekActivity::class.java)
-            startActivity(intent)
-            finish()
+            run()
         }
+    }
+
+    private fun init(){
+        sqlLite = SqlLite(this)
     }
 
     private fun toMD5(s: String): String {
@@ -107,27 +107,26 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkPermission(){
-        if(Build.VERSION.SDK_INT >= 23) {
-            if(checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE)
-            }else{
-                allPermission = 1
-            }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+        init()
+        try {
+            sqlLite.readCalendar()
+            readDb = 1
+        }catch (e: Exception){ Log.d("Err", e.toString()) }
+
+        if(readDb == 0) {
+            checkPermission()
+            if (allPermission == 1)
+                run()
+            else
+                checkPermission()
         }else{
-            run()
+            val intent = Intent(this@LoginActivity, WeekActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if(requestCode == REQUEST_CODE){
-            if(grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[1] == PackageManager.PERMISSION_GRANTED){
-                run()
-            }
-        }else{
-            Toast.makeText(this@LoginActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
-        }
-    }
 }
