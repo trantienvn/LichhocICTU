@@ -1,6 +1,7 @@
 package com.indieteam.mytask.ui
 
 import android.Manifest
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -8,6 +9,8 @@ import android.content.pm.PackageManager
 import android.graphics.*
 import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.text.style.LineBackgroundSpan
 import android.util.Log
@@ -20,8 +23,9 @@ import com.indieteam.mytask.R
 import com.indieteam.mytask.adapter.CalendarListViewAdapter
 import com.indieteam.mytask.dataObj.v2.TimeDetails
 import com.indieteam.mytask.dataObj.v2.StudentCalendarObj
-import com.indieteam.mytask.process.ParseCalendarJson
+import com.indieteam.mytask.process.parseJson.ParseCalendarJson
 import com.indieteam.mytask.process.domHTML.DomUpdateCalendar
+import com.indieteam.mytask.process.runInBackground.AppService
 import com.indieteam.mytask.sqlite.SqlLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -42,17 +46,15 @@ class WeekActivity : AppCompatActivity() {
 
     private val REQUEST_CODE = 1
     private lateinit var sqlLite: SqlLite
-    private var calendarResult: JSONObject? = null
+    private var calendarJson: JSONObject? = null
     private var parseCalendarJson: ParseCalendarJson? = null
     var mapDateForDots = mutableMapOf<CalendarDay, String>()
-    //private var calendarFinalArr = ArrayList<CalendarFinal>()
     private var studentCalendarObjArr = ArrayList<StudentCalendarObj>()
     private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
     private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
     private var allPermission = 0
     private val swipe = Swipe()
     private lateinit var customSwipe: CustomSwipe
-    var addDotsCallBack = 0
     private var screenHeight = 0
     private var statusBarHeight = 0
     private var navigationBarHeight = 0
@@ -63,7 +65,6 @@ class WeekActivity : AppCompatActivity() {
             R.drawable.bg_e, R.drawable.bg_f, R.drawable.bg_i)
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private val timeDetails = TimeDetails()
-
 
     inner class OnSwipeListener: com.github.pwittchen.swipe.library.rx2.SwipeListener{
         override fun onSwipedUp(event: MotionEvent?): Boolean {
@@ -220,7 +221,7 @@ class WeekActivity : AppCompatActivity() {
         statusBarHeight = resources.getDimensionPixelSize(resourcesId)
         val resourcesId2 = resources.getIdentifier("navigation_bar_height", "dimen", "android")
         navigationBarHeight = resources.getDimensionPixelSize(resourcesId2)
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         calendarMode = sharedPref.getInt("CalendarMode", 0)
     }
 
@@ -428,6 +429,7 @@ class WeekActivity : AppCompatActivity() {
                     try {
                         sqlLite.deleteCalendar()
                         sqlLite.deleteInfo()
+                        stopService(Intent(this, AppService::class.java))
                     }catch (e: Exception){ Log.d("Err", e.toString()) }
                     moveToLogin()
                 }
@@ -463,6 +465,23 @@ class WeekActivity : AppCompatActivity() {
             updateListView(date)
     }
 
+    private fun startService(){
+        val intent = Intent(this, AppService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            ContextCompat.startForegroundService(this, intent)
+        else
+            startService(intent)
+    }
+
+    private fun checkServiceRunning(): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (AppService::class.java.name == service.service.className)
+                Log.d("service", "running"); return true
+        }
+        Log.d("service", "not running"); return false
+    }
+
     private fun run(){
         changeBackground()
         var readDb: Int
@@ -477,18 +496,19 @@ class WeekActivity : AppCompatActivity() {
             Log.d("err", e.toString())
         }
 
-        if(readDb == 0){
-            moveToLogin()
+        if(readDb == 0){ moveToLogin()
         }else{
-            calendarResult = JSONObject(valueDb)
-            parseCalendarJson = ParseCalendarJson(this, calendarResult!!)
+            calendarJson = JSONObject(valueDb)
+            parseCalendarJson = ParseCalendarJson(calendarJson!!)
         }
         initFloatButton()
         toDay()
         drawBackgroundToday()
-        parseCalendarJson!!.addToMapDots()
+        mapDateForDots = parseCalendarJson!!.addToMapDots()
         setCalendarDots()
         swipe.setListener(OnSwipeListener())
+        if (!checkServiceRunning())
+            startService()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -498,9 +518,8 @@ class WeekActivity : AppCompatActivity() {
         calendarSetting()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermission()
-            if (allPermission == 1) {
+            if (allPermission == 1)
                 run()
-            }
         }else
             run()
     }

@@ -170,13 +170,14 @@ class DomUpdateCalendar(val context: Context, private val signIn: String): Threa
                 }
             }
         }catch (e: Exception){
-            Log.d("err", e.toString())
+            Log.d("Err", e.toString())
             weekActivity.supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
                 weekActivity.supportFragmentManager.beginTransaction().remove(it).commit()
             }
             weekActivity.runOnUiThread {
                 weekActivity.visible()
-                Toast.makeText(weekActivity, "Err #09 (Not Internet, ...)", Toast.LENGTH_SHORT).show()
+                Log.d("Err", e.toString())
+                Toast.makeText(weekActivity, "Not Internet or Try login again", Toast.LENGTH_SHORT).show()
             }
         }
         this.join()

@@ -141,7 +141,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
             loginActivity.runOnUiThread {
                 loginActivity.visibly()
                 loginActivity.clickLogin = 0
-                Toast.makeText(loginActivity, "Err #03 (Not Internet, ...)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(loginActivity, "Not Internet, login again", Toast.LENGTH_SHORT).show()
             }
         }
         this.join()

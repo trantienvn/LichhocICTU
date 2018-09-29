@@ -27,7 +27,7 @@ class InfoStudentActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if (supportFragmentManager.findFragmentByTag("qrFragment") != null){
-            supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("qrFragment"))
+            supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("qrFragment")!!)
                     .commit()
             visible()
             countClick = 0

@@ -178,7 +178,7 @@ class DomDownloadExel(val context: Context, val sessionUrl: String, private val 
         }catch (e: Exception){
             Log.d("err", e.toString())
             loginActivity.runOnUiThread {
-                Toast.makeText(loginActivity, "Err #09", Toast.LENGTH_SHORT).show()
+                Toast.makeText(loginActivity, "Not Internet, login again", Toast.LENGTH_SHORT).show()
             }
         }
         this.join()
