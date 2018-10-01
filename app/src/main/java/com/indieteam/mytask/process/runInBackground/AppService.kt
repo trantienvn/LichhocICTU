@@ -40,7 +40,7 @@ class AppService: Service(){
             Timer().scheduleAtFixedRate(0, 30000) {
                 calendarForNow = Calendar.getInstance()!!
                 Log.d("hour", calendarForNow.get(Calendar.HOUR_OF_DAY).toString() + " " + calendarForNow.get(Calendar.MINUTE))
-                if (calendarForNow.get(Calendar.HOUR_OF_DAY) == 23 && calendarForNow.get(Calendar.MINUTE) == 27) {
+                if (calendarForNow.get(Calendar.HOUR_OF_DAY) == 20 && calendarForNow.get(Calendar.MINUTE) == 0) {
                     if (countNotification == 0)
                         runTask()
                     countNotification++
