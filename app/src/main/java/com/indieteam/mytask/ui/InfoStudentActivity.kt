@@ -1,7 +1,8 @@
 package com.indieteam.mytask.ui
 
-import android.support.v7.app.AppCompatActivity
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -10,10 +11,9 @@ import com.indieteam.mytask.R
 import com.indieteam.mytask.sqlite.SqlLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import kotlinx.android.synthetic.main.activity_info_student.*
-import kotlinx.android.synthetic.main.activity_week.*
-import kotlinx.android.synthetic.main.fragment_qr.*
 import org.json.JSONObject
 
+@Suppress("DEPRECATION")
 class InfoStudentActivity : AppCompatActivity() {
 
     private lateinit var sqlLite: SqlLite
@@ -84,6 +84,7 @@ class InfoStudentActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun readInfo(){
         var readDb: Int
         var valueDb= ""

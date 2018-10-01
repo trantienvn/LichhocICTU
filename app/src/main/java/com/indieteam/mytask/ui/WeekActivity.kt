@@ -1,6 +1,7 @@
 package com.indieteam.mytask.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
@@ -17,6 +18,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View.*
 import android.view.ViewTreeObserver
+import android.widget.CalendarView
 import android.widget.Toast
 import com.github.pwittchen.swipe.library.rx2.Swipe
 import com.indieteam.mytask.R
@@ -63,6 +65,7 @@ class WeekActivity : AppCompatActivity() {
     private var startTouchY = 0f
     private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_d,
             R.drawable.bg_e, R.drawable.bg_f, R.drawable.bg_i)
+    @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private val timeDetails = TimeDetails()
 
@@ -128,27 +131,28 @@ class WeekActivity : AppCompatActivity() {
 
     inner class DrawDots(private val colors: List<Int>, private val text: String) : LineBackgroundSpan {
 
-        private val bounds = Rect()
-
         override fun drawBackground(c: Canvas, p: Paint,
                                     left: Int, right: Int, top: Int,
                                     baseline: Int, bottom: Int,
                                     charSequence: CharSequence,
                                     start: Int, end: Int, lineNum: Int) {
             val lastColor = p.color
-            val lastTextSize = p.textSize
             if (text.length == 1)
                 p.color = colors[0]
             if (text.length == 2)
                 p.color = colors[1]
             if (text.length >= 3)
                 p.color = colors[2]
-            p.textSize = 50f
-            p.getTextBounds(text, 0, text.length, bounds)
-            val x = right/2 - bounds.width()/1.8
-            val y = 1.3*bottom
-            c.drawText(text, x.toFloat(), y.toFloat(), p)
-            p.textSize = lastTextSize
+            var totalWidth = 0f
+            for (i in 0 until text.length)
+                if (i != 0)
+                    totalWidth += (right.toFloat()/100f) * 7.5f
+
+            var cX = right/2f - totalWidth/2
+            for (i in 0 until text.length){
+                c.drawCircle(cX, bottom.toFloat() + (bottom.toFloat()/100f) * 10f, (right.toFloat()/100f) * 2.1f  , p)
+                cX += (right.toFloat()/100f) * 7.5f
+            }
             p.color = lastColor
         }
     }
@@ -207,9 +211,6 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun init(){
-        //readExelV1 = ReadExel(this)
-        //exelToCalendarRawV1 = ExelToCalendarRaw(this)
-        //parseCalendarRawV1 = CalendarRawToJson(this)
         sqlLite = SqlLite(this)
         customSwipe = CustomSwipe(this)
         calenderEvents()
@@ -304,6 +305,11 @@ class WeekActivity : AppCompatActivity() {
             updateListView(date)
         }
         calendarView.setOnMonthChangedListener { /*materialCalendarView*/_, calendarDay ->
+            object: CalendarView(this) {
+                fun setTitleFormatter(){
+                    return
+                }
+            }
             calendarView.setTitleFormatter{ "Tháng ${calendarDay.month+1} Năm ${calendarDay.year}" }
         }
     }
@@ -348,6 +354,7 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initFloatButton(){
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_logout, R.drawable.ic_logout)
@@ -370,7 +377,7 @@ class WeekActivity : AppCompatActivity() {
         )
         float_button.addAllActionItems(listItem)
 
-        float_button.setOnActionSelectedListener {
+        float_button.setOnActionSelectedListener { it ->
             when(it.id){
                 R.id.fab_setting ->{
                     //Toast.makeText(this@WeekActivity, "Setting", Toast.LENGTH_SHORT).show()
@@ -429,7 +436,8 @@ class WeekActivity : AppCompatActivity() {
                     try {
                         sqlLite.deleteCalendar()
                         sqlLite.deleteInfo()
-                        stopService(Intent(this, AppService::class.java))
+                        if (checkServiceRunning())
+                            stopService(Intent(this, AppService::class.java))
                     }catch (e: Exception){ Log.d("Err", e.toString()) }
                     moveToLogin()
                 }
@@ -474,12 +482,17 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun checkServiceRunning(): Boolean {
-        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (AppService::class.java.name == service.service.className)
-                Log.d("service", "running"); return true
-        }
-        Log.d("service", "not running"); return false
+        try {
+            val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (AppService::class.java.name == service.service.className) {
+                    Log.d("service", "running")
+                    return true
+                }
+            }
+        }catch (e: Exception){e.printStackTrace()}
+        Log.d("service", "not running")
+        return false
     }
 
     private fun run(){
@@ -507,6 +520,7 @@ class WeekActivity : AppCompatActivity() {
         mapDateForDots = parseCalendarJson!!.addToMapDots()
         setCalendarDots()
         swipe.setListener(OnSwipeListener())
+        Log.d("service", checkServiceRunning().toString())
         if (!checkServiceRunning())
             startService()
     }

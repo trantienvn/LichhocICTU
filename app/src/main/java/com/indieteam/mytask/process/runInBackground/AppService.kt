@@ -4,11 +4,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
-import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.util.Log
 import com.indieteam.mytask.R
@@ -30,7 +28,7 @@ class AppService: Service(){
     private var result = ""
     private lateinit var appNotification: AppNotification
     private var numberSubjects = 0
-    private var coutNotification = 0
+    private var countNotification = 0
     private var notificationThread = NotificationThread()
     init {
         calendarForTomorrow.set(calendarForTomorrow.get(Calendar.YEAR), calendarForTomorrow.get(Calendar.MONTH), calendarForTomorrow.get(Calendar.DAY_OF_MONTH))
@@ -39,15 +37,15 @@ class AppService: Service(){
 
     inner class NotificationThread: Thread(){
         override fun run() {
-            Timer().scheduleAtFixedRate(0, 50000) {
+            Timer().scheduleAtFixedRate(0, 30000) {
                 calendarForNow = Calendar.getInstance()!!
                 Log.d("hour", calendarForNow.get(Calendar.HOUR_OF_DAY).toString() + " " + calendarForNow.get(Calendar.MINUTE))
-                if (calendarForNow.get(Calendar.HOUR_OF_DAY) == 20 && calendarForNow.get(Calendar.MINUTE) == 0) {
-                    if (coutNotification == 0)
+                if (calendarForNow.get(Calendar.HOUR_OF_DAY) == 23 && calendarForNow.get(Calendar.MINUTE) == 27) {
+                    if (countNotification == 0)
                         runTask()
-                    coutNotification++
+                    countNotification++
                 }else
-                    coutNotification = 0
+                    countNotification = 0
             }
         }
     }
@@ -88,7 +86,7 @@ class AppService: Service(){
 
     override fun onCreate() {
         super.onCreate()
-        if(Build.VERSION.SDK_INT >= 26){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val channelName  = "calendarNotification"
             val channelId = "calendar_notification"
             val description = ""
@@ -99,9 +97,9 @@ class AppService: Service(){
             notificationManager.createNotificationChannel(chanel)
 
             val mBuilder = NotificationCompat.Builder(this, "calendar_notification")
-                    .setSmallIcon(R.mipmap.ic_launcher_round)
+                    .setSmallIcon(R.drawable.ic_date_range_256)
                     .setContentTitle("Tác vụ")
-                    .setContentText("Ứng dụng đang chạy nền")
+                    .setContentText("Đang theo dõi lịch học")
                     .setColor(Color.parseColor("#2c73b3"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
@@ -113,12 +111,17 @@ class AppService: Service(){
     override fun onBind(intent: Intent?): IBinder? { return null }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d("service", "started")
         notificationThread.start()
         return START_STICKY
     }
 
     override fun onDestroy() {
+        Log.d("service", "stoped")
         super.onDestroy()
-        stopSelf()
+        try {
+            stopSelf()
+            notificationThread.join()
+        }catch (e: java.lang.Exception){ e.printStackTrace() }
     }
 }

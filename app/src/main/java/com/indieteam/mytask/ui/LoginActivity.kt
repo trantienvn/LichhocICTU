@@ -19,7 +19,6 @@ class LoginActivity : AppCompatActivity() {
 
     private val REQUEST_CODE = 1
     private var allPermission= 0
-    var sessionUrl = ""
     lateinit var sqlLite: SqlLite
     private var readDb = 0
 
