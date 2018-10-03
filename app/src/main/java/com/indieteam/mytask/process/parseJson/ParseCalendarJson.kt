@@ -1,5 +1,6 @@
 package com.indieteam.mytask.process.parseJson
 
+import android.annotation.SuppressLint
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -65,6 +66,7 @@ class ParseCalendarJson(val calendar: JSONObject){
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     fun addToMapDots(): MutableMap<CalendarDay, String>{
         val mapDateForDots = mutableMapOf<CalendarDay, String>()
         val calendarValue = calendar.getJSONArray("calendar")

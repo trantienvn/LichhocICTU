@@ -1,5 +1,6 @@
 package com.indieteam.mytask.process.domHTML
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
 import android.text.Html
@@ -13,6 +14,7 @@ import kotlinx.android.synthetic.main.fragment_process_bar.*
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 
+@Suppress("DEPRECATION")
 class DomLogin(val context: Context, private val userName: String, private val passWord: String): Thread(){
 
     private val urlAddress = UrlAddress()
@@ -39,6 +41,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
         classContextName = context.javaClass.name.substring(context.javaClass.name.lastIndexOf(".") + 1, context.javaClass.name.length)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun run() {
         try{
             val res = Jsoup.connect(urlAddress.urlLoginClean)

@@ -1,6 +1,6 @@
 package com.indieteam.mytask.process.calendar.v2
 
-import android.util.Log
+import android.annotation.SuppressLint
 import com.indieteam.mytask.dataObj.v2.RawCalendarObj
 import org.json.JSONArray
 import org.json.JSONObject
@@ -9,6 +9,7 @@ import java.util.*
 
 class ExeltoJson{
 
+    @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private var dayOfWeekMap = mutableMapOf("2" to Calendar.MONDAY,
             "3" to Calendar.TUESDAY,
@@ -44,9 +45,9 @@ class ExeltoJson{
             val calendar = Calendar.getInstance()
             val calendar2 = Calendar.getInstance()
             calendar.time = dateStartDate
-            var dateStartCalendar = calendar
+            val dateStartCalendar = calendar
             calendar2.time = dateEndDate
-            var dateEndCalendar = calendar2
+            val dateEndCalendar = calendar2
 
             while (dateStartCalendar.time <= dateEndCalendar.time){
                 //Log.d("date", calendar.time.toString())
