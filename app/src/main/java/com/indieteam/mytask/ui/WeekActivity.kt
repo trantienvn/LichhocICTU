@@ -54,6 +54,7 @@ class WeekActivity : AppCompatActivity() {
     private var studentCalendarObjArr = ArrayList<StudentCalendarObj>()
     private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
     private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
+    private lateinit var calendarListViewAdapter: CalendarListViewAdapter
     private var allPermission = 0
     private val swipe = Swipe()
     private lateinit var customSwipe: CustomSwipe
@@ -63,8 +64,7 @@ class WeekActivity : AppCompatActivity() {
     private var calendarMode = 0
     private lateinit var sharedPref: SharedPreferences
     private var startTouchY = 0f
-    private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_d,
-            R.drawable.bg_e, R.drawable.bg_f, R.drawable.bg_i)
+    private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_e, R.drawable.bg_i)
     @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private val timeDetails = TimeDetails()
@@ -224,6 +224,8 @@ class WeekActivity : AppCompatActivity() {
         navigationBarHeight = resources.getDimensionPixelSize(resourcesId2)
         sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         calendarMode = sharedPref.getInt("CalendarMode", 0)
+        calendarListViewAdapter = CalendarListViewAdapter(this@WeekActivity, studentCalendarObjArr)
+        calender_list_view.adapter = calendarListViewAdapter
     }
 
     fun preDate(){
@@ -341,14 +343,12 @@ class WeekActivity : AppCompatActivity() {
                                 studentCalendarObjArr.add(StudentCalendarObj(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
                         }
                         //log.text = result
-                        calender_list_view.adapter = null
-                        calender_list_view.adapter = CalendarListViewAdapter(this@WeekActivity, studentCalendarObjArr)
+                        calendarListViewAdapter.notifyDataSetChanged()
                     }
                 } else {
-                    Log.d("result", "$date Nghỉ")
+                    //Log.d("result", "$date Nghỉ")
                     //log.text = "$date Nghỉ"
-                    calender_list_view.adapter = null
-                    calender_list_view.adapter = CalendarListViewAdapter(this@WeekActivity, studentCalendarObjArr)
+                    calendarListViewAdapter.notifyDataSetChanged()
                 }
             }
         }

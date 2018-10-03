@@ -26,6 +26,7 @@ class SqlLite(context: Context): SQLiteOpenHelper(context, "calendar.db", null, 
         value.put("id", 1)
         value.put("calendar", data)
         dbWrite.insert("userCalendar", null, value)
+        dbWrite.close()
     }
 
     fun insertInfo(username: String, password: String, cookie: String){
@@ -36,6 +37,7 @@ class SqlLite(context: Context): SQLiteOpenHelper(context, "calendar.db", null, 
         value.put("password", password)
         value.put("cookie", cookie)
         dbWrite.insert("userInfo", null, value)
+        dbWrite.close()
     }
 
     fun updateCalendar(data: String){
@@ -52,6 +54,7 @@ class SqlLite(context: Context): SQLiteOpenHelper(context, "calendar.db", null, 
         value.put("password", password)
         value.put("cookie", cookie)
         dbWrite.update("userInfo", value, "id=?", arrayOf("1"))
+        dbWrite.close()
     }
 
     fun readCalendar(): String{
@@ -60,6 +63,27 @@ class SqlLite(context: Context): SQLiteOpenHelper(context, "calendar.db", null, 
         cursor.moveToFirst()
         val value = cursor.getString(0)
         cursor.close()
+        dbRead.close()
+        return value
+    }
+
+    fun readUserName(): String{
+        val dbRead = readableDatabase
+        val cursor = dbRead.rawQuery("SELECT username FROM userInfo", null)
+        cursor.moveToFirst()
+        val value = cursor.getString(0)
+        cursor.close()
+        dbRead.close()
+        return value
+    }
+
+    fun readPassword(): String{
+        val dbRead = readableDatabase
+        val cursor = dbRead.rawQuery("SELECT password FROM userInfo", null)
+        cursor.moveToFirst()
+        val value = cursor.getString(0)
+        cursor.close()
+        dbRead.close()
         return value
     }
 
@@ -69,16 +93,19 @@ class SqlLite(context: Context): SQLiteOpenHelper(context, "calendar.db", null, 
         cursor.moveToFirst()
         val value = cursor.getString(0)
         cursor.close()
+        dbRead.close()
         return value
     }
 
     fun deleteCalendar(){
         val dbWrite = writableDatabase
         dbWrite.delete("userCalendar", "id=1", null)
+        dbWrite.close()
     }
 
     fun deleteInfo(){
         val dbWrite = writableDatabase
         dbWrite.delete("userInfo", "id=1", null)
+        dbWrite.close()
     }
 }

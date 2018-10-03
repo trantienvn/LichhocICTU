@@ -37,7 +37,8 @@ class DomUpdateCalendar(val context: Context, private val signIn: String): Threa
                     .execute()
             val location = res.header("Location")
             sessionUrl = location.substring(location.indexOf("S(") + 2, location.indexOf("))"))
-
+            Log.d("sessionUrlOnUpdate", sessionUrl)
+            Log.d("cookie", signIn)
             val dataMap = mutableMapOf<String, String>()
             if(sessionUrl.isNotBlank()) {
                 val resFirst = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
@@ -171,14 +172,17 @@ class DomUpdateCalendar(val context: Context, private val signIn: String): Threa
             }
         }catch (e: Exception){
             Log.d("Err", e.toString())
-            weekActivity.supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
-                weekActivity.supportFragmentManager.beginTransaction().remove(it).commit()
-            }
-            weekActivity.runOnUiThread {
-                weekActivity.visible()
-                Log.d("Err", e.toString())
-                Toast.makeText(weekActivity, "Not Internet or Try login again", Toast.LENGTH_SHORT).show()
-            }
+            try {
+                DomLogin(context, sqlLite.readUserName(), sqlLite.readPassword()).start()
+            }catch (e: java.lang.Exception){ Log.d("Err", e.toString()) }
+//            weekActivity.supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
+//                weekActivity.supportFragmentManager.beginTransaction().remove(it).commit()
+//            }
+//            weekActivity.runOnUiThread {
+//                weekActivity.visible()
+//                Log.d("Err", e.toString())
+//                //Toast.makeText(weekActivity, "Not Internet or Try login again", Toast.LENGTH_SHORT).show()
+//            }
         }
         this.join()
     }

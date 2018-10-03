@@ -14,24 +14,11 @@
         android:paddingBottom="10dp"
         android:paddingRight="10dp">
 
-        <!--<TextView-->
-            <!--android:id="@+id/subject_date"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Subject Date: "-->
-            <!--android:textStyle="normal"/>-->
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
-
-           <!-- <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/bg_e"
-                android:scaleType="centerCrop"
-                android:background="@drawable/shape_profile"/>-->
 
             <TextView
                 android:id="@+id/subject_name"

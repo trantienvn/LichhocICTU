@@ -1,8 +1,8 @@
 package com.indieteam.mytask.process.domHTML
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.hardware.camera2.CameraCaptureSession
 import android.text.Html
 import android.util.Log
 import android.widget.Toast
@@ -18,7 +18,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 @Suppress("DEPRECATION")
-class DomDownloadExel(val context: Context, val sessionUrl: String, private val signIn: String): Thread() {
+class DomDownloadExel(val context: Context, private val sessionUrl: String, private val signIn: String): Thread() {
 
     private var urlAddress = UrlAddress()
 
@@ -26,17 +26,24 @@ class DomDownloadExel(val context: Context, val sessionUrl: String, private val 
     private var drpSemester = ""
     private var drpTerm = ""
     private var drpTermArr = ArrayList<String>()
-    private var loginActivity = context as LoginActivity
     private var characterDolla = Html.fromHtml("&#36;")
     private var err = 0
     private val sqlLite = SqlLite(context)
-    private var readExel = ReadExel(loginActivity)
+    private var classContextName = ""
+    private var readExel = ReadExel(context)
 
+    init {
+        classContextName = context.javaClass.name.substring(context.javaClass.name.lastIndexOf(".") + 1, context.javaClass.name.length)
+    }
+
+    @SuppressLint("SetTextI18n")
     override fun run() {
         try {
-            loginActivity.supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
-                loginActivity.runOnUiThread {
-                    loginActivity.process.text = "Lưu Exel..."
+            if (classContextName == "LoginActivity") {
+                (context as LoginActivity).supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
+                    context.runOnUiThread {
+                        context.process.text = "Lưu Exel..."
+                    }
                 }
             }
             val dataMap = mutableMapOf<String, String>()
@@ -74,8 +81,10 @@ class DomDownloadExel(val context: Context, val sessionUrl: String, private val 
                     //Log.d("input", i.`val`())
                 }
             }else{
-                loginActivity.runOnUiThread {
-                    Toast.makeText(loginActivity, "Err #04", Toast.LENGTH_SHORT).show()
+                if (classContextName == "LoginActivity") {
+                    (context as LoginActivity).runOnUiThread {
+                        Toast.makeText(context, "Err #04", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
 
@@ -97,7 +106,7 @@ class DomDownloadExel(val context: Context, val sessionUrl: String, private val 
                     if (i.attr("name") == "drpTerm") {
                         for (j in i.select("option")) {
                             drpTermArr.add(j.attr("value"))
-                            Log.d("drpTerm", j.attr("value"))
+                            Log.d("dot_hoc drpTerm", j.attr("value"))
                         }
                     }
                 }
@@ -129,12 +138,12 @@ class DomDownloadExel(val context: Context, val sessionUrl: String, private val 
                     Log.d("contentType", resDownloadExel.contentType())
                     if (resDownloadExel.contentType() == "application/vnd.ms-excel; charset=utf-8") {
                         try {
-                            val dir = File(loginActivity.filesDir, "exel")
+                            val dir = File(context.filesDir, "exel")
                             if (!dir.exists()) {
                                 dir.mkdirs()
                             }
 
-                            val file = File(loginActivity.filesDir, "exel/tkb_v2.xls")
+                            val file = File(context.filesDir, "exel/tkb_v2.xls")
                             if (file.exists())
                                 file.delete()
 
@@ -144,55 +153,79 @@ class DomDownloadExel(val context: Context, val sessionUrl: String, private val 
                             // read
                             readExel.readTkb()
                             if (readExel.readExelCallBack == -1 || readExel.readExelCallBack == 0) {
-                                loginActivity.runOnUiThread {
-                                    err = 1
-                                    Toast.makeText(loginActivity, "Err #05", Toast.LENGTH_SHORT).show()
+                                if (classContextName == "LoginActivity") {
+                                    (context as LoginActivity).runOnUiThread {
+                                        err = 1
+                                        Toast.makeText(context, "Err #05", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             }
                         } catch (e: Exception) {
                             Log.d("Err", e.toString())
-                            loginActivity.runOnUiThread {
-                                err = 1
-                                Toast.makeText(loginActivity, "Err #06", Toast.LENGTH_SHORT).show()
+                            if (classContextName == "LoginActivity") {
+                                (context as LoginActivity).runOnUiThread {
+                                    err = 1
+                                    Toast.makeText(context, "Err #06", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
                     } else {
-                        loginActivity.runOnUiThread {
-                            err = 1
-                            Toast.makeText(loginActivity, "Err #07", Toast.LENGTH_SHORT).show()
+                        if (classContextName == "LoginActivity") {
+                            (context as LoginActivity).runOnUiThread {
+                                err = 1
+                                Toast.makeText(context, "Err #07", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }
                 if(err == 0) {
                     save(); done()
                 } else{
-                    loginActivity.runOnUiThread {
-                        Toast.makeText(loginActivity, "Err", Toast.LENGTH_SHORT).show()
+                    if (classContextName == "LoginActivity") {
+                        (context as LoginActivity).runOnUiThread {
+                            Toast.makeText(context, "Err", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }else{
-                loginActivity.runOnUiThread {
-                    Toast.makeText(loginActivity, "Err #08", Toast.LENGTH_SHORT).show()
+                if (classContextName == "LoginActivity") {
+                    (context as LoginActivity).runOnUiThread {
+                        Toast.makeText(context, "Err #08", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }catch (e: Exception){
             Log.d("err", e.toString())
-            loginActivity.runOnUiThread {
-                Toast.makeText(loginActivity, "Not Internet, login again", Toast.LENGTH_SHORT).show()
+            if (classContextName == "LoginActivity") {
+                (context as LoginActivity).runOnUiThread {
+                    Toast.makeText(context, "Not Internet, login again", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         this.join()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun done(){
-        loginActivity.supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
-            loginActivity.runOnUiThread {
-                loginActivity.process.text = "Lưu Exel...Ok"
+        if (classContextName == "LoginActivity") {
+            (context as LoginActivity).apply {
+                supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
+                    runOnUiThread {
+                        process.text = "Lưu Exel...Ok"
+                    }
+                }
+                val intent = Intent(context, WeekActivity::class.java)
+                startActivity(intent)
+                finish()
             }
         }
-        val intent = Intent(loginActivity, WeekActivity::class.java)
-        loginActivity.startActivity(intent)
-        loginActivity.finish()
+        if (classContextName == "WeekActivity") {
+            (context as WeekActivity).apply {
+                val intent = Intent(context, WeekActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        }
     }
 
     private fun save(){

@@ -76,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
         return ""
     }
 
-    fun visibly(){
+    fun visible(){
         linearLayout.visibility = View.VISIBLE
         btn_login.visibility = View.VISIBLE
         developer.visibility = View.VISIBLE

@@ -1,11 +1,14 @@
 package com.indieteam.mytask.process.domHTML
 
 import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import android.text.Html
 import android.util.Log
 import android.widget.Toast
 import com.indieteam.mytask.address.UrlAddress
+import com.indieteam.mytask.sqlite.SqlLite
 import com.indieteam.mytask.ui.LoginActivity
+import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.fragment_process_bar.*
 import org.jsoup.Connection
 import org.jsoup.Jsoup
@@ -29,7 +32,12 @@ class DomLogin(val context: Context, private val userName: String, private val p
     private var hidUserFullName = ""
     private var hidTrainingSystemId = ""
     private var characterDolla = Html.fromHtml("&#36;")
-    private var loginActivity = context as LoginActivity
+    private var classContextName = ""
+    private val sqlLite = SqlLite(context)
+
+    init {
+        classContextName = context.javaClass.name.substring(context.javaClass.name.lastIndexOf(".") + 1, context.javaClass.name.length)
+    }
 
     override fun run() {
         try{
@@ -39,8 +47,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
                     .execute()
             val location = res.header("Location")
             sessionUrl = location.substring(location.indexOf("S(") + 2, location.indexOf("))"))
-//            Log.d("location", res.header("Location"))
-//            Log.d("sessionUrl", loginActivity.sessionUrl)
+            Log.d("sessionUrlInLogin", sessionUrl)
 
             if(sessionUrl.isNotBlank()) {
                 val resFirst = Jsoup.connect(urlAddress.urlLoginSession(sessionUrl))
@@ -67,10 +74,11 @@ class DomLogin(val context: Context, private val userName: String, private val p
                     }
                 }
             }else{
-                loginActivity.runOnUiThread {
-                    Toast.makeText(loginActivity, "Err #01", Toast.LENGTH_SHORT).show()
+                if (classContextName == "LoginActivity") {
+                    (context as LoginActivity).runOnUiThread {
+                        Toast.makeText(context, "Err #01", Toast.LENGTH_SHORT).show()
+                    }
                 }
-                this.join()
             }
 
             if(sessionUrl.isNotBlank()) {
@@ -95,53 +103,74 @@ class DomLogin(val context: Context, private val userName: String, private val p
                 var cookie = ""
                 if (resLogin.cookie("SignIn") != null) {
                     cookie = resLogin.cookie("SignIn")
-                    loginActivity.runOnUiThread {
-                        //Toast.makeText(this@LoginActivity, "Đã đăng nhập", Toast.LENGTH_SHORT).show()
-                        loginActivity.supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
-                            loginActivity.runOnUiThread {
-                                loginActivity.process.text = "Đăng nhập...OK"
+                    if (classContextName == "LoginActivity"){
+                        (context as LoginActivity).runOnUiThread {
+                            //Toast.makeText(this@LoginActivity, "Đã đăng nhập", Toast.LENGTH_SHORT).show()
+                            context.supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
+                                context.runOnUiThread {
+                                    context.process.text = "Đăng nhập...OK"
+                                }
                             }
                         }
-                        var insertCallback = 0
+                    }
+
+                    if (classContextName == "LoginActivity") {
                         try {
-                            loginActivity.sqlLite.insertInfo(userName, passWord, cookie)
-                            insertCallback = 1
-                        }catch (e: Exception){ Log.d("err", e.toString()) }
-                        if(insertCallback == 0){
-                            try {
-                                loginActivity.sqlLite.updateInfo(userName, passWord, cookie)
-                            }catch (e: Exception){ Log.d("err", e.toString()) }
-                        }
-                        DomDownloadExel(loginActivity, sessionUrl, cookie).start()
+                            sqlLite.insertInfo(userName, passWord, cookie)
+                        }catch (e: SQLiteConstraintException){ Log.d("err", e.toString()) }
+                        DomDownloadExel(context, sessionUrl, cookie).start()
+                    }
+
+                    if (classContextName == "WeekActivity") {
+                        try {
+                            sqlLite.updateInfo(userName, passWord, cookie)
+                        }catch (e: SQLiteConstraintException){ Log.d("err", e.toString()) }
+                        DomDownloadExel(context, sessionUrl, cookie).start()
                     }
                 } else {
-                    loginActivity.supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
-                        loginActivity.supportFragmentManager.beginTransaction().remove(it)
-                                .commit()
+                    if (classContextName == "LoginActivity") {
+                        (context as LoginActivity).supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
+                            context.supportFragmentManager.beginTransaction().remove(it)
+                                    .commit()
+                        }
+                        context.runOnUiThread {
+                            context.visible()
+                            Toast.makeText(context, "Sai mã sinh viên hoặc mật khẩu", Toast.LENGTH_SHORT).show()
+                        }
+                        context.clickLogin = 0
                     }
-                    loginActivity.runOnUiThread {
-                        loginActivity.visibly()
-                        Toast.makeText(loginActivity, "Sai mã sinh viên hoặc mật khẩu", Toast.LENGTH_SHORT).show()
-                    }
-                    loginActivity.clickLogin = 0
                 }
                 Log.d("cookie", cookie)
             }else{
-                loginActivity.runOnUiThread {
-                    Toast.makeText(loginActivity, "Err #02", Toast.LENGTH_SHORT).show()
+                if (classContextName == "LoginActivity") {
+                    (context as LoginActivity).runOnUiThread {
+                        Toast.makeText(context, "Err #02", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
 
         }catch (e: Exception) {
             Log.d("Err", "$e")
-            loginActivity.supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
-                loginActivity.supportFragmentManager.beginTransaction().remove(it)
-                        .commit()
+            if (classContextName == "LoginActivity") {
+                (context as LoginActivity).supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
+                    context.supportFragmentManager.beginTransaction().remove(it)
+                            .commit()
+                }
+                context.runOnUiThread {
+                    context.visible()
+                    context.clickLogin = 0
+                    Toast.makeText(context, "Not Internet or Try login again ...", Toast.LENGTH_SHORT).show()
+                }
             }
-            loginActivity.runOnUiThread {
-                loginActivity.visibly()
-                loginActivity.clickLogin = 0
-                Toast.makeText(loginActivity, "Not Internet, login again", Toast.LENGTH_SHORT).show()
+            if (classContextName == "WeekActivity") {
+                (context as WeekActivity).supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
+                    context.supportFragmentManager.beginTransaction().remove(it)
+                            .commit()
+                }
+                context.runOnUiThread {
+                    context.visible()
+                    Toast.makeText(context, "Not Internet or Try login again ...", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         this.join()

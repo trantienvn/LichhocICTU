@@ -51,7 +51,7 @@ class ExeltoJson{
             while (dateStartCalendar.time <= dateEndCalendar.time){
                 //Log.d("date", calendar.time.toString())
                 if(dateStartCalendar.get(Calendar.DAY_OF_WEEK) == dayOfWeekMap[i.subjectDayOfWeek]){
-                    Log.d("size", size.toString())
+//                    Log.d("size", size.toString())
 //                    Log.d("subjectName", i.subjectName)
 //                    Log.d("subjectDate", "${dateStartCalendar.get(Calendar.DAY_OF_MONTH)}/"+
 //                            "${dateStartCalendar.get(Calendar.MONTH) + 1}/" +

@@ -24,11 +24,11 @@ class ReadExel(context: Context){
         val className = sheet.getCell(2, 6).contents
         val courseName = sheet.getCell(2, 7).contents
         val majorsName = sheet.getCell(5, 7).contents
-        Log.d("infoStudent", studentName + "\n" +
-                studentId + "\n" +
-                className  + "\n" +
-                courseName + "\n" +
-                majorsName + "\n")
+//        Log.d("infoStudent", studentName + "\n" +
+//                studentId + "\n" +
+//                className  + "\n" +
+//                courseName + "\n" +
+//                majorsName + "\n")
         infoObj.put("studentName", studentName)
         infoObj.put("studentId", studentId)
         infoObj.put("className", className)
@@ -55,7 +55,7 @@ class ReadExel(context: Context){
                 var teacher = ""
                 for(j in 0 until 11){
                     val cell = sheet.getCell(j, i).contents
-                    Log.d("cell", cell)
+                    //Log.d("cell", cell)
                     when(j){
                         0 -> subjectDayOfWeek = cell
                         3 -> subjectName = cell

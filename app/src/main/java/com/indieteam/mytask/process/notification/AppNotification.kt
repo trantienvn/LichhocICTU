@@ -39,7 +39,7 @@ class AppNotification(val context: Context, private val numberSubjects: String) 
         else
             "Nghỉ"
         val mBuilder = NotificationCompat.Builder(context, "calendar_notification")
-                .setSmallIcon(R.drawable.ic_date_range_256)
+                .setSmallIcon(R.drawable.ic_next_day_256)
                 .setContentTitle("Ngày mai")
                 .setContentText(badgeContent)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(contents))
