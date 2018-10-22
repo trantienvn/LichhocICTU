@@ -116,11 +116,14 @@ class LoginActivity : AppCompatActivity() {
         }catch (e: Exception){ Log.d("Err", e.toString()) }
 
         if(readDb == 0) {
-            checkPermission()
-            if (allPermission == 1)
-                run()
-            else
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 checkPermission()
+                if (allPermission == 1)
+                    run()
+                else
+                    checkPermission()
+            }else
+                run()
         }else{
             val intent = Intent(this@LoginActivity, WeekActivity::class.java)
             startActivity(intent)

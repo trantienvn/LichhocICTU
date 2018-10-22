@@ -175,7 +175,8 @@ class WeekActivity : AppCompatActivity() {
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        swipe.dispatchTouchEvent(event)
+        try { swipe.dispatchTouchEvent(event)
+        }catch (e: Exception){e.printStackTrace()}
         return super.dispatchTouchEvent(event)
     }
 
@@ -566,6 +567,8 @@ class WeekActivity : AppCompatActivity() {
             checkPermission()
             if (allPermission == 1)
                 run()
+            else
+                checkPermission()
         }else
             run()
     }
