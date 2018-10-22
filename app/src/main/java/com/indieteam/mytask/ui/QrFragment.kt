@@ -26,7 +26,7 @@ class QrFragment : Fragment() {
             object : Thread() {
                 override fun run() {
                     try {
-                        val qrBitmap = QRCode.from(it).to(ImageType.JPG).withSize(1000, 1000).bitmap()
+                        val qrBitmap = QRCode.from(it.toUpperCase()).to(ImageType.JPG).withSize(1000, 1000).bitmap()
                         activity?.runOnUiThread {
                             qr_img.setImageBitmap(qrBitmap)
                         }

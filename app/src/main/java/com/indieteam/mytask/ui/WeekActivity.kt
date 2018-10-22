@@ -7,7 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -16,17 +19,17 @@ import android.support.v7.app.AppCompatActivity
 import android.text.style.LineBackgroundSpan
 import android.util.Log
 import android.view.MotionEvent
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewTreeObserver
-import android.widget.CalendarView
 import android.widget.Toast
 import com.github.pwittchen.swipe.library.rx2.Swipe
 import com.indieteam.mytask.R
 import com.indieteam.mytask.adapter.CalendarListViewAdapter
-import com.indieteam.mytask.dataObj.v2.TimeDetails
 import com.indieteam.mytask.dataObj.v2.StudentCalendarObj
-import com.indieteam.mytask.process.parseJson.ParseCalendarJson
+import com.indieteam.mytask.dataObj.v2.TimeDetails
 import com.indieteam.mytask.process.domHTML.DomUpdateCalendar
+import com.indieteam.mytask.process.parseJson.ParseCalendarJson
 import com.indieteam.mytask.process.runInBackground.AppService
 import com.indieteam.mytask.sqlite.SqlLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
@@ -63,13 +66,14 @@ class WeekActivity : AppCompatActivity() {
     private var navigationBarHeight = 0
     private var calendarMode = 0
     private lateinit var sharedPref: SharedPreferences
-    private var startTouchY = 0f
-    private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_e, R.drawable.bg_i)
+    private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_i)
     @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private val timeDetails = TimeDetails()
 
     inner class OnSwipeListener: com.github.pwittchen.swipe.library.rx2.SwipeListener{
+        private var startTouchY = 0f
+
         override fun onSwipedUp(event: MotionEvent?): Boolean {
             //Toast.makeText(this@WeekActivity, "Swiped up", Toast.LENGTH_SHORT).show()
             return true
@@ -146,8 +150,7 @@ class WeekActivity : AppCompatActivity() {
             var totalWidth = 0f
             for (i in 0 until text.length)
                 if (i != 0)
-                    totalWidth += (right.toFloat()/100f) * 7.5f
-
+                    totalWidth += (right.toFloat()/100f) * 7.5f // 7.5 is space (percent) margin left of dots
             var cX = right/2f - totalWidth/2
             for (i in 0 until text.length){
                 c.drawCircle(cX, bottom.toFloat() + (bottom.toFloat()/100f) * 10f, (right.toFloat()/100f) * 2.1f  , p)
@@ -166,6 +169,7 @@ class WeekActivity : AppCompatActivity() {
             if (mode == "Dots")
                 view.addSpan(DrawDots(colors, dot))
             if (mode == "ToDay")
+                //view.setSelectionDrawable(resources.getDrawable(R.drawable.shape_bg_cal_today))
                 view.setBackgroundDrawable(resources.getDrawable(R.drawable.shape_bg_cal_today))
         }
     }
@@ -253,6 +257,7 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun calendarSetting(){
+        calendarView.topbarVisible = true
         calendarView.state().edit().
                 setMinimumDate(dateStart)
                 .setMaximumDate(dateEnd)
@@ -301,17 +306,42 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun calenderEvents(){
-        calendarView.setOnDateChangedListener { /*materialCalendarView*/_, calendarDay, /*b*/_ ->
+        calendarView.setOnDateChangedListener { materialCalendarView, calendarDay, b ->
             val date = "${calendarDay.day}/${calendarDay.month+1}/${calendarDay.year}"
-            //Toast.makeText(this, "$date", Toast.LENGTH_LONG).show()
             updateListView(date)
         }
-        calendarView.setOnMonthChangedListener { /*materialCalendarView*/_, calendarDay ->
-            object: CalendarView(this) {
+        calendarView.setOnDateLongClickListener { materialCalendarView, calendarDay ->
+            val date = "${calendarDay.day}/${calendarDay.month+1}/${calendarDay.year}"
+            if (parseCalendarJson != null){
+                parseCalendarJson!!.apply {
+                    getSubject(date)
+                    if (!subjectName.isEmpty() &&
+                            !subjectTime.isEmpty() &&
+                            !subjectPlace.isEmpty() &&
+                            !teacher.isEmpty()) {
+                        if (subjectName.size == subjectTime.size &&
+                                subjectName.size == subjectPlace.size &&
+                                subjectName.size == teacher.size) {
+                            var result = ""
+                            var count = 1
+                            for (j in 0 until subjectName.size) {
+                                result += "$count. ${subjectName[j]} \n"
+                                count++
+                            }
+                            Toast.makeText(this@WeekActivity, result, Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        // Nghi
+                    }
+                }
+            }
+        }
+        calendarView.setOnMonthChangedListener { materialCalendarView, calendarDay ->
+            /*object: CalendarView(this) {
                 fun setTitleFormatter(){
                     return
                 }
-            }
+            }*/
             calendarView.setTitleFormatter{ "Tháng ${calendarDay.month+1} Năm ${calendarDay.year}" }
         }
     }
@@ -321,19 +351,14 @@ class WeekActivity : AppCompatActivity() {
             studentCalendarObjArr.removeAll(studentCalendarObjArr)
             parseCalendarJson!!.apply {
                 getSubject(date)
-                if (/*!subjectDate.isEmpty() &&*/
-                        !subjectName.isEmpty() &&
+                if (!subjectName.isEmpty() &&
                         !subjectTime.isEmpty() &&
                         !subjectPlace.isEmpty() &&
                         !teacher.isEmpty()) {
-                    //var result = ""
-                    if (/*subjectName.size == subjectDate.size &&*/
-                            subjectName.size == subjectTime.size &&
+                    if (subjectName.size == subjectTime.size &&
                             subjectName.size == subjectPlace.size &&
                             subjectName.size == teacher.size) {
                         for (j in 0 until subjectName.size) {
-                            //Log.d("result", "${subjectDate[j]}, ${subjectName[j]}, ${subjectTime[j]}, ${subjectPlace[j]}")
-                            //result += "${subjectDate[j]}, ${subjectName[j]}, ${subjectTime[j]}, ${subjectPlace[j]} \n"
                             val firstTime = subjectTime[j].substring(0, subjectTime[j].indexOf(",")).toInt() -1
                             val endTime = subjectTime[j].substring(subjectTime[j].lastIndexOf(",") + 1, subjectTime[j].length).toInt() - 1
                             if (simpleDateFormat.parse(date) >= CalendarDay.from(CalendarDay().year, 3, 15).date &&
@@ -342,12 +367,10 @@ class WeekActivity : AppCompatActivity() {
                             else
                                 studentCalendarObjArr.add(StudentCalendarObj(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
                         }
-                        //log.text = result
                         calendarListViewAdapter.notifyDataSetChanged()
                     }
                 } else {
-                    //Log.d("result", "$date Nghỉ")
-                    //log.text = "$date Nghỉ"
+                    // Nghi
                     calendarListViewAdapter.notifyDataSetChanged()
                 }
             }
@@ -359,18 +382,26 @@ class WeekActivity : AppCompatActivity() {
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_logout, R.drawable.ic_logout)
                         .setLabel("Đăng xuất")
+                        .setLabelColor(Color.WHITE)
+                        .setLabelBackgroundColor(resources.getColor(R.color.colorBlue))
                         .setFabBackgroundColor(resources.getColor(R.color.colorBlue))
                         .create(),
                         SpeedDialActionItem.Builder(R.id.fab_setting, R.drawable.ic_switch)
                                 .setLabel("Tuần/Tháng")
+                                .setLabelColor(Color.WHITE)
+                                .setLabelBackgroundColor(resources.getColor(R.color.colorPurple))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorPurple))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_update, R.drawable.ic_update)
                                 .setLabel("Cập nhật lịch")
+                                .setLabelColor(Color.WHITE)
+                                .setLabelBackgroundColor(resources.getColor(R.color.colorOrangeDark))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorOrangeDark))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_info)
                                 .setLabel("Cá nhân")
+                                .setLabelColor(Color.WHITE)
+                                .setLabelBackgroundColor(resources.getColor(R.color.colorBlue))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorBlue))
                                 .create()
 
@@ -509,7 +540,8 @@ class WeekActivity : AppCompatActivity() {
             Log.d("err", e.toString())
         }
 
-        if(readDb == 0){ moveToLogin()
+        if(readDb == 0){
+            moveToLogin()
         }else{
             calendarJson = JSONObject(valueDb)
             parseCalendarJson = ParseCalendarJson(calendarJson!!)

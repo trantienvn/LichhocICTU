@@ -15,7 +15,7 @@
         android:layout_height="0dp"
         android:background="@color/colorWhite"
         android:elevation="3dp"
-        android:paddingBottom="10dp"
+        android:paddingBottom="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.25"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,13 +23,13 @@
         app:mcv_arrowColor="@color/colorWhite"
         app:mcv_calendarMode="week"
         app:mcv_firstDayOfWeek="sunday"
-        app:mcv_headerTextAppearance="@color/colorWhite"
-        app:mcv_selectionColor="@color/colorBlue"
+        app:mcv_selectionColor="@color/colorGrayDark"
         app:mcv_showOtherDates="none"
         app:mcv_showWeekDays="true"
         app:mcv_tileHeight="match_parent"
         app:mcv_titleAnimationOrientation="horizontal"
-        app:mcv_weekDayTextAppearance="@color/colorWhite" />
+        app:mcv_headerTextAppearance="@style/calendarHeader"
+        app:mcv_weekDayTextAppearance="@style/calendarWeekHeader" />
 
     <View
         android:id="@+id/view"
@@ -37,7 +37,7 @@
         android:layout_height="0dp"
         android:background="@color/colorWhite"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.05"
+        app:layout_constraintHeight_percent="0.02"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calendarView" />
 
@@ -50,7 +50,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.7"
+        app:layout_constraintHeight_percent="0.73"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view">
 

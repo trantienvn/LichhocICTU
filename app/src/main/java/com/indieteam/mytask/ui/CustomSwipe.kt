@@ -9,8 +9,8 @@ class CustomSwipe(private val activity: WeekActivity){
 
     private var screenW = 0
     private var screenY = 0
-    private var time: Long = 200
-    private var timeback: Long = 100
+    private var time: Long = 130
+    private var timeback: Long = 90
     var lastXListview = 0f
 
     private fun screenSize(){
