@@ -8,7 +8,7 @@ import android.util.Log
 import android.widget.Toast
 import com.indieteam.mytask.address.UrlAddress
 import com.indieteam.mytask.process.calendar.v2.ReadExel
-import com.indieteam.mytask.sqlite.SqlLite
+import com.indieteam.mytask.sqlite.SqLite
 import com.indieteam.mytask.ui.LoginActivity
 import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.fragment_process_bar.*
@@ -28,7 +28,7 @@ class DomDownloadExel(val context: Context, private val sessionUrl: String, priv
     private var drpTermArr = ArrayList<String>()
     private var characterDolla = Html.fromHtml("&#36;")
     private var err = 0
-    private val sqlLite = SqlLite(context)
+    private val sqlLite = SqLite(context)
     private var classContextName = ""
     private var readExel = ReadExel(context)
 
@@ -198,7 +198,7 @@ class DomDownloadExel(val context: Context, private val sessionUrl: String, priv
             Log.d("err", e.toString())
             if (classContextName == "LoginActivity") {
                 (context as LoginActivity).runOnUiThread {
-                    Toast.makeText(context, "Not Internet, login again", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
                 }
             }
         }

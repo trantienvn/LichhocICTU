@@ -8,7 +8,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import com.indieteam.mytask.R
-import com.indieteam.mytask.sqlite.SqlLite
+import com.indieteam.mytask.sqlite.SqLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import kotlinx.android.synthetic.main.activity_info_student.*
 import org.json.JSONObject
@@ -16,7 +16,7 @@ import org.json.JSONObject
 @Suppress("DEPRECATION")
 class InfoStudentActivity : AppCompatActivity() {
 
-    private lateinit var sqlLite: SqlLite
+    private lateinit var sqLite: SqLite
     private lateinit var studentName: String
     private lateinit var studentId: String
     private lateinit var className: String
@@ -88,9 +88,9 @@ class InfoStudentActivity : AppCompatActivity() {
     private fun readInfo(){
         var readDb: Int
         var valueDb= ""
-        sqlLite = SqlLite(this)
+        sqLite = SqLite(this)
         try{
-            valueDb = sqlLite.readCalendar()
+            valueDb = sqLite.readCalendar()
             readDb = 1
             Log.d("readdb", "readCalendar db done")
         }catch (e: Exception){

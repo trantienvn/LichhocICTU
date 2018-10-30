@@ -2,6 +2,7 @@ package com.indieteam.mytask.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
@@ -24,14 +25,23 @@ import android.view.View.VISIBLE
 import android.view.ViewTreeObserver
 import android.widget.Toast
 import com.github.pwittchen.swipe.library.rx2.Swipe
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.Scope
+import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.json.gson.GsonFactory
 import com.indieteam.mytask.R
 import com.indieteam.mytask.adapter.CalendarListViewAdapter
 import com.indieteam.mytask.dataObj.v2.StudentCalendarObj
 import com.indieteam.mytask.dataObj.v2.TimeDetails
+import com.indieteam.mytask.process.CheckNet
 import com.indieteam.mytask.process.domHTML.DomUpdateCalendar
+import com.indieteam.mytask.process.sync.SyncGoogle
 import com.indieteam.mytask.process.parseJson.ParseCalendarJson
 import com.indieteam.mytask.process.runInBackground.AppService
-import com.indieteam.mytask.sqlite.SqlLite
+import com.indieteam.mytask.sqlite.SqLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
@@ -50,7 +60,7 @@ import kotlin.collections.ArrayList
 class WeekActivity : AppCompatActivity() {
 
     private val REQUEST_CODE = 1
-    private lateinit var sqlLite: SqlLite
+    private lateinit var sqLite: SqLite
     private var calendarJson: JSONObject? = null
     private var parseCalendarJson: ParseCalendarJson? = null
     var mapDateForDots = mutableMapOf<CalendarDay, String>()
@@ -65,11 +75,26 @@ class WeekActivity : AppCompatActivity() {
     private var statusBarHeight = 0
     private var navigationBarHeight = 0
     private var calendarMode = 0
-    private lateinit var sharedPref: SharedPreferences
+    lateinit var sharedPref: SharedPreferences
     private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_i)
     @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private val timeDetails = TimeDetails()
+    var syncGoogleCallback = 0
+    lateinit var checkNet: CheckNet
+
+    // Google oauth2
+    lateinit var credential: GoogleAccountCredential
+    var scope = Scope("https://www.googleapis.com/auth/calendar")
+    var scope2 = Scope("https://www.googleapis.com/auth/calendar.events")
+    var RC_SIGN_IN = 4
+    val httpTransport = AndroidHttp.newCompatibleTransport()
+    var jsonFactory = GsonFactory.getDefaultInstance()
+    lateinit var service: com.google.api.services.calendar.Calendar
+    var appName = "mystask-calendar"
+    lateinit var gso: GoogleSignInOptions
+    lateinit var mGoogleSignInClient: GoogleSignInClient
+    lateinit var signInIntent: Intent
 
     inner class OnSwipeListener: com.github.pwittchen.swipe.library.rx2.SwipeListener{
         private var startTouchY = 0f
@@ -216,7 +241,7 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun init(){
-        sqlLite = SqlLite(this)
+        sqLite = SqLite(this)
         customSwipe = CustomSwipe(this)
         calenderEvents()
         title = ""
@@ -231,6 +256,7 @@ class WeekActivity : AppCompatActivity() {
         calendarMode = sharedPref.getInt("CalendarMode", 0)
         calendarListViewAdapter = CalendarListViewAdapter(this@WeekActivity, studentCalendarObjArr)
         calender_list_view.adapter = calendarListViewAdapter
+        checkNet = CheckNet(this)
     }
 
     fun preDate(){
@@ -329,6 +355,7 @@ class WeekActivity : AppCompatActivity() {
                                 result += "$count. ${subjectName[j]} \n"
                                 count++
                             }
+                            result = result.trim()
                             Toast.makeText(this@WeekActivity, result, Toast.LENGTH_SHORT).show()
                         }
                     } else {
@@ -393,6 +420,12 @@ class WeekActivity : AppCompatActivity() {
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorPurple))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorPurple))
                                 .create(),
+                        SpeedDialActionItem.Builder(R.id.fab_sync_google, R.drawable.ic_export)
+                                .setLabel("Đồng bộ Google")
+                                .setLabelColor(Color.WHITE)
+                                .setLabelBackgroundColor(resources.getColor(R.color.colorGreenDark))
+                                .setFabBackgroundColor(resources.getColor(R.color.colorGreenDark))
+                                .create(),
                         SpeedDialActionItem.Builder(R.id.fab_update, R.drawable.ic_update)
                                 .setLabel("Cập nhật lịch")
                                 .setLabelColor(Color.WHITE)
@@ -445,29 +478,48 @@ class WeekActivity : AppCompatActivity() {
                     val intent = Intent(this@WeekActivity, InfoStudentActivity::class.java)
                     startActivity(intent)
                 }
-                R.id.fab_update ->{
-                    supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
-                            .commit()
-                    supportFragmentManager.executePendingTransactions()
-                    supportFragmentManager.findFragmentByTag("processBarUpdate")?.apply{
-                        process?.text = "Cập nhật..."
-                    }
-                    gone()
-                    try {
-                        DomUpdateCalendar(this, sqlLite.readCookie()).start()
-                    }catch (e: Exception){
-                        visible()
-                        supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
-                            supportFragmentManager.beginTransaction().remove(it).commit()
+                R.id.fab_sync_google ->{
+                    if(checkNet.check()) {
+                        if (syncGoogleCallback == 0) {
+                            syncGoogleCallback = 1
+                            val syncGoogle = SyncGoogle(this)
+                            syncGoogle.start()
                         }
-                        Toast.makeText(this, "Err update", Toast.LENGTH_SHORT).show()
-                        Log.d("Err", e.toString())
+                    } else{
+                        runOnUiThread {
+                            Toast.makeText(this, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                R.id.fab_update ->{
+                    if (checkNet.check()) {
+                        supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
+                                .commit()
+                        supportFragmentManager.executePendingTransactions()
+                        supportFragmentManager.findFragmentByTag("processBarUpdate")?.apply {
+                            process?.text = "Cập nhật..."
+                        }
+                        gone()
+                        try {
+                            DomUpdateCalendar(this, sqLite.readCookie()).start()
+                        } catch (e: Exception) {
+                            visible()
+                            supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
+                                supportFragmentManager.beginTransaction().remove(it).commit()
+                            }
+                            Toast.makeText(this, "Err update", Toast.LENGTH_SHORT).show()
+                            Log.d("Err", e.toString())
+                        }
+                    } else{
+                        runOnUiThread {
+                            Toast.makeText(this, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
                 R.id.fab_logout ->{
                     try {
-                        sqlLite.deleteCalendar()
-                        sqlLite.deleteInfo()
+                        sqLite.deleteCalendar()
+                        sqLite.deleteInfo()
                         if (checkServiceRunning())
                             stopService(Intent(this, AppService::class.java))
                     }catch (e: Exception){ Log.d("Err", e.toString()) }
@@ -532,7 +584,7 @@ class WeekActivity : AppCompatActivity() {
         var readDb: Int
         var valueDb= ""
         try{
-            valueDb = sqlLite.readCalendar()
+            valueDb = sqLite.readCalendar()
             readDb = 1
             Log.d("readdb", "readCalendar db done")
         }catch (e: Exception){
@@ -571,6 +623,30 @@ class WeekActivity : AppCompatActivity() {
                 checkPermission()
         }else
             run()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when(requestCode) {
+            RC_SIGN_IN->{
+                if (resultCode != Activity.RESULT_OK && data != null) {
+                    Toast.makeText(this@WeekActivity, "Oauth false", Toast.LENGTH_LONG).show()
+                    syncGoogleCallback = 0
+                }
+                else {
+                    credential.selectedAccountName = GoogleSignIn.getClient(this, gso).silentSignIn().result?.email
+                    sharedPref.edit().apply{
+                        putString("accSelected", GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email)
+                                .apply()
+                    }
+                    //Toast.makeText(this@WeekActivity, "Oauth true", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(this@WeekActivity, "${GoogleSignIn.getClient(this, gso).silentSignIn().result?.email}", Toast.LENGTH_LONG).show()
+
+                    val syncGoogle = SyncGoogle(this)
+                    syncGoogle.start()
+                }
+            }
+        }
     }
 
 }

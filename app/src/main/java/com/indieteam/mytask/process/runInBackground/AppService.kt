@@ -12,14 +12,14 @@ import android.util.Log
 import com.indieteam.mytask.R
 import com.indieteam.mytask.process.notification.AppNotification
 import com.indieteam.mytask.process.parseJson.ParseCalendarJson
-import com.indieteam.mytask.sqlite.SqlLite
+import com.indieteam.mytask.sqlite.SqLite
 import org.json.JSONObject
 import java.util.*
 import kotlin.concurrent.scheduleAtFixedRate
 
 class AppService: Service(){
 
-    private lateinit var sqlLite: SqlLite
+    private lateinit var sqLite: SqLite
     private var valueDb = ""
     private lateinit var calendarJson: JSONObject
     private lateinit var parseCalendarJson: ParseCalendarJson
@@ -54,8 +54,8 @@ class AppService: Service(){
     private fun runTask(){
         result = ""
         val date = "${calendarForTomorrow.get(Calendar.DAY_OF_MONTH)}/${calendarForTomorrow.get(Calendar.MONTH)+1}/${calendarForTomorrow.get(Calendar.YEAR)}"
-        sqlLite = SqlLite(this)
-        try { valueDb = sqlLite.readCalendar()
+        sqLite = SqLite(this)
+        try { valueDb = sqLite.readCalendar()
         }catch (e: Exception){ Log.d("Err", e.toString())}
         if (valueDb.isNotBlank()){
             calendarJson = JSONObject(valueDb)

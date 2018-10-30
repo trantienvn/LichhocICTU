@@ -10,7 +10,9 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.indieteam.mytask.R
-import com.indieteam.mytask.sqlite.SqlLite
+import com.indieteam.mytask.process.CheckNet
+import com.indieteam.mytask.process.sync.SyncGoogle
+import com.indieteam.mytask.sqlite.SqLite
 import kotlinx.android.synthetic.main.activity_login.*
 import java.security.NoSuchAlgorithmException
 
@@ -19,8 +21,9 @@ class LoginActivity : AppCompatActivity() {
 
     private val REQUEST_CODE = 1
     private var allPermission= 0
-    lateinit var sqlLite: SqlLite
+    lateinit var sqLite: SqLite
     private var readDb = 0
+    lateinit var checkNet: CheckNet
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == REQUEST_CODE){
@@ -47,7 +50,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun init(){
-        sqlLite = SqlLite(this)
+        sqLite = SqLite(this)
+        checkNet = CheckNet(this)
     }
 
     private fun toMD5(s: String): String {
@@ -92,16 +96,22 @@ class LoginActivity : AppCompatActivity() {
 
     private fun run(){
         btn_login.setOnClickListener {
-            if (text_username.text.toString().isNotBlank() && text_password.text.toString().isNotBlank() && clickLogin == 0) {
-                gone()
-                supportFragmentManager.beginTransaction().add(R.id.login_root_view, ProcessBarFragment(), "processBarFragment")
-                        .commit()
-                supportFragmentManager.executePendingTransactions()
-                val md5Password = toMD5(text_password.text.toString())
-                Log.d("md5password", md5Password)
-                //DomLogin(text_username.text.toString(), md5Password).start()
-                com.indieteam.mytask.process.domHTML.DomLogin(this, text_username.text.toString(), md5Password).start()
-                clickLogin++
+            if (checkNet.check()) {
+                if (text_username.text.toString().isNotBlank() && text_password.text.toString().isNotBlank() && clickLogin == 0) {
+                    gone()
+                    supportFragmentManager.beginTransaction().add(R.id.login_root_view, ProcessBarFragment(), "processBarFragment")
+                            .commit()
+                    supportFragmentManager.executePendingTransactions()
+                    val md5Password = toMD5(text_password.text.toString())
+                    Log.d("md5password", md5Password)
+                    //DomLogin(text_username.text.toString(), md5Password).start()
+                    com.indieteam.mytask.process.domHTML.DomLogin(this, text_username.text.toString(), md5Password).start()
+                    clickLogin++
+                }
+            } else {
+                runOnUiThread {
+                    Toast.makeText(this, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -111,7 +121,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         init()
         try {
-            sqlLite.readCalendar()
+            sqLite.readCalendar()
             readDb = 1
         }catch (e: Exception){ Log.d("Err", e.toString()) }
 

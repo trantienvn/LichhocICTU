@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
-class SqlLite(context: Context): SQLiteOpenHelper(context, "calendar.db", null, 1){
+class SqLite(context: Context): SQLiteOpenHelper(context, "calendar.db", null, 1){
     override fun onCreate(p0: SQLiteDatabase?) {
         try {
             val sql = "CREATE TABLE userCalendar(id int primary key, calendar text)"

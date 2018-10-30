@@ -6,7 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import com.indieteam.mytask.address.UrlAddress
 import com.indieteam.mytask.process.calendar.v2.ReadExel
-import com.indieteam.mytask.sqlite.SqlLite
+import com.indieteam.mytask.sqlite.SqLite
 import com.indieteam.mytask.ui.WeekActivity
 import org.jsoup.Connection
 import org.jsoup.Jsoup
@@ -27,7 +27,7 @@ class DomUpdateCalendar(val context: Context, private val signIn: String): Threa
     private var pageHeader1drpNgonNgu = "010527EFBEB84BCA8919321CFD5C3A34"
     private var err = 0
     private val readExel = ReadExel(weekActivity)
-    private val sqlLite = SqlLite(context)
+    private val sqlLite = SqLite(context)
 
     override fun run() {
         try {
@@ -139,7 +139,7 @@ class DomUpdateCalendar(val context: Context, private val signIn: String): Threa
                             val fos = FileOutputStream(file)
                             fos.write(resDownloadExel.bodyAsBytes())
                             fos.close()
-                            // read and save to sqlLite
+                            // read and save to sqLite
                             readExel.readTkb()
                             Log.d("readExelCallBack", readExel.readExelCallBack.toString())
                             if (readExel.readExelCallBack == -1 || readExel.readExelCallBack == 0) {

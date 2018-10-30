@@ -7,7 +7,7 @@ import android.text.Html
 import android.util.Log
 import android.widget.Toast
 import com.indieteam.mytask.address.UrlAddress
-import com.indieteam.mytask.sqlite.SqlLite
+import com.indieteam.mytask.sqlite.SqLite
 import com.indieteam.mytask.ui.LoginActivity
 import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.fragment_process_bar.*
@@ -35,7 +35,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
     private var hidTrainingSystemId = ""
     private var characterDolla = Html.fromHtml("&#36;")
     private var classContextName = ""
-    private val sqlLite = SqlLite(context)
+    private val sqlLite = SqLite(context)
 
     init {
         classContextName = context.javaClass.name.substring(context.javaClass.name.lastIndexOf(".") + 1, context.javaClass.name.length)
@@ -162,7 +162,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
                 context.runOnUiThread {
                     context.visible()
                     context.clickLogin = 0
-                    Toast.makeText(context, "Not Internet or Try login again ...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
                 }
             }
             if (classContextName == "WeekActivity") {
