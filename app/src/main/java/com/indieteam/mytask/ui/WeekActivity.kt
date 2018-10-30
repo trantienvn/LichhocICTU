@@ -634,7 +634,7 @@ class WeekActivity : AppCompatActivity() {
                     syncGoogleCallback = 0
                 }
                 else {
-                    credential.selectedAccountName = GoogleSignIn.getClient(this, gso).silentSignIn().result?.email
+                    credential.selectedAccountName = GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email
                     sharedPref.edit().apply{
                         putString("accSelected", GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email)
                                 .apply()
@@ -642,8 +642,11 @@ class WeekActivity : AppCompatActivity() {
                     //Toast.makeText(this@WeekActivity, "Oauth true", Toast.LENGTH_LONG).show()
                     //Toast.makeText(this@WeekActivity, "${GoogleSignIn.getClient(this, gso).silentSignIn().result?.email}", Toast.LENGTH_LONG).show()
 
-                    val syncGoogle = SyncGoogle(this)
-                    syncGoogle.start()
+                    if(credential.selectedAccountName != null ) {
+                        val syncGoogle = SyncGoogle(this)
+                        syncGoogle.start()
+                    }else
+                        syncGoogleCallback = 0
                 }
             }
         }

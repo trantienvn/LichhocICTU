@@ -46,6 +46,7 @@ class SyncGoogle(val context: Context): Thread() {
     private fun checkCalendarPermission(){
         weekActivity.apply {
             gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
                     .requestScopes(scope, scope2)
                     .build()
             mGoogleSignInClient = GoogleSignIn.getClient(context, gso)
