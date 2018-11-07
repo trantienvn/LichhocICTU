@@ -20,15 +20,12 @@ class CalendarListViewAdapter(val activity: WeekActivity, val data: ArrayList<St
         if (data.isEmpty()){
             //layout.subject_date.text = "Nghỉ"
             layout.subject_name.text = "Nghỉ"
-            layout.subject_time.text = ""
-            layout.subject_place.text = ""
+            layout.subject_time_place.text = ""
             layout.teacher.text = ""
 
         }else {
             layout.subject_name.text = "${data[p0].subjectName}"
-            layout.subject_time.text = "${data[p0].subjectTime}"
-            layout.subject_place.text = "" +
-                    "${data[p0].subjectPlace}"
+            layout.subject_time_place.text = "${data[p0].subjectTime} tại ${data[p0].subjectPlace}"
             layout.teacher.text = "${data[p0].teacher}"
         }
 

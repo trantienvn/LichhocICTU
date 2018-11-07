@@ -42,7 +42,8 @@
             android:name=".process.runInBackground.AppService"
             android:exported="false"></service>
 
-        <activity android:name=".ui.AboutActivity"></activity>
+        <activity android:name=".ui.AboutActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

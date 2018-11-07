@@ -120,11 +120,11 @@ class InfoStudentActivity : AppCompatActivity() {
         if (readDb == 1){
             val jsonObject = JSONObject(valueDb)
             val infoObj = jsonObject.getJSONObject("info")
-            studentName = infoObj.getString("studentName")
-            studentId = infoObj.getString("studentId")
-            className = infoObj.getString("className")
-            courseName = infoObj.getString("courseName")
-            majorsName = infoObj.getString("majorsName")
+            studentName = infoObj.getString("studentName").trim()
+            studentId = infoObj.getString("studentId").trim()
+            className = infoObj.getString("className").trim()
+            courseName = infoObj.getString("courseName").trim()
+            majorsName = infoObj.getString("majorsName").trim()
             student_name.text = studentName
             student_id.text = "Mã sinh viên: $studentId"
             class_name.text = "Lớp: $className"
