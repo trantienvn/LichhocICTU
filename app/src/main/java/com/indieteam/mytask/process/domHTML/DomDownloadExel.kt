@@ -47,6 +47,7 @@ class DomDownloadExel(val context: Context, private val sessionUrl: String, priv
                 }
             }
             val dataMap = mutableMapOf<String, String>()
+            // start get post params
             if(sessionUrl.isNotBlank()) {
                 val resFirst = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
                         .cookie("SignIn", signIn)
@@ -86,7 +87,7 @@ class DomDownloadExel(val context: Context, private val sessionUrl: String, priv
                         Toast.makeText(context, "Err #04", Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
+            }// end get post params
 
             if(sessionUrl.isNotBlank()) {
                 val resSecond = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))

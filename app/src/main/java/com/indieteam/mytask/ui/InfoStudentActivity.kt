@@ -60,6 +60,24 @@ class InfoStudentActivity : AppCompatActivity() {
                 )
         gen_qr_btn.addAllActionItems(listItem)
 
+        image_profile.setOnClickListener {
+            countClick++
+            if (!studentId.isNullOrBlank()) {
+                if(countClick == 1){
+                    gone()
+                    bundle.putString("studentId", studentId)
+                    qrFragment.arguments = bundle
+                    supportFragmentManager.beginTransaction().add(R.id.info_root_view, qrFragment, "qrFragment")
+                            .commit()
+                    supportFragmentManager.executePendingTransactions()
+                }
+            } else {
+                countClick = 0
+                visible()
+                Toast.makeText(this, "Err #01, Không thể tạo mã QR", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         gen_qr_btn.setOnActionSelectedListener{
             when (it.id){
                 R.id.fab_gen_qr ->{

@@ -6,24 +6,23 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:largeHeap="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".ui.WeekActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ui.LoginActivity"
             android:screenOrientation="portrait"
@@ -34,14 +33,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.InfoStudentActivity"
-            android:theme="@style/InfoStudentTheme"
-            android:screenOrientation="portrait">
-        </activity>
+        <activity
+            android:name=".ui.InfoStudentActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/InfoStudentTheme"></activity>
+
         <service
-            android:name="com.indieteam.mytask.process.runInBackground.AppService"
-            android:exported="false">
-        </service>
+            android:name=".process.runInBackground.AppService"
+            android:exported="false"></service>
+
+        <activity android:name=".ui.AboutActivity"></activity>
     </application>
 
 </manifest>

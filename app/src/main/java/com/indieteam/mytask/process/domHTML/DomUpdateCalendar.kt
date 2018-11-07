@@ -31,6 +31,7 @@ class DomUpdateCalendar(val context: Context, private val signIn: String): Threa
 
     override fun run() {
         try {
+            // start get post params
             val res = Jsoup.connect(urlAddress.urlLoginClean)
                     .followRedirects(false)
                     .method(Connection.Method.GET)
@@ -76,7 +77,7 @@ class DomUpdateCalendar(val context: Context, private val signIn: String): Threa
                     Toast.makeText(weekActivity, "Err #04", Toast.LENGTH_SHORT).show()
                 }
                 this.join()
-            }
+            } // end get post params
 
             if(sessionUrl.isNotBlank()) {
                 val resSecond = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))

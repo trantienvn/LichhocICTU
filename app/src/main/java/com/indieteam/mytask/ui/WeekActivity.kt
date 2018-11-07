@@ -415,7 +415,7 @@ class WeekActivity : AppCompatActivity() {
                         .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                         .create(),
                         SpeedDialActionItem.Builder(R.id.fab_donate, R.drawable.ic_coin)
-                                .setLabel("Donate")
+                                .setLabel("Donate/Giới thiệu")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -427,7 +427,7 @@ class WeekActivity : AppCompatActivity() {
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_sync_google, R.drawable.ic_export)
-                                .setLabel("Đồng bộ Google (Beta)")
+                                .setLabel("Đồng bộ Google Calendar (Beta)")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -439,7 +439,7 @@ class WeekActivity : AppCompatActivity() {
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_info)
-                                .setLabel("Cá nhân")
+                                .setLabel("Cá nhân/QR")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -453,8 +453,8 @@ class WeekActivity : AppCompatActivity() {
                 R.id.fab_setting ->{
                     //Toast.makeText(this@WeekActivity, "Setting", Toast.LENGTH_SHORT).show()
                     if(calendarMode == 1) {
-                        calendarView.layoutParams.height = ((screenHeight / 100f) * 25f).toInt()
-                        content_layout.layoutParams.height = ((screenHeight - (screenHeight / 100f) * 25f) - view.height - statusBarHeight).toInt()
+                        calendarView.layoutParams.height = ((screenHeight / 100f) * 21f).toInt()
+                        content_layout.layoutParams.height = ((screenHeight - (screenHeight / 100f) * 21f) - view.height - statusBarHeight).toInt()
                         calendarView.state().edit()
                                 .setCalendarDisplayMode(CalendarMode.WEEKS)
                                 .commit()
@@ -521,6 +521,10 @@ class WeekActivity : AppCompatActivity() {
                             Toast.makeText(this, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
                         }
                     }
+                }
+                R.id.fab_donate ->{
+                    val intent = Intent(this, AboutActivity::class.java)
+                    startActivity(intent)
                 }
                 R.id.fab_logout ->{
                     try {
