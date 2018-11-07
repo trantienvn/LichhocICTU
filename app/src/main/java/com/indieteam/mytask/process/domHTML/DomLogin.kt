@@ -3,6 +3,7 @@ package com.indieteam.mytask.process.domHTML
 import android.annotation.SuppressLint
 import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
+import android.preference.PreferenceManager
 import android.text.Html
 import android.util.Log
 import android.widget.Toast
@@ -36,6 +37,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
     private var characterDolla = Html.fromHtml("&#36;")
     private var classContextName = ""
     private val sqlLite = SqLite(context)
+    private val sharedPref = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
 
     init {
         classContextName = context.javaClass.name.substring(context.javaClass.name.lastIndexOf(".") + 1, context.javaClass.name.length)
@@ -105,6 +107,10 @@ class DomLogin(val context: Context, private val userName: String, private val p
 
                 var cookie = ""
                 if (resLogin.cookie("SignIn") != null) {
+                    sharedPref.edit().apply {
+                        putString("username", userName)
+                                .apply()
+                    }
                     cookie = resLogin.cookie("SignIn")
                     if (classContextName == "LoginActivity"){
                         (context as LoginActivity).runOnUiThread {
@@ -172,7 +178,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
                 }
                 context.runOnUiThread {
                     context.visible()
-                    Toast.makeText(context, "Not Internet or Try login again ...", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Kiểm tra lại kết nối...", Toast.LENGTH_SHORT).show()
                 }
             }
         }

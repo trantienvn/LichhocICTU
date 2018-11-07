@@ -2,9 +2,11 @@ package com.indieteam.mytask.ui
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
@@ -24,6 +26,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var sqLite: SqLite
     private var readDb = 0
     lateinit var checkNet: CheckNet
+    private lateinit var sharedPref: SharedPreferences
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == REQUEST_CODE){
@@ -52,6 +55,8 @@ class LoginActivity : AppCompatActivity() {
     private fun init(){
         sqLite = SqLite(this)
         checkNet = CheckNet(this)
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        text_username.setText(sharedPref.getString("username", ""))
     }
 
     private fun toMD5(s: String): String {
