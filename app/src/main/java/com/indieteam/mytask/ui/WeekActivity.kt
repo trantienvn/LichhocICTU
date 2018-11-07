@@ -28,6 +28,8 @@ import com.github.pwittchen.swipe.library.rx2.Swipe
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.Scope
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -405,6 +407,18 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
+     private fun isGooglePlayServicesAvailable(): Boolean {
+         val googleApiAvailability = GoogleApiAvailability.getInstance()
+         val status = googleApiAvailability.isGooglePlayServicesAvailable(this)
+         if(status != ConnectionResult.SUCCESS) {
+             if(googleApiAvailability.isUserResolvableError(status)) {
+                googleApiAvailability.getErrorDialog(this, status, 2404).show()
+             }
+             return false
+         }
+         return true
+    }
+
     @SuppressLint("SetTextI18n")
     private fun initFloatButton(){
         val listItem =
@@ -486,10 +500,12 @@ class WeekActivity : AppCompatActivity() {
                 }
                 R.id.fab_sync_google ->{
                     if(checkNet.check()) {
-                        if (syncGoogleCallback == 0) {
-                            syncGoogleCallback = 1
-                            val syncGoogle = SyncGoogle(this)
-                            syncGoogle.start()
+                        if (isGooglePlayServicesAvailable()) {
+                            if (syncGoogleCallback == 0) {
+                                syncGoogleCallback = 1
+                                val syncGoogle = SyncGoogle(this)
+                                syncGoogle.start()
+                            }
                         }
                     } else{
                         runOnUiThread {
