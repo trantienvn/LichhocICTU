@@ -76,7 +76,7 @@ class WeekActivity : AppCompatActivity() {
     private var navigationBarHeight = 0
     private var calendarMode = 0
     lateinit var sharedPref: SharedPreferences
-    private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_i)
+    //private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_i)
     @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private val timeDetails = TimeDetails()
@@ -299,8 +299,8 @@ class WeekActivity : AppCompatActivity() {
                             .commit()
                 }
                 else {
-                    calendarView.layoutParams.height = (screenHeight / 2f).toInt()
-                    content_layout.layoutParams.height = (screenHeight - (screenHeight / 2f) - view.height - statusBarHeight).toInt()
+                    calendarView.layoutParams.height = (screenHeight / 2.3).toInt()
+                    content_layout.layoutParams.height = (screenHeight - (screenHeight / 2.3f) - view.height - statusBarHeight).toInt()
                     calendarView.state().edit()
                             .setCalendarDisplayMode(CalendarMode.MONTHS)
                             .commit()
@@ -314,7 +314,7 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun changeBackground(){
-        calender_list_view.background = resources.getDrawable(background[random(0, background.size - 1)])
+        //calender_list_view.background = resources.getDrawable(background[random(0, background.size - 1)])
     }
 
     private fun random(from: Int, to: Int): Int{
@@ -323,7 +323,7 @@ class WeekActivity : AppCompatActivity() {
 
     private fun setCalendarDots(){
         for(i in mapDateForDots){
-            calendarView.addDecorator(EventDecorator("Dots", listOf(resources.getColor(R.color.colorGreen), resources.getColor(R.color.colorOrangeDark), resources.getColor(R.color.colorRedDark)), i.key, i.value))
+            calendarView.addDecorator(EventDecorator("Dots", listOf(resources.getColor(R.color.colorBlue), resources.getColor(R.color.colorOrange), resources.getColor(R.color.colorRed)), i.key, i.value))
             //Log.d("valuedot", i.value)
         }
     }
@@ -410,33 +410,39 @@ class WeekActivity : AppCompatActivity() {
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_logout, R.drawable.ic_logout)
                         .setLabel("Đăng xuất")
-                        .setLabelColor(Color.WHITE)
-                        .setLabelBackgroundColor(resources.getColor(R.color.colorBlue))
-                        .setFabBackgroundColor(resources.getColor(R.color.colorBlue))
+                        .setLabelColor(Color.BLACK)
+                        .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
+                        .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                         .create(),
+                        SpeedDialActionItem.Builder(R.id.fab_donate, R.drawable.ic_coin)
+                                .setLabel("Donate")
+                                .setLabelColor(Color.BLACK)
+                                .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
+                                .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
+                                .create(),
                         SpeedDialActionItem.Builder(R.id.fab_setting, R.drawable.ic_switch)
                                 .setLabel("Tuần/Tháng")
-                                .setLabelColor(Color.WHITE)
-                                .setLabelBackgroundColor(resources.getColor(R.color.colorPurple))
-                                .setFabBackgroundColor(resources.getColor(R.color.colorPurple))
+                                .setLabelColor(Color.BLACK)
+                                .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
+                                .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_sync_google, R.drawable.ic_export)
-                                .setLabel("Đồng bộ Google")
-                                .setLabelColor(Color.WHITE)
-                                .setLabelBackgroundColor(resources.getColor(R.color.colorGreenDark))
-                                .setFabBackgroundColor(resources.getColor(R.color.colorGreenDark))
+                                .setLabel("Đồng bộ Google (Beta)")
+                                .setLabelColor(Color.BLACK)
+                                .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
+                                .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_update, R.drawable.ic_update)
                                 .setLabel("Cập nhật lịch")
-                                .setLabelColor(Color.WHITE)
-                                .setLabelBackgroundColor(resources.getColor(R.color.colorOrangeDark))
-                                .setFabBackgroundColor(resources.getColor(R.color.colorOrangeDark))
+                                .setLabelColor(Color.BLACK)
+                                .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
+                                .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_info)
                                 .setLabel("Cá nhân")
-                                .setLabelColor(Color.WHITE)
-                                .setLabelBackgroundColor(resources.getColor(R.color.colorBlue))
-                                .setFabBackgroundColor(resources.getColor(R.color.colorBlue))
+                                .setLabelColor(Color.BLACK)
+                                .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
+                                .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create()
 
         )
@@ -460,8 +466,8 @@ class WeekActivity : AppCompatActivity() {
                         }
                         calendarMode = sharedPref.getInt("CalendarMode", 0)
                     } else {
-                        calendarView.layoutParams.height = (screenHeight / 2f).toInt()
-                        content_layout.layoutParams.height = (screenHeight - (screenHeight / 2f) - view.height - statusBarHeight).toInt()
+                        calendarView.layoutParams.height = (screenHeight / 2.3f).toInt()
+                        content_layout.layoutParams.height = (screenHeight - (screenHeight / 2.3f) - view.height - statusBarHeight).toInt()
                         calendarView.state().edit()
                                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                                 .commit()

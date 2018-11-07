@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/colorWhite"
-        android:elevation="3dp"
+        android:elevation="1dp"
         android:paddingBottom="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.25"
@@ -70,9 +70,10 @@
             android:id="@+id/calender_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_a"
+            android:background="@color/colorWhite"
             android:divider="@color/colorWhite"
-            android:dividerHeight="10dp">
+            android:dividerHeight="10dp"
+            android:scrollbars="none">
         </ListView>
 
     </RelativeLayout>
@@ -86,7 +87,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:elevation="3.5dp"
+        android:elevation="2dp"
         app:layout_constraintHeight_percent="1">
 
         <com.leinardi.android.speeddial.SpeedDialView
