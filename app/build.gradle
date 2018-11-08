@@ -10,8 +10,8 @@ android {
         applicationId "com.indieteam.mytask"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 13
-        versionName "1.4.2"
+        versionCode 14
+        versionName "1.5.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -19,10 +19,23 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            lintOptions {
+                disable 'MissingTranslation'
+                checkReleaseBuilds false
+                abortOnError false
+            }
+            minifyEnabled false
         }
     }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
+    }
+
+    configurations {
+        all {
+            exclude module: 'httpclient'
+        }
     }
 }
 
@@ -45,8 +58,8 @@ dependencies {
     implementation "com.android.support:support-compat:28.0.0"
 
     implementation 'com.google.apis:google-api-services-calendar:v3-rev355-1.25.0'
-    implementation 'com.google.api-client:google-api-client-android:1.25.0' exclude module: 'httpclient'
-    implementation 'com.google.http-client:google-http-client-gson:1.25.0' exclude module: 'httpclient'
+    implementation 'com.google.api-client:google-api-client-android:1.25.0'
+    implementation 'com.google.http-client:google-http-client-gson:1.25.0'exclude module: 'httpclient'
     implementation 'com.google.android.gms:play-services-identity:16.0.0'
     implementation 'com.google.android.gms:play-services-fitness:16.0.1'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
