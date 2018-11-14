@@ -8,16 +8,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.indieteam.mytask.R
+import com.indieteam.mytask.ads.Ads
 import kotlinx.android.synthetic.main.fragment_qr.*
 import net.glxn.qrgen.android.QRCode
 import net.glxn.qrgen.core.image.ImageType
 
 class QrFragment : Fragment() {
 
+    private lateinit var ads: Ads
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_qr, container, false)
+    }
+
+    private fun loadAds(){
+        ads = Ads(requireContext())
+        ads.apply {
+            loadBottomAds(ads_bottom)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,5 +50,7 @@ class QrFragment : Fragment() {
                 }
             }.start()
         }
+        loadAds()
     }
+
 }

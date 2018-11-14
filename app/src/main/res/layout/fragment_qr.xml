@@ -18,4 +18,25 @@
         app:layout_constraintTop_toTopOf="parent"
         android:scaleType="centerInside"/>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:elevation="1dp"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent="1">
+
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/ads_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-1117482668766229/2522668559"
+            android:layout_marginBottom="10dp">
+
+        </com.google.android.gms.ads.AdView>
+
+    </RelativeLayout>
+
 </android.support.constraint.ConstraintLayout>
