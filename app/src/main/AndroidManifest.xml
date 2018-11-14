@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.InfoStudentActivity"
+            android:name=".ui.StudentInfoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/InfoStudentTheme" />
 

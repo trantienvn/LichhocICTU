@@ -11,11 +11,11 @@ import com.indieteam.mytask.R
 import com.indieteam.mytask.ads.Ads
 import com.indieteam.mytask.sqlite.SqLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
-import kotlinx.android.synthetic.main.activity_info_student.*
+import kotlinx.android.synthetic.main.activity_student_info.*
 import org.json.JSONObject
 
 @Suppress("DEPRECATION")
-class InfoStudentActivity : AppCompatActivity() {
+class StudentInfoActivity : AppCompatActivity() {
 
     private lateinit var sqLite: SqLite
     private lateinit var studentName: String
@@ -144,7 +144,7 @@ class InfoStudentActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_info_student)
+        setContentView(R.layout.activity_student_info)
         readInfo()
         genQr()
         loadAds()
