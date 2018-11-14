@@ -25,6 +25,7 @@ import android.view.View.VISIBLE
 import android.view.ViewTreeObserver
 import android.widget.Toast
 import com.github.pwittchen.swipe.library.rx2.Swipe
+import com.google.android.gms.ads.AdSize
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -114,6 +115,7 @@ class WeekActivity : AppCompatActivity() {
             //Toast.makeText(this@WeekActivity, "Swiped down", Toast.LENGTH_SHORT).show()
             return true
         }
+
         override fun onSwipingUp(event: MotionEvent?) {
             //Toast.makeText(this@WeekActivity, "Swiping right", Toast.LENGTH_SHORT).show()
         }
@@ -610,6 +612,13 @@ class WeekActivity : AppCompatActivity() {
         return false
     }
 
+    private fun loadAds(){
+        ads = Ads(this)
+        ads.apply {
+            loadBottomAds(ads_bottom)
+        }
+    }
+
     private fun run(){
         //changeBackground()
         var readDb: Int
@@ -639,13 +648,8 @@ class WeekActivity : AppCompatActivity() {
         Log.d("service", checkServiceRunning().toString())
         if (!checkServiceRunning())
             startService()
-        loadAds()
-    }
-
-    private fun loadAds(){
-        ads.apply {
-            loadBottomAds(ads_bottom)
-        }
+        if (Build.VERSION.SDK_INT >= 21)
+            loadAds()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

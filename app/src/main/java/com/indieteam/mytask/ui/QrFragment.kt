@@ -1,5 +1,6 @@
 package com.indieteam.mytask.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.google.android.gms.ads.AdSize
 import com.indieteam.mytask.R
 import com.indieteam.mytask.ads.Ads
 import kotlinx.android.synthetic.main.fragment_qr.*
@@ -50,7 +52,8 @@ class QrFragment : Fragment() {
                 }
             }.start()
         }
-        loadAds()
+        if (Build.VERSION.SDK_INT >= 21)
+            loadAds()
     }
 
 }

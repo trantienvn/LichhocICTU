@@ -1,12 +1,14 @@
 package com.indieteam.mytask.ui
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
+import com.google.android.gms.ads.AdSize
 import com.indieteam.mytask.R
 import com.indieteam.mytask.ads.Ads
 import com.indieteam.mytask.sqlite.SqLite
@@ -62,7 +64,7 @@ class StudentInfoActivity : AppCompatActivity() {
                 )
         gen_qr_btn.addAllActionItems(listItem)
 
-        image_profile.setOnClickListener {
+        header_profile.setOnClickListener {
             countClick++
             if (!studentId.isNullOrBlank()) {
                 if(countClick == 1){
@@ -137,6 +139,7 @@ class StudentInfoActivity : AppCompatActivity() {
 
     private fun loadAds(){
         ads = Ads(this)
+
         ads.apply {
             loadBottomAds(ads_bottom)
         }
@@ -147,6 +150,7 @@ class StudentInfoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_student_info)
         readInfo()
         genQr()
-        loadAds()
+        if (Build.VERSION.SDK_INT >= 21)
+            loadAds()
     }
 }

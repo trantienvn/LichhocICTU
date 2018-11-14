@@ -41,7 +41,8 @@
             android:text="Name: "
             android:textColor="@color/colorBlueDark"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginLeft="15dp"/>
 
     </LinearLayout>
 
@@ -129,13 +130,13 @@
         <com.google.android.gms.ads.AdView
             xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/ads_bottom"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             ads:adSize="BANNER"
             ads:adUnitId="ca-app-pub-1117482668766229/2522668559"
-            android:layout_marginLeft="10dp"
-            android:layout_marginBottom="10dp"/>
+            android:layout_alignRight="@+id/float_button"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
