@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import android.support.v4.app.NotificationCompat
@@ -13,9 +12,9 @@ import android.support.v4.app.NotificationManagerCompat
 import com.indieteam.mytask.R
 import com.indieteam.mytask.ui.WeekActivity
 
-class AppNotification(val context: Context, private val numberSubjects: String) {
+class AppNotification(val context: Context) {
 
-    fun build(contents: String){
+    fun subject(contents: String, numberSubjects: String){
         //touch
         val intent = Intent(context, WeekActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -49,10 +48,19 @@ class AppNotification(val context: Context, private val numberSubjects: String) 
                 .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                 .setVibrate(longArrayOf(1))
                 .setAutoCancel(true) // remove notification after touch
-                //.setOngoing(true) // disable wipe
 
         //show
         NotificationManagerCompat.from(context).notify(2, mBuilder.build())
+    }
+
+    fun foreground(): NotificationCompat.Builder{
+        return NotificationCompat.Builder(context, "calendar_notification")
+                .setSmallIcon(R.drawable.ic_date_range_256)
+                .setContentTitle("Đang theo dõi lịch học")
+                .setColor(Color.parseColor("#2c73b3"))
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                .setAutoCancel(false)
     }
 
 }

@@ -4,12 +4,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
-import android.support.v4.app.NotificationCompat
 import android.util.Log
-import com.indieteam.mytask.R
 import com.indieteam.mytask.process.notification.AppNotification
 import com.indieteam.mytask.process.parseJson.ParseCalendarJson
 import com.indieteam.mytask.sqlite.SqLite
@@ -29,20 +26,21 @@ class AppService: Service(){
     private lateinit var appNotification: AppNotification
     private var numberSubjects = 0
     private var countNotification = 0
-    private var notificationThread = NotificationThread()
+    private var notificationThread = CheckTimeInBackground()
+
     init {
         calendarForTomorrow.set(calendarForTomorrow.get(Calendar.YEAR), calendarForTomorrow.get(Calendar.MONTH), calendarForTomorrow.get(Calendar.DAY_OF_MONTH))
         calendarForTomorrow.add(Calendar.DAY_OF_MONTH, 1)
     }
 
-    inner class NotificationThread: Thread(){
+    inner class CheckTimeInBackground: Thread(){
         override fun run() {
             Timer().scheduleAtFixedRate(0, 30000) {
                 calendarForNow = Calendar.getInstance()!!
                 Log.d("hour", calendarForNow.get(Calendar.HOUR_OF_DAY).toString() + " " + calendarForNow.get(Calendar.MINUTE))
                 if (calendarForNow.get(Calendar.HOUR_OF_DAY) == 20 && calendarForNow.get(Calendar.MINUTE) == 0) {
                     if (countNotification == 0)
-                        runTask()
+                        pushNotification()
                     countNotification++
                 }else
                     countNotification = 0
@@ -51,7 +49,7 @@ class AppService: Service(){
     }
 
 
-    private fun runTask(){
+    private fun pushNotification(){
         result = ""
         val date = "${calendarForTomorrow.get(Calendar.DAY_OF_MONTH)}/${calendarForTomorrow.get(Calendar.MONTH)+1}/${calendarForTomorrow.get(Calendar.YEAR)}"
         sqLite = SqLite(this)
@@ -76,8 +74,8 @@ class AppService: Service(){
             }
             result = result.substring(0, result.lastIndexOf("\n"))
             Log.d("AppService_Log", "Date $date: $result")
-            appNotification = AppNotification(this, numberSubjects.toString())
-            appNotification.build(result)
+            appNotification = AppNotification(this)
+            appNotification.subject(result, numberSubjects.toString())
 
         }else{
             Log.d("AppService_Log", "null")
@@ -86,6 +84,7 @@ class AppService: Service(){
 
     override fun onCreate() {
         super.onCreate()
+        appNotification = AppNotification(this)
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val channelName  = "calendarNotification"
             val channelId = "calendar_notification"
@@ -96,15 +95,7 @@ class AppService: Service(){
             val notificationManager = this.getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(chanel)
 
-            val mBuilder = NotificationCompat.Builder(this, "calendar_notification")
-                    .setSmallIcon(R.drawable.ic_date_range_256)
-                    .setContentTitle("Tác vụ")
-                    .setContentText("Đang theo dõi lịch học")
-                    .setColor(Color.parseColor("#2c73b3"))
-                    .setPriority(NotificationCompat.PRIORITY_LOW)
-                    .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
-                    .setAutoCancel(true) // remove notification after touch
-            startForeground(1, mBuilder.build())
+            startForeground(1, appNotification.foreground().build())
         }
     }
 

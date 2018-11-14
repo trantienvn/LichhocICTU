@@ -603,9 +603,10 @@ class WeekActivity : AppCompatActivity() {
     private fun checkServiceRunning(): Boolean {
         try {
             val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-            for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
-                if (AppService::class.java.name == service.service.className) {
+            for (services in manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (AppService::class.java.name == services.service.className) {
                     Log.d("service", "running")
+                    Log.d("service_name", services.service.className.toString())
                     return true
                 }
             }
