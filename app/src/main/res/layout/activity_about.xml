@@ -7,27 +7,30 @@
     tools:context=".ui.AboutActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="25dp"
-        android:layout_marginBottom="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="30dp">
+            android:layout_marginBottom="30dp"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Hỗ trợ chúng tôi, Donate tại"
+                android:textColor="@color/colorBlack"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorBlack"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/link_donate"
@@ -36,22 +39,22 @@
                 android:autoLink="web"
                 android:text="https://unghotoi.com/1541598877es8ou"
                 android:textColor="@color/colorBlue"
-                android:textColorLink="@color/colorBlue"/>
+                android:textColorLink="@color/colorBlue" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="15dp">
+            android:layout_marginBottom="15dp"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TKB ICTU"
-                android:textSize="17sp"
                 android:textColor="@color/colorBlack"
-                android:textStyle="bold"/>
+                android:textSize="17sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/version"
@@ -64,34 +67,34 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="15dp">
+            android:layout_marginBottom="15dp"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Team members"
-                android:textSize="17sp"
                 android:textColor="@color/colorBlack"
-                android:textStyle="bold"/>
+                android:textSize="17sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Minh Duc"/>
+                android:text="Minh Duc" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thanh Hanh"/>
+                android:text="Thanh Hanh" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="15dp">
+            android:layout_marginBottom="15dp"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -102,10 +105,21 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Minh Duc"/>
+                android:text="Minh Duc" />
 
         </LinearLayout>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/developer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="IndieTeam"
+        android:textColor="@color/colorBlue"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="5dp"/>
 
 </android.support.constraint.ConstraintLayout>
