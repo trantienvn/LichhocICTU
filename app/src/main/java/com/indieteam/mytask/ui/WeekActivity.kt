@@ -515,9 +515,7 @@ class WeekActivity : AppCompatActivity() {
                             }
                         }
                     } else{
-                        runOnUiThread {
-                            Toast.makeText(this, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
-                        }
+                        Toast.makeText(this, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
                     }
                 }
                 R.id.fab_update ->{
@@ -540,9 +538,7 @@ class WeekActivity : AppCompatActivity() {
                             Log.d("Err", e.toString())
                         }
                     } else{
-                        runOnUiThread {
-                            Toast.makeText(this, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
-                        }
+                        Toast.makeText(this, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
                     }
                 }
                 R.id.fab_donate ->{
@@ -550,13 +546,19 @@ class WeekActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.fab_logout ->{
-                    try {
-                        sqLite.deleteCalendar()
-                        sqLite.deleteInfo()
-                        if (checkServiceRunning())
-                            stopService(Intent(this, AppService::class.java))
-                    }catch (e: Exception){ Log.d("Err", e.toString()) }
-                    moveToLogin()
+                    if (checkNet.check()) {
+                        try {
+                            sqLite.deleteCalendar()
+                            sqLite.deleteInfo()
+                            if (checkServiceRunning())
+                                stopService(Intent(this, AppService::class.java))
+                        } catch (e: Exception) {
+                            Log.d("Err", e.toString())
+                        }
+                        moveToLogin()
+                    } else{
+                        Toast.makeText(this, "Đang giữ lịch an toàn khi ngoại tuyến", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             false //false to close float button
