@@ -90,9 +90,11 @@ class SyncGoogle(val context: Context): Thread() {
 
     private fun deleteCalendar(){
         try {
-            service.calendars().delete(weekActivity.sharedPref.getString("google-calendar-id", "null")).execute()
-            weekActivity.runOnUiThread {
-                //Toast.makeText(weekActivity, "Deleted", Toast.LENGTH_SHORT).show()
+            if (weekActivity.sharedPref.getString("google-calendar-id", "null") != "null") {
+                service.calendars().delete(weekActivity.sharedPref.getString("google-calendar-id", "null")).execute()
+                weekActivity.runOnUiThread {
+                    //Toast.makeText(weekActivity, "Deleted", Toast.LENGTH_SHORT).show()
+                }
             }
         }catch (e: IOException){
             e.printStackTrace()

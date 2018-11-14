@@ -36,6 +36,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.json.gson.GsonFactory
 import com.indieteam.mytask.R
 import com.indieteam.mytask.adapter.CalendarListViewAdapter
+import com.indieteam.mytask.ads.Ads
 import com.indieteam.mytask.dataObj.v2.StudentCalendarObj
 import com.indieteam.mytask.dataObj.v2.TimeDetails
 import com.indieteam.mytask.process.CheckNet
@@ -97,6 +98,9 @@ class WeekActivity : AppCompatActivity() {
     lateinit var gso: GoogleSignInOptions
     lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var signInIntent: Intent
+
+    //Ads
+    private var ads = Ads()
 
     inner class OnSwipeListener: com.github.pwittchen.swipe.library.rx2.SwipeListener{
         private var startTouchY = 0f
@@ -441,7 +445,7 @@ class WeekActivity : AppCompatActivity() {
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_sync_google, R.drawable.ic_export)
-                                .setLabel("Đồng bộ Google Calendar (Beta)")
+                                .setLabel("Đ.bộ Google lịch (Beta)")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -634,6 +638,13 @@ class WeekActivity : AppCompatActivity() {
         Log.d("service", checkServiceRunning().toString())
         if (!checkServiceRunning())
             startService()
+        loadAds()
+    }
+
+    private fun loadAds(){
+        ads.apply {
+            loadBottomAds(ads_bottom)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

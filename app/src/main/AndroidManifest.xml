@@ -21,9 +21,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-1117482668766229~6134610505"/>
+
         <activity
             android:name=".ui.WeekActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.LoginActivity"
             android:screenOrientation="portrait"
@@ -37,14 +41,15 @@
         <activity
             android:name=".ui.InfoStudentActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/InfoStudentTheme"></activity>
+            android:theme="@style/InfoStudentTheme" />
 
         <service
             android:name=".process.runInBackground.AppService"
-            android:exported="false"></service>
+            android:exported="false" />
 
-        <activity android:name=".ui.AboutActivity"
-            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".ui.AboutActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
