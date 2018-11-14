@@ -322,13 +322,13 @@ class WeekActivity : AppCompatActivity() {
         calendarView.selectionMode = SELECTION_MODE_SINGLE
     }
 
-    private fun changeBackground(){
-        //calender_list_view.background = resources.getDrawable(background[random(0, background.size - 1)])
-    }
+//    private fun changeBackground(){
+//        //calender_list_view.background = resources.getDrawable(background[random(0, background.size - 1)])
+//    }
 
-    private fun random(from: Int, to: Int): Int{
-        return Random().nextInt(to - from) + from
-    }
+//    private fun random(from: Int, to: Int): Int{
+//        return Random().nextInt(to - from) + from
+//    }
 
     private fun setCalendarDots(){
         for(i in mapDateForDots){
@@ -613,7 +613,7 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun run(){
-        changeBackground()
+        //changeBackground()
         var readDb: Int
         var valueDb= ""
         try{
