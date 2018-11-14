@@ -17,6 +17,7 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.telephony.TelephonyManager
 import android.text.style.LineBackgroundSpan
 import android.util.Log
 import android.view.MotionEvent
@@ -25,6 +26,7 @@ import android.view.View.VISIBLE
 import android.view.ViewTreeObserver
 import android.widget.Toast
 import com.github.pwittchen.swipe.library.rx2.Swipe
+import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -100,7 +102,7 @@ class WeekActivity : AppCompatActivity() {
     lateinit var signInIntent: Intent
 
     //Ads
-    private var ads = Ads()
+    private lateinit var ads: Ads
 
     inner class OnSwipeListener: com.github.pwittchen.swipe.library.rx2.SwipeListener{
         private var startTouchY = 0f
@@ -263,6 +265,7 @@ class WeekActivity : AppCompatActivity() {
         calendarListViewAdapter = CalendarListViewAdapter(this@WeekActivity, studentCalendarObjArr)
         calender_list_view.adapter = calendarListViewAdapter
         checkNet = CheckNet(this)
+        ads = Ads(this)
     }
 
     fun preDate(){

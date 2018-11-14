@@ -8,6 +8,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import com.indieteam.mytask.R
+import com.indieteam.mytask.ads.Ads
 import com.indieteam.mytask.sqlite.SqLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import kotlinx.android.synthetic.main.activity_info_student.*
@@ -24,6 +25,7 @@ class InfoStudentActivity : AppCompatActivity() {
     private lateinit var majorsName: String
     private val bundle = Bundle()
     private val qrFragment = QrFragment()
+    private lateinit var ads: Ads
 
     override fun onBackPressed() {
         if (supportFragmentManager.findFragmentByTag("qrFragment") != null){
@@ -133,10 +135,18 @@ class InfoStudentActivity : AppCompatActivity() {
         }
     }
 
+    private fun loadAds(){
+        ads = Ads(this)
+        ads.apply {
+            loadBottomAds(ads_bottom)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_info_student)
         readInfo()
         genQr()
+        loadAds()
     }
 }
