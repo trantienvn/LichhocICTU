@@ -56,6 +56,7 @@ class DomUpdateCalendar(val context: Context, private val signIn: String): Threa
                             }
                         }
                     }
+
                     //Dot hoc
                     if(i.attr("name") == "drpTerm"){
                         for (j in i.select("option")){

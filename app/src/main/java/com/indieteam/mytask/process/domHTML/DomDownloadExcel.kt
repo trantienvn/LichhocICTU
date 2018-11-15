@@ -18,7 +18,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 @Suppress("DEPRECATION")
-class DomDownloadExel(val context: Context, private val sessionUrl: String, private val signIn: String): Thread() {
+class DomDownloadExcel(val context: Context, private val sessionUrl: String, private val signIn: String): Thread() {
 
     private var urlAddress = UrlAddress()
 
@@ -42,7 +42,7 @@ class DomDownloadExel(val context: Context, private val sessionUrl: String, priv
             if (classContextName == "LoginActivity") {
                 (context as LoginActivity).supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
                     context.runOnUiThread {
-                        context.process.text = "Lưu Exel..."
+                        context.process.text = "Lưu Excel..."
                     }
                 }
             }
@@ -212,7 +212,7 @@ class DomDownloadExel(val context: Context, private val sessionUrl: String, priv
             (context as LoginActivity).apply {
                 supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
                     runOnUiThread {
-                        process.text = "Lưu Exel...Ok"
+                        process.text = "Lưu Excel...Ok"
                     }
                 }
                 val intent = Intent(context, WeekActivity::class.java)

@@ -127,14 +127,14 @@ class DomLogin(val context: Context, private val userName: String, private val p
                         try {
                             sqlLite.insertInfo(userName, passWord, cookie)
                         }catch (e: SQLiteConstraintException){ Log.d("err", e.toString()) }
-                        DomDownloadExel(context, sessionUrl, cookie).start()
+                        DomDownloadExcel(context, sessionUrl, cookie).start()
                     }
 
                     if (classContextName == "WeekActivity") {
                         try {
                             sqlLite.updateInfo(userName, passWord, cookie)
                         }catch (e: SQLiteConstraintException){ Log.d("err", e.toString()) }
-                        DomDownloadExel(context, sessionUrl, cookie).start()
+                        DomDownloadExcel(context, sessionUrl, cookie).start()
                     }
                 } else {
                     if (classContextName == "LoginActivity") {
