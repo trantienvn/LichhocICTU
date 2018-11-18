@@ -150,7 +150,7 @@ class StudentInfoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_student_info)
         readInfo()
         genQr()
-        if (Build.VERSION.SDK_INT >= 21)
-            loadAds()
+//        if (Build.VERSION.SDK_INT >= 21)
+//            loadAds()
     }
 }

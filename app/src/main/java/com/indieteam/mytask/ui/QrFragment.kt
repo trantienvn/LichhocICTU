@@ -52,8 +52,8 @@ class QrFragment : Fragment() {
                 }
             }.start()
         }
-        if (Build.VERSION.SDK_INT >= 21)
-            loadAds()
+//        if (Build.VERSION.SDK_INT >= 21)
+//            loadAds()
     }
 
 }

@@ -651,8 +651,8 @@ class WeekActivity : AppCompatActivity() {
         Log.d("service", checkServiceRunning().toString())
         if (!checkServiceRunning())
             startService()
-        if (Build.VERSION.SDK_INT >= 21)
-            loadAds()
+//        if (Build.VERSION.SDK_INT >= 21)
+//            loadAds()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
