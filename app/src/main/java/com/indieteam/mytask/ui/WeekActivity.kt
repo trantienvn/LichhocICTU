@@ -217,14 +217,12 @@ class WeekActivity : AppCompatActivity() {
         if(requestCode == REQUEST_CODE){
             if(grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                allPermission = 1
                 run()
                 //Toast.makeText(this@WeekActivity, "Permissions is granted", Toast.LENGTH_LONG).show()
             }else{
                 Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
             }
-        }else{
-            Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
-            finish()
         }
     }
 

@@ -21,3 +21,4 @@
 #-renamesourcefileattribute SourceFile
 
 -ignorewarnings
+-keep class com.google.api.services.calendar.** { *;}

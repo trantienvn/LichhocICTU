@@ -81,7 +81,7 @@ class SyncGoogle(val context: Context): Thread() {
         }catch (e: IOException){
             e.printStackTrace()
             weekActivity.runOnUiThread {
-                Toast.makeText(weekActivity, "Lỗi", Toast.LENGTH_SHORT).show()
+                Toast.makeText(weekActivity, "Lỗi insert calendar", Toast.LENGTH_SHORT).show()
                 weekActivity.syncGoogleCallback = 0
             }
             this@SyncGoogle.join()
@@ -101,9 +101,9 @@ class SyncGoogle(val context: Context): Thread() {
         }
     }
 
-    private fun insertEvents(summary: String, location: String, date: String, timeStart: String, timeEnd: String){
+    private fun insertEvents(summaryEvent: String, location: String, date: String, timeStart: String, timeEnd: String){
         val event = Event()
-                .setSummary(summary)
+                .setSummary(summaryEvent)
                 .setLocation(location)
         var day = date.substring(0, date.indexOf("/"))
         var month = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"))
@@ -113,8 +113,6 @@ class SyncGoogle(val context: Context): Thread() {
             day = "0${day}"
         if (month.toInt()<10)
             month = "0${month}"
-
-        //Log.d("YMD","$year $month $day ($timeStart: $timeEnd)")
 
         val startDateTime = DateTime("${year}-${month}-${day}T${timeStart}:00+07:00")
         Log.d("startDateTime", "${year}-${month}-${day}T${timeStart}:00+07:00")
@@ -135,7 +133,7 @@ class SyncGoogle(val context: Context): Thread() {
         }catch (e: IOException){
             e.printStackTrace()
             weekActivity.runOnUiThread {
-                Toast.makeText(weekActivity, "Lỗi", Toast.LENGTH_SHORT).show()
+                Toast.makeText(weekActivity, "Lỗi insert event", Toast.LENGTH_SHORT).show()
                 weekActivity.syncGoogleCallback = 0
             }
             this@SyncGoogle.join()

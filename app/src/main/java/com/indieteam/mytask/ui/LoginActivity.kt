@@ -109,7 +109,6 @@ class LoginActivity : AppCompatActivity() {
                     supportFragmentManager.executePendingTransactions()
                     val md5Password = toMD5(text_password.text.toString())
                     Log.d("md5password", md5Password)
-                    //DomLogin(text_username.text.toString(), md5Password).start()
                     com.indieteam.mytask.process.domHTML.DomLogin(this, text_username.text.toString(), md5Password).start()
                     clickLogin++
                 }
