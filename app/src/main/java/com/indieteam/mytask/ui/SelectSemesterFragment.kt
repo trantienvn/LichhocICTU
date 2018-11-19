@@ -1,7 +1,9 @@
 package com.indieteam.mytask.ui
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -24,6 +26,7 @@ class SelectSemesterFragment : Fragment() {
     private var sessionUrl: String? = null
     private var signIn: String? = null
     private var drpSemesterSelected = ""
+    private lateinit var sharedPreferences: SharedPreferences
 
     inner class Adapter: BaseAdapter(){
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -32,6 +35,8 @@ class SelectSemesterFragment : Fragment() {
             val key = semesterArray.getJSONObject(position).keys().next()
             val value = semesterArray.getJSONObject(position).get(key).toString()
             view.semester_name.text = key
+            if (value == sharedPreferences.getString("semesterSelected", ""))
+                view.background = resources.getDrawable(R.color.colorGray)
             Log.d("value", key)
             return view
         }
@@ -59,6 +64,8 @@ class SelectSemesterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
         semesterData = arguments?.getString("semester")
         sessionUrl = arguments?.getString("sessionUrl")
         signIn = arguments?.getString("signIn")
@@ -72,6 +79,10 @@ class SelectSemesterFragment : Fragment() {
                 val key = semesterArray.getJSONObject(position).keys().next()
                 val value = semesterArray.getJSONObject(position).get(key).toString()
                 drpSemesterSelected = value
+                sharedPreferences.edit().apply {
+                    putString("semesterSelected", value)
+                            .apply()
+                }
                 //Toast.makeText(requireContext(), drpSemesterSelected, Toast.LENGTH_SHORT).show()
                 requireActivity().supportFragmentManager.beginTransaction().remove(this).commit()
                 if (sessionUrl != null && signIn != null)
