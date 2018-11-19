@@ -104,7 +104,7 @@ class LoginActivity : AppCompatActivity() {
             if (checkNet.check()) {
                 if (text_username.text.toString().isNotBlank() && text_password.text.toString().isNotBlank() && clickLogin == 0) {
                     gone()
-                    supportFragmentManager.beginTransaction().add(R.id.login_root_view, ProcessBarFragment(), "processBarFragment")
+                    supportFragmentManager.beginTransaction().add(R.id.login_root_view, ProcessBarFragment(), "processBarLogin")
                             .commit()
                     supportFragmentManager.executePendingTransactions()
                     val md5Password = toMD5(text_password.text.toString())

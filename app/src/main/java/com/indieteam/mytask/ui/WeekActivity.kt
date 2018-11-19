@@ -227,10 +227,13 @@ class WeekActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (calendarView.selectedDate == CalendarDay.today())
-            super.onBackPressed()
-        else
-            toDay()
+        if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null &&
+                supportFragmentManager.findFragmentByTag("selectSemesterFragment") == null) {
+            if (calendarView.selectedDate == CalendarDay.today())
+                super.onBackPressed()
+            else
+                toDay()
+        }
     }
 
     private fun checkPermission(){
@@ -522,7 +525,7 @@ class WeekActivity : AppCompatActivity() {
                                 .commit()
                         supportFragmentManager.executePendingTransactions()
                         supportFragmentManager.findFragmentByTag("processBarUpdate")?.apply {
-                            process?.text = "Cập nhật..."
+                            process?.text = "Tải học kỳ..."
                         }
                         gone()
                         try {
