@@ -239,6 +239,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                             .commit()
                 }
                 context.visible()
+                context.clickLogin = 0
                 Toast.makeText(context, errorName, Toast.LENGTH_SHORT).show()
             }
         }

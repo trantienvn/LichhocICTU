@@ -21,4 +21,5 @@
 #-renamesourcefileattribute SourceFile
 
 -ignorewarnings
--keep class com.google.api.services.calendar.** { *;}
+-keep class com.google.api.services.calendar.** { *; }
+-keep class android.support.multidex.** { *; }

@@ -104,6 +104,7 @@ class DomGetSemester(val context: Context, private val sessionUrl: String, priva
                             .commit()
                 }
                 context.visible()
+                context.clickLogin = 0
                 Toast.makeText(context, errorName, Toast.LENGTH_SHORT).show()
             }
         }
