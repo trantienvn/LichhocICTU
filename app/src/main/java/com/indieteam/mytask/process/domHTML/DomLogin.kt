@@ -115,7 +115,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
                     if (classContextName == "LoginActivity"){
                         (context as LoginActivity).runOnUiThread {
                             //Toast.makeText(this@LoginActivity, "Đã đăng nhập", Toast.LENGTH_SHORT).show()
-                            context.supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
+                            context.supportFragmentManager.findFragmentByTag("processBarLogin")?.let {
                                 context.runOnUiThread {
                                     context.process.text = "Đăng nhập...OK"
                                 }
@@ -127,7 +127,6 @@ class DomLogin(val context: Context, private val userName: String, private val p
                         try {
                             sqlLite.insertInfo(userName, passWord, cookie)
                         }catch (e: SQLiteConstraintException){ Log.d("err", e.toString()) }
-                        //DomDownloadExcel(context, sessionUrl, cookie).start()
                         DomGetSemester(context, sessionUrl, cookie).start()
                     }
 
@@ -135,21 +134,10 @@ class DomLogin(val context: Context, private val userName: String, private val p
                         try {
                             sqlLite.updateInfo(userName, passWord, cookie)
                         }catch (e: SQLiteConstraintException){ Log.d("err", e.toString()) }
-                        //DomDownloadExcel(context, sessionUrl, cookie).start()
                         DomGetSemester(context, sessionUrl, cookie).start()
                     }
                 } else {
-                    if (classContextName == "LoginActivity") {
-                        (context as LoginActivity).supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
-                            context.supportFragmentManager.beginTransaction().remove(it)
-                                    .commit()
-                        }
-                        context.runOnUiThread {
-                            context.visible()
-                            Toast.makeText(context, "Sai mã sinh viên hoặc mật khẩu", Toast.LENGTH_SHORT).show()
-                        }
-                        context.clickLogin = 0
-                    }
+                    appException("Sai mã sinh viên hoặc mật khẩu")
                 }
                 Log.d("cookie", cookie)
             }else{
@@ -161,29 +149,32 @@ class DomLogin(val context: Context, private val userName: String, private val p
             }
 
         }catch (e: Exception) {
-            Log.d("Err", "$e")
-            if (classContextName == "LoginActivity") {
-                (context as LoginActivity).supportFragmentManager.findFragmentByTag("processBarFragment")?.let {
-                    context.supportFragmentManager.beginTransaction().remove(it)
-                            .commit()
-                }
-                context.runOnUiThread {
-                    context.visible()
-                    context.clickLogin = 0
-                    Toast.makeText(context, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
-                }
-            }
-            if (classContextName == "WeekActivity") {
-                (context as WeekActivity).supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
-                    context.supportFragmentManager.beginTransaction().remove(it)
-                            .commit()
-                }
-                context.runOnUiThread {
-                    context.visible()
-                    Toast.makeText(context, "Kiểm tra lại kết nối...", Toast.LENGTH_SHORT).show()
-                }
-            }
+           appException("Kiểm tra lại kết nối")
         }
         this.join()
+    }
+
+    private fun appException(errorName: String){
+        if (classContextName == "LoginActivity") {
+            (context as LoginActivity).runOnUiThread {
+                context.supportFragmentManager.findFragmentByTag("processBarLogin")?.let {
+                    context.supportFragmentManager.beginTransaction().remove(it)
+                            .commit()
+                }
+                context.visible()
+                context.clickLogin = 0
+                Toast.makeText(context, errorName, Toast.LENGTH_SHORT).show()
+            }
+        }
+        if (classContextName == "WeekActivity") {
+            (context as WeekActivity).runOnUiThread {
+                context.supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
+                    context.supportFragmentManager.beginTransaction().remove(it)
+                            .commit()
+                }
+                context.visible()
+                Toast.makeText(context, errorName, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

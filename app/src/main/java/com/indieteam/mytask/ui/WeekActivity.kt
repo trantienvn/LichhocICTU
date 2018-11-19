@@ -227,12 +227,17 @@ class WeekActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null &&
-                supportFragmentManager.findFragmentByTag("selectSemesterFragment") == null) {
-            if (calendarView.selectedDate == CalendarDay.today())
-                super.onBackPressed()
-            else
-                toDay()
+        if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null) {
+            if (supportFragmentManager.findFragmentByTag("selectSemesterFragment") != null){
+                supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("selectSemesterFragment")!!)
+                        .commit()
+                visible()
+            }else {
+                if (calendarView.selectedDate == CalendarDay.today())
+                    super.onBackPressed()
+                else
+                    toDay()
+            }
         }
     }
 
