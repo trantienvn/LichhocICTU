@@ -12,7 +12,7 @@ import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.indieteam.mytask.dataObj.v2.TimeDetails
-import com.indieteam.mytask.process.CheckNet
+import com.indieteam.mytask.process.IsNet
 import com.indieteam.mytask.sqlite.SqLite
 import com.indieteam.mytask.ui.WeekActivity
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -30,7 +30,7 @@ class SyncGoogle(val context: Context): Thread() {
     private val timeDetails = TimeDetails()
     private lateinit var service: com.google.api.services.calendar.Calendar
     private var weekActivity = context as WeekActivity
-    private var checkNet = CheckNet(context)
+    private var checkNet = IsNet(context)
 
 
     private fun init(){
@@ -99,6 +99,10 @@ class SyncGoogle(val context: Context): Thread() {
         }catch (e: IOException){
             e.printStackTrace()
         }
+    }
+
+    private fun getCalendar(){
+
     }
 
     private fun insertEvents(summaryEvent: String, location: String, date: String, timeStart: String, timeEnd: String){

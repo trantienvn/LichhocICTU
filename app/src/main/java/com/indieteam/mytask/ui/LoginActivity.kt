@@ -12,8 +12,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.indieteam.mytask.R
-import com.indieteam.mytask.process.CheckNet
-import com.indieteam.mytask.process.sync.SyncGoogle
+import com.indieteam.mytask.process.IsNet
 import com.indieteam.mytask.sqlite.SqLite
 import kotlinx.android.synthetic.main.activity_login.*
 import java.security.NoSuchAlgorithmException
@@ -22,10 +21,10 @@ import java.security.NoSuchAlgorithmException
 class LoginActivity : AppCompatActivity() {
 
     private val REQUEST_CODE = 1
-    private var allPermission= 0
+    private var isPermission= 0
     lateinit var sqLite: SqLite
     private var readDb = 0
-    lateinit var checkNet: CheckNet
+    lateinit var isNet: IsNet
     private lateinit var sharedPref: SharedPreferences
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -45,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
                     || checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE)
             }else{
-                allPermission = 1
+                isPermission = 1
             }
         }else{
             run()
@@ -54,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun init(){
         sqLite = SqLite(this)
-        checkNet = CheckNet(this)
+        isNet = IsNet(this)
         sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         text_username.setText(sharedPref.getString("username", ""))
     }
@@ -101,7 +100,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun run(){
         btn_login.setOnClickListener {
-            if (checkNet.check()) {
+            if (isNet.check()) {
                 if (text_username.text.toString().isNotBlank() && text_password.text.toString().isNotBlank() && clickLogin == 0) {
                     gone()
                     supportFragmentManager.beginTransaction().add(R.id.login_root_view, ProcessBarFragment(), "processBarLogin")
@@ -132,7 +131,7 @@ class LoginActivity : AppCompatActivity() {
         if(readDb == 0) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 checkPermission()
-                if (allPermission == 1)
+                if (isPermission == 1)
                     run()
                 else
                     checkPermission()

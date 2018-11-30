@@ -25,7 +25,6 @@ import android.view.View.VISIBLE
 import android.view.ViewTreeObserver
 import android.widget.Toast
 import com.github.pwittchen.swipe.library.rx2.Swipe
-import com.google.android.gms.ads.AdSize
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -40,7 +39,7 @@ import com.indieteam.mytask.adapter.CalendarListViewAdapter
 import com.indieteam.mytask.ads.Ads
 import com.indieteam.mytask.dataObj.v2.StudentCalendarObj
 import com.indieteam.mytask.dataObj.v2.TimeDetails
-import com.indieteam.mytask.process.CheckNet
+import com.indieteam.mytask.process.IsNet
 import com.indieteam.mytask.process.domHTML.DomUpdateCalendar
 import com.indieteam.mytask.process.sync.SyncGoogle
 import com.indieteam.mytask.process.parseJson.ParseCalendarJson
@@ -67,12 +66,12 @@ class WeekActivity : AppCompatActivity() {
     private lateinit var sqLite: SqLite
     private var calendarJson: JSONObject? = null
     private var parseCalendarJson: ParseCalendarJson? = null
-    var mapDateForDots = mutableMapOf<CalendarDay, String>()
+    var dots = mutableMapOf<CalendarDay, String>()
     private var studentCalendarObjArr = ArrayList<StudentCalendarObj>()
     private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
     private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
     private lateinit var calendarListViewAdapter: CalendarListViewAdapter
-    private var allPermission = 0
+    private var isPermission = 0
     private val swipe = Swipe()
     private lateinit var customSwipe: CustomSwipe
     private var screenHeight = 0
@@ -85,7 +84,7 @@ class WeekActivity : AppCompatActivity() {
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private val timeDetails = TimeDetails()
     var syncGoogleCallback = 0
-    lateinit var checkNet: CheckNet
+    private lateinit var isNet: IsNet
 
     // Google oauth2
     lateinit var credential: GoogleAccountCredential
@@ -202,7 +201,6 @@ class WeekActivity : AppCompatActivity() {
             if (mode == "Dots")
                 view.addSpan(DrawDots(colors, dot))
             if (mode == "ToDay")
-                //view.setSelectionDrawable(resources.getDrawable(R.drawable.shape_bg_cal_today))
                 view.setBackgroundDrawable(resources.getDrawable(R.drawable.shape_bg_cal_today))
         }
     }
@@ -217,9 +215,8 @@ class WeekActivity : AppCompatActivity() {
         if(requestCode == REQUEST_CODE){
             if(grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED){
-                allPermission = 1
+                isPermission = 1
                 run()
-                //Toast.makeText(this@WeekActivity, "Permissions is granted", Toast.LENGTH_LONG).show()
             }else{
                 Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
             }
@@ -247,7 +244,7 @@ class WeekActivity : AppCompatActivity() {
                     || checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE)
             }else{
-                allPermission = 1
+                isPermission = 1
             }
         }else{
             run()
@@ -270,7 +267,7 @@ class WeekActivity : AppCompatActivity() {
         calendarMode = sharedPref.getInt("CalendarMode", 0)
         calendarListViewAdapter = CalendarListViewAdapter(this@WeekActivity, studentCalendarObjArr)
         calender_list_view.adapter = calendarListViewAdapter
-        checkNet = CheckNet(this)
+        isNet = IsNet(this)
         ads = Ads(this)
     }
 
@@ -307,7 +304,7 @@ class WeekActivity : AppCompatActivity() {
         view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 view.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                //view.height //height is ready
+                //view.height //height is ready?
                 if (calendarMode == 0) {
                     calendarView.state().edit()
                             .setCalendarDisplayMode(CalendarMode.WEEKS)
@@ -328,18 +325,9 @@ class WeekActivity : AppCompatActivity() {
         calendarView.selectionMode = SELECTION_MODE_SINGLE
     }
 
-//    private fun changeBackground(){
-//        //calender_list_view.background = resources.getDrawable(background[random(0, background.size - 1)])
-//    }
-
-//    private fun random(from: Int, to: Int): Int{
-//        return Random().nextInt(to - from) + from
-//    }
-
     private fun setCalendarDots(){
-        for(i in mapDateForDots){
+        for(i in dots){
             calendarView.addDecorator(EventDecorator("Dots", listOf(resources.getColor(R.color.colorBlue), resources.getColor(R.color.colorOrange), resources.getColor(R.color.colorRed)), i.key, i.value))
-            //Log.d("valuedot", i.value)
         }
     }
 
@@ -478,7 +466,6 @@ class WeekActivity : AppCompatActivity() {
         float_button.setOnActionSelectedListener { it ->
             when(it.id){
                 R.id.fab_setting ->{
-                    //Toast.makeText(this@WeekActivity, "Setting", Toast.LENGTH_SHORT).show()
                     if(calendarMode == 1) {
                         calendarView.layoutParams.height = ((screenHeight / 100f) * 21f).toInt()
                         content_layout.layoutParams.height = ((screenHeight - (screenHeight / 100f) * 21f) - view.height - statusBarHeight).toInt()
@@ -512,7 +499,7 @@ class WeekActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.fab_sync_google ->{
-                    if(checkNet.check()) {
+                    if(isNet.check()) {
                         if (isGooglePlayServicesAvailable()) {
                             if (syncGoogleCallback == 0) {
                                 syncGoogleCallback = 1
@@ -525,7 +512,7 @@ class WeekActivity : AppCompatActivity() {
                     }
                 }
                 R.id.fab_update ->{
-                    if (checkNet.check()) {
+                    if (isNet.check()) {
                         supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
                                 .commit()
                         supportFragmentManager.executePendingTransactions()
@@ -552,7 +539,7 @@ class WeekActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.fab_logout ->{
-                    if (checkNet.check()) {
+                    if (isNet.check()) {
                         try {
                             sqLite.deleteCalendar()
                             sqLite.deleteInfo()
@@ -651,7 +638,7 @@ class WeekActivity : AppCompatActivity() {
         initFloatButton()
         toDay()
         drawBackgroundToday()
-        mapDateForDots = parseCalendarJson!!.addToMapDots()
+        dots = parseCalendarJson!!.initDots()
         setCalendarDots()
         swipe.setListener(OnSwipeListener())
         Log.d("service", checkServiceRunning().toString())
@@ -668,7 +655,7 @@ class WeekActivity : AppCompatActivity() {
         calendarSetting()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermission()
-            if (allPermission == 1)
+            if (isPermission == 1)
                 run()
             else
                 checkPermission()
@@ -690,9 +677,6 @@ class WeekActivity : AppCompatActivity() {
                         putString("accSelected", GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email)
                                 .apply()
                     }
-                    //Toast.makeText(this@WeekActivity, "Oauth true", Toast.LENGTH_LONG).show()
-                    //Toast.makeText(this@WeekActivity, "${GoogleSignIn.getClient(this, gso).silentSignIn().result?.email}", Toast.LENGTH_LONG).show()
-
                     if(credential.selectedAccountName != null ) {
                         val syncGoogle = SyncGoogle(this)
                         syncGoogle.start()

@@ -3,7 +3,7 @@ package com.indieteam.mytask.process
 import android.content.Context
 import android.net.ConnectivityManager
 
-class CheckNet(val context: Context) {
+class IsNet(val context: Context) {
 
     fun check(): Boolean{
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
