@@ -1,13 +1,13 @@
-package com.indieteam.mytask.process.calendar.v2
+package com.indieteam.mytask.process.excel
 
 import android.annotation.SuppressLint
-import com.indieteam.mytask.dataObj.v2.RawCalendarObj
+import com.indieteam.mytask.dataStruct.RawCalendarStruct
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ExeltoJson{
+class ExcelToJson{
 
     @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
@@ -23,8 +23,8 @@ class ExeltoJson{
     var jsonArray = JSONArray()
     var size = 0
 
-    fun toJson(rawCalendarObjArr: ArrayList<RawCalendarObj>) {
-        for (i in rawCalendarObjArr){
+    fun toJson(rawCalendarStructArr: ArrayList<RawCalendarStruct>) {
+        for (i in rawCalendarStructArr){
             //debug use it
 //            Log.d("subjectName", i.subjectName)
 //            Log.d("subjectDate", i.subjectDate)
@@ -36,22 +36,22 @@ class ExeltoJson{
             val dateStartString = i.subjectDate.substring(0, i.subjectDate.indexOf("-")).trim()
             val dateEndString = i.subjectDate.substring(i.subjectDate.indexOf("-") + 1, i.subjectDate.length).trim()
 
-            val dateStartDate = simpleDateFormat.parse((dateStartString))
-            val dateEndDate = simpleDateFormat.parse((dateEndString))
+            val dateStart = simpleDateFormat.parse((dateStartString))
+            val dateEnd = simpleDateFormat.parse((dateEndString))
 
 //            Log.d("dateStartString", dateStartString)
 //            Log.d("dateEndString", dateEndString)
 
             val calendar = Calendar.getInstance()
             val calendar2 = Calendar.getInstance()
-            calendar.time = dateStartDate
-            val dateStartCalendar = calendar
-            calendar2.time = dateEndDate
-            val dateEndCalendar = calendar2
+            calendar.time = dateStart
+            val calendarStart = calendar
+            calendar2.time = dateEnd
+            val calendarEnd = calendar2
 
-            while (dateStartCalendar.time <= dateEndCalendar.time){
+            while (calendarStart.time <= calendarEnd.time){
                 //Log.d("date", calendar.time.toString())
-                if(dateStartCalendar.get(Calendar.DAY_OF_WEEK) == dayOfWeekMap[i.subjectDayOfWeek]){
+                if(calendarStart.get(Calendar.DAY_OF_WEEK) == dayOfWeekMap[i.subjectDayOfWeek]){
 //                    Log.d("size", size.toString())
 //                    Log.d("subjectName", i.subjectName)
 //                    Log.d("subjectDate", "${dateStartCalendar.get(Calendar.DAY_OF_MONTH)}/"+
@@ -64,9 +64,9 @@ class ExeltoJson{
 
                     val jsonObjectChild = JSONObject()
                     jsonObjectChild.put("subjectName", i.subjectName)
-                    jsonObjectChild.put("subjectDate", "${dateStartCalendar.get(Calendar.DAY_OF_MONTH)}/"+
-                            "${dateStartCalendar.get(Calendar.MONTH) + 1}/" +
-                            "${dateStartCalendar.get(Calendar.YEAR)}")
+                    jsonObjectChild.put("subjectDate", "${calendarStart.get(Calendar.DAY_OF_MONTH)}/"+
+                            "${calendarStart.get(Calendar.MONTH) + 1}/" +
+                            "${calendarStart.get(Calendar.YEAR)}")
                     jsonObjectChild.put("subjectDayOfWeek", i.subjectDayOfWeek)
                     jsonObjectChild.put("subjectTime", i.subjectTime)
                     jsonObjectChild.put("subjectPlace", i.subjectPlace)
@@ -75,7 +75,7 @@ class ExeltoJson{
                     jsonArray.put(size, jsonObjectChild)
                     size++
                 }
-                dateStartCalendar.add(Calendar.DAY_OF_MONTH, 1)
+                calendarStart.add(Calendar.DAY_OF_MONTH, 1)
             }
         }
         //Log.d("exelToJson", jsonObject.toString())

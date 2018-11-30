@@ -1,5 +1,6 @@
 package com.indieteam.mytask.process.sync
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
@@ -11,7 +12,7 @@ import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
-import com.indieteam.mytask.dataObj.v2.TimeDetails
+import com.indieteam.mytask.dataStruct.TimeDetails
 import com.indieteam.mytask.process.IsNet
 import com.indieteam.mytask.sqlite.SqLite
 import com.indieteam.mytask.ui.WeekActivity
@@ -22,15 +23,18 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class SyncGoogle(val context: Context): Thread() {
+@Suppress("DEPRECATION")
+class SyncGoogleCalendar(val context: Context): Thread() {
 
     private var sqLite = SqLite(context)
+    @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     val date = "${CalendarDay.today().day}/${CalendarDay.today().month+1}/${CalendarDay.today().year}"
     private val timeDetails = TimeDetails()
     private lateinit var service: com.google.api.services.calendar.Calendar
     private var weekActivity = context as WeekActivity
     private var checkNet = IsNet(context)
+    private var calendarId: String? = null
 
 
     private fun init(){
@@ -39,7 +43,7 @@ class SyncGoogle(val context: Context): Thread() {
             credential.selectedAccountName = sharedPref.getString("accSelected", "null")
             service = Calendar.Builder(httpTransport, jsonFactory, credential)
                     .setApplicationName(appName).build()
-            this@SyncGoogle.service = weekActivity.service
+            this@SyncGoogleCalendar.service = weekActivity.service
         }
     }
 
@@ -69,43 +73,40 @@ class SyncGoogle(val context: Context): Thread() {
 
         try {
             val insert = service.Calendars().insert(calendar).execute()
-            weekActivity.apply {
-                runOnUiThread {
-                    //Toast.makeText(context, insert.id, Toast.LENGTH_SHORT).show()
-                    sharedPref.edit().apply{
-                        putString("google-calendar-id", insert.id)
-                        apply()
-                    }
-                }
-            }
+            calendarId = insert.id
         }catch (e: IOException){
             e.printStackTrace()
             weekActivity.runOnUiThread {
                 Toast.makeText(weekActivity, "Lỗi insert calendar", Toast.LENGTH_SHORT).show()
                 weekActivity.syncGoogleCallback = 0
             }
-            this@SyncGoogle.join()
+            this@SyncGoogleCalendar.join()
         }
     }
 
-    private fun deleteCalendar(){
+    private fun deleteCalendar(id: String){
         try {
-            if (weekActivity.sharedPref.getString("google-calendar-id", "null") != "null") {
-                service.calendars().delete(weekActivity.sharedPref.getString("google-calendar-id", "null")).execute()
-                weekActivity.runOnUiThread {
-                    //Toast.makeText(weekActivity, "Deleted", Toast.LENGTH_SHORT).show()
-                }
-            }
+            service.calendars().delete(id).execute()
         }catch (e: IOException){
             e.printStackTrace()
         }
     }
 
-    private fun getCalendar(){
-
+    private fun findCalendarExist(){
+        var pageToken: String? = null
+        val calendarList = service.calendarList().list().setPageToken(pageToken).execute()
+        do {
+            for (calendar in calendarList.items) {
+                Log.d("calendar_summary", calendar.summary)
+                if (calendar.summary == "Lich hoc ictu"){
+                    deleteCalendar(calendar.id)
+                }
+            }
+            pageToken = calendarList.nextPageToken
+        } while (pageToken != null)
     }
 
-    private fun insertEvents(summaryEvent: String, location: String, date: String, timeStart: String, timeEnd: String){
+    private fun insertEvents(id: String, summaryEvent: String, location: String, date: String, timeStart: String, timeEnd: String){
         val event = Event()
                 .setSummary(summaryEvent)
                 .setLocation(location)
@@ -114,38 +115,37 @@ class SyncGoogle(val context: Context): Thread() {
         val year = date.substring(date.lastIndexOf("/") + 1, date.length)
 
         if (day.toInt()<10)
-            day = "0${day}"
+            day = "0$day"
         if (month.toInt()<10)
-            month = "0${month}"
+            month = "0$month"
 
-        val startDateTime = DateTime("${year}-${month}-${day}T${timeStart}:00+07:00")
-        Log.d("startDateTime", "${year}-${month}-${day}T${timeStart}:00+07:00")
+        val startDateTime = DateTime("$year-$month-${day}T$timeStart:00+07:00")
+        Log.d("startDateTime", "$year-$month-${day}T$timeStart:00+07:00")
         val start = EventDateTime()
                 .setDateTime(startDateTime)
                 .setTimeZone("Asia/Ho_Chi_Minh")
         event.start = start
 
-        val endDateTime = DateTime("${year}-${month}-${day}T${timeEnd}:00+07:00")
-        Log.d("endDateTime", "${year}-${month}-${day}T${timeEnd}:00+07:00")
+        val endDateTime = DateTime("$year-$month-${day}T$timeEnd:00+07:00")
+        Log.d("endDateTime", "$year-$month-${day}T$timeEnd:00+07:00")
 
         val end = EventDateTime()
                 .setDateTime(endDateTime)
                 .setTimeZone("Asia/Ho_Chi_Minh")
         event.end = end
         try {
-            service.events().insert(weekActivity.sharedPref.getString("google-calendar-id", "null"), event).execute()
+            service.events().insert(id, event).execute()
         }catch (e: IOException){
             e.printStackTrace()
             weekActivity.runOnUiThread {
                 Toast.makeText(weekActivity, "Lỗi insert event", Toast.LENGTH_SHORT).show()
                 weekActivity.syncGoogleCallback = 0
             }
-            this@SyncGoogle.join()
+            this@SyncGoogleCalendar.join()
         }
     }
 
     fun sync(){
-        var contentCSV = "Subject,Start Date,End Date,Location, Start Time, End Time"
         val jsonObjects = JSONObject(sqLite.readCalendar())
         val jsonArr = jsonObjects.getJSONArray("calendar")
 
@@ -153,20 +153,10 @@ class SyncGoogle(val context: Context): Thread() {
             runOnUiThread{
                 Toast.makeText(this, "Đang đồng bộ trong nền", Toast.LENGTH_SHORT).show()
             }
-            if (sharedPref.getString("google-calendar-id", "null") != null)
-                deleteCalendar()
         }
 
+        findCalendarExist()
         insertCalendar()
-
-//        val dir = File(Environment.getExternalStorageDirectory(), "TKB ICTU")
-//        if (!dir.exists()) {
-//            dir.mkdirs()
-//        }
-//
-//        val file = File(Environment.getExternalStorageDirectory(), "TKB ICTU/tkb.csv")
-//        if (file.exists())
-//            file.delete()
 
         for (i in 0 until jsonArr.length()) {
             if (!checkNet.check()){
@@ -181,16 +171,16 @@ class SyncGoogle(val context: Context): Thread() {
             val subjectDate = jsonArr.getJSONObject(i).getString("subjectDate")
             val subjectTime = jsonArr.getJSONObject(i).getString("subjectTime")
             val subjectPlace = jsonArr.getJSONObject(i).getString("subjectPlace")
-            val teacher = jsonArr.getJSONObject(i).getString("teacher")
+            //val teacher = jsonArr.getJSONObject(i).getString("teacher")
             val firstTime = subjectTime.substring(0, subjectTime.indexOf(",")).toInt() - 1
             val endTime = subjectTime.substring(subjectTime.lastIndexOf(",") + 1, subjectTime.length).toInt() - 1
             if (simpleDateFormat.parse(date) >= CalendarDay.from(CalendarDay().year, 3, 15).date &&
                     simpleDateFormat.parse(date) < CalendarDay.from(CalendarDay().year, 9, 15).date) {
-                contentCSV += "\n$subjectName,$subjectDate,$subjectDate,$subjectPlace,${timeDetails.timeSummerArr[firstTime].timeIn},${timeDetails.timeSummerArr[endTime].timeOut},"
-                insertEvents(subjectName, subjectPlace, subjectDate, timeDetails.timeSummerArr[firstTime].timeIn, timeDetails.timeSummerArr[endTime].timeOut)
+                if (calendarId != null)
+                    insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeSummerArr[firstTime].timeIn, timeDetails.timeSummerArr[endTime].timeOut)
             } else {
-                contentCSV += "\n$subjectName,$subjectDate,$subjectDate,$subjectPlace,${timeDetails.timeWinterArr[firstTime].timeIn},${timeDetails.timeWinterArr[endTime].timeOut},"
-                insertEvents(subjectName, subjectPlace, subjectDate, timeDetails.timeWinterArr[firstTime].timeIn, timeDetails.timeWinterArr[endTime].timeOut)
+                if (calendarId != null)
+                    insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeWinterArr[firstTime].timeIn, timeDetails.timeWinterArr[endTime].timeOut)
             }
         }
 
@@ -198,18 +188,6 @@ class SyncGoogle(val context: Context): Thread() {
             Toast.makeText(weekActivity, "Hoàn tất đồng bộ", Toast.LENGTH_SHORT).show()
             weekActivity.syncGoogleCallback = 0
         }
-
-//        val fos = FileOutputStream(file)
-//        fos.write(contentCSV.toByteArray())
-//        fos.close()
-//        Log.d("contentCSV", contentCSV)
-//        (context as WeekActivity).apply {
-//            syncGoogleCallback = 0
-//            runOnUiThread {
-//                Toast.makeText(this, "Đã xuất: $file", Toast.LENGTH_LONG).show()
-//            }
-//        }
-
     }
 
 

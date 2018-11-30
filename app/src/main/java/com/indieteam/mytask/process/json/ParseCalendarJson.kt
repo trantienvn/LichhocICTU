@@ -1,4 +1,4 @@
-package com.indieteam.mytask.process.parseJson
+package com.indieteam.mytask.process.json
 
 import android.annotation.SuppressLint
 import com.prolificinteractive.materialcalendarview.CalendarDay

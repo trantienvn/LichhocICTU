@@ -1,8 +1,8 @@
-package com.indieteam.mytask.process.calendar.v2
+package com.indieteam.mytask.process.excel
 
 import android.content.Context
 import android.util.Log
-import com.indieteam.mytask.dataObj.v2.RawCalendarObj
+import com.indieteam.mytask.dataStruct.RawCalendarStruct
 import jxl.Sheet
 import jxl.Workbook
 import org.json.JSONObject
@@ -13,10 +13,10 @@ class ReadExel(context: Context){
 
     private val fileV2 = File(context.filesDir, "exel/tkb_v2.xls")
 
-    var rawCalendarObjArr = ArrayList<RawCalendarObj>()
+    var rawCalendarObjArr = ArrayList<RawCalendarStruct>()
     var infoObj = JSONObject()
     var readExelCallBack = 0
-    var exelToJson = ExeltoJson()
+    var exelToJson = ExcelToJson()
 
     private fun readInfo(sheet: Sheet){
         val studentName = sheet.getCell(2, 5).contents
@@ -66,7 +66,7 @@ class ReadExel(context: Context){
                     }
                 }
 
-                rawCalendarObjArr.add(RawCalendarObj(subjectName,
+                rawCalendarObjArr.add(RawCalendarStruct(subjectName,
                         subjectDate,
                         subjectDayOfWeek,
                         subjectTime,

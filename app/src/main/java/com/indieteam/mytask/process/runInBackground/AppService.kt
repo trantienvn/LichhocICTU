@@ -8,7 +8,7 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import com.indieteam.mytask.process.notification.AppNotification
-import com.indieteam.mytask.process.parseJson.ParseCalendarJson
+import com.indieteam.mytask.process.json.ParseCalendarJson
 import com.indieteam.mytask.sqlite.SqLite
 import org.json.JSONObject
 import java.util.*

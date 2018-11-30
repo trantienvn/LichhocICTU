@@ -37,12 +37,12 @@ import com.google.api.client.json.gson.GsonFactory
 import com.indieteam.mytask.R
 import com.indieteam.mytask.adapter.CalendarListViewAdapter
 import com.indieteam.mytask.ads.Ads
-import com.indieteam.mytask.dataObj.v2.StudentCalendarObj
-import com.indieteam.mytask.dataObj.v2.TimeDetails
+import com.indieteam.mytask.dataStruct.StudentCalendarStruct
+import com.indieteam.mytask.dataStruct.TimeDetails
 import com.indieteam.mytask.process.IsNet
 import com.indieteam.mytask.process.domHTML.DomUpdateCalendar
-import com.indieteam.mytask.process.sync.SyncGoogle
-import com.indieteam.mytask.process.parseJson.ParseCalendarJson
+import com.indieteam.mytask.process.sync.SyncGoogleCalendar
+import com.indieteam.mytask.process.json.ParseCalendarJson
 import com.indieteam.mytask.process.runInBackground.AppService
 import com.indieteam.mytask.sqlite.SqLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
@@ -67,7 +67,7 @@ class WeekActivity : AppCompatActivity() {
     private var calendarJson: JSONObject? = null
     private var parseCalendarJson: ParseCalendarJson? = null
     var dots = mutableMapOf<CalendarDay, String>()
-    private var studentCalendarObjArr = ArrayList<StudentCalendarObj>()
+    private var studentCalendarObjArr = ArrayList<StudentCalendarStruct>()
     private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
     private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
     private lateinit var calendarListViewAdapter: CalendarListViewAdapter
@@ -394,9 +394,9 @@ class WeekActivity : AppCompatActivity() {
                             val endTime = subjectTime[j].substring(subjectTime[j].lastIndexOf(",") + 1, subjectTime[j].length).toInt() - 1
                             if (simpleDateFormat.parse(date) >= CalendarDay.from(CalendarDay().year, 3, 15).date &&
                                     simpleDateFormat.parse(date) < CalendarDay.from(CalendarDay().year, 9, 15).date)
-                                studentCalendarObjArr.add(StudentCalendarObj(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
+                                studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
                             else
-                                studentCalendarObjArr.add(StudentCalendarObj(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
+                                studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
                         }
                         calendarListViewAdapter.notifyDataSetChanged()
                     }
@@ -503,7 +503,7 @@ class WeekActivity : AppCompatActivity() {
                         if (isGooglePlayServicesAvailable()) {
                             if (syncGoogleCallback == 0) {
                                 syncGoogleCallback = 1
-                                val syncGoogle = SyncGoogle(this)
+                                val syncGoogle = SyncGoogleCalendar(this)
                                 syncGoogle.start()
                             }
                         }
@@ -678,7 +678,7 @@ class WeekActivity : AppCompatActivity() {
                                 .apply()
                     }
                     if(credential.selectedAccountName != null ) {
-                        val syncGoogle = SyncGoogle(this)
+                        val syncGoogle = SyncGoogleCalendar(this)
                         syncGoogle.start()
                     }else
                         syncGoogleCallback = 0

@@ -1,4 +1,4 @@
-package com.indieteam.mytask.dataObj.v2
+package com.indieteam.mytask.dataStruct
 
 
 class TimeDetails{
