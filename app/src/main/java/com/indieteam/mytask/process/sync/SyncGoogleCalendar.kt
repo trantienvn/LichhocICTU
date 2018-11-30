@@ -14,6 +14,7 @@ import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.indieteam.mytask.dataStruct.TimeDetails
 import com.indieteam.mytask.process.IsNet
+import com.indieteam.mytask.process.notification.AppNotification
 import com.indieteam.mytask.sqlite.SqLite
 import com.indieteam.mytask.ui.WeekActivity
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -35,6 +36,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
     private var weekActivity = context as WeekActivity
     private var checkNet = IsNet(context)
     private var calendarId: String? = null
+    private val appNotification = AppNotification(context)
 
 
     private fun init(){
@@ -81,8 +83,10 @@ class SyncGoogleCalendar(val context: Context): Thread() {
                         putBoolean("isSyncing", false)
                         apply()
                     }
+                    appNotification.syncFail()
                 }
             }
+            appNotification.syncFail()
             this@SyncGoogleCalendar.join()
         }
     }
@@ -99,6 +103,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
                         putBoolean("isSyncing", false)
                         apply()
                     }
+                    appNotification.syncFail()
                 }
             }
             this@SyncGoogleCalendar.join()
@@ -157,6 +162,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
                         putBoolean("isSyncing", false)
                         apply()
                     }
+                    appNotification.syncFail()
                 }
             }
             this@SyncGoogleCalendar.join()
@@ -169,7 +175,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
 
         weekActivity.apply{
             runOnUiThread{
-                Toast.makeText(this, "Đang đồng bộ trong nền", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Đang tải lịch lên Google Calendar trong nền", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -185,6 +191,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
                             putBoolean("isSyncing", false)
                             apply()
                         }
+                        appNotification.syncFail()
                     }
                 }
                 this@SyncGoogleCalendar.join()
@@ -209,7 +216,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
 
         weekActivity.apply{
             runOnUiThread {
-                Toast.makeText(weekActivity, "Hoàn tất đồng bộ", Toast.LENGTH_SHORT).show()
+                Toast.makeText(weekActivity, "Đã tải lịch lên Google Calendar", Toast.LENGTH_SHORT).show()
                 Log.d("Sync", "Done")
                 sharedPref.edit().apply {
                     putBoolean("isSyncing", false)
@@ -217,6 +224,9 @@ class SyncGoogleCalendar(val context: Context): Thread() {
                 }
             }
         }
+
+        appNotification.syncDone()
+
     }
 
 

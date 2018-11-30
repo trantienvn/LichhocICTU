@@ -1,11 +1,13 @@
-package com.indieteam.mytask.process.runInBackground
+package com.indieteam.mytask.process.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.IBinder
+import android.preference.PreferenceManager
 import android.util.Log
 import com.indieteam.mytask.process.notification.AppNotification
 import com.indieteam.mytask.process.json.ParseCalendarJson
@@ -27,6 +29,7 @@ class AppService: Service(){
     private var numberSubjects = 0
     private var countNotification = 0
     private var notificationThread = CheckTimeInBackground()
+    private lateinit var sharedPreferences: SharedPreferences
 
     init {
         calendarForTomorrow.set(calendarForTomorrow.get(Calendar.YEAR), calendarForTomorrow.get(Calendar.MONTH), calendarForTomorrow.get(Calendar.DAY_OF_MONTH))
@@ -35,13 +38,14 @@ class AppService: Service(){
 
     inner class CheckTimeInBackground: Thread(){
         override fun run() {
-            Timer().scheduleAtFixedRate(0, 30000) {
+            Timer().scheduleAtFixedRate(0, 40000) {
                 calendarForNow = Calendar.getInstance()!!
                 Log.d("hour", calendarForNow.get(Calendar.HOUR_OF_DAY).toString() + " " + calendarForNow.get(Calendar.MINUTE))
                 if (calendarForNow.get(Calendar.HOUR_OF_DAY) == 20 && calendarForNow.get(Calendar.MINUTE) == 0) {
-                    if (countNotification == 0)
+                    if (countNotification == 0) {
                         pushNotification()
-                    countNotification++
+                        countNotification++
+                    }
                 }else
                     countNotification = 0
             }
@@ -86,8 +90,8 @@ class AppService: Service(){
         super.onCreate()
         appNotification = AppNotification(this)
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val channelName  = "calendarNotification"
-            val channelId = "calendar_notification"
+            val channelName  = "App Notification"
+            val channelId = "App Notification"
             val description = ""
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val chanel = NotificationChannel(channelId, channelName, importance)
@@ -103,6 +107,7 @@ class AppService: Service(){
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("service", "started")
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         notificationThread.start()
         return START_STICKY
     }

@@ -22,8 +22,8 @@ class AppNotification(val context: Context) {
 
         //set channelId
         if(Build.VERSION.SDK_INT >= 26){
-            val channelName  = "calendarNotification"
-            val channelId = "calendar_notification"
+            val channelName  = "Calendar Notification"
+            val channelId = "Calendar Notification"
             val description = ""
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val chanel = NotificationChannel(channelId, channelName, importance)
@@ -51,6 +51,71 @@ class AppNotification(val context: Context) {
 
         //show
         NotificationManagerCompat.from(context).notify(2, mBuilder.build())
+    }
+
+    fun syncing(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channelName  = "App Notification"
+            val channelId = "App Notification"
+            val description = ""
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val chanel = NotificationChannel(channelId, channelName, importance)
+            chanel.description = description
+
+            val notification = NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(R.drawable.ic_next_day_64)
+                    .setContentTitle("Đang tải lịch lên Google Calendar...")
+                    .setColor(Color.parseColor("#2c73b3"))
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                    .setAutoCancel(false) // remove notification after touch
+
+            NotificationManagerCompat.from(context).notify(1, notification.build())
+        }
+    }
+
+    fun syncDone(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channelName  = "App Notification"
+            val channelId = "App Notification"
+            val description = ""
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val chanel = NotificationChannel(channelId, channelName, importance)
+            chanel.description = description
+
+            val notification = NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(R.drawable.ic_next_day_64)
+                    .setContentTitle("Đang theo dõi lịch học")
+                    .setContentText("Đã tải lịch lên Google Calendar")
+                    .setColor(Color.parseColor("#2c73b3"))
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                    .setAutoCancel(false) // remove notification after touch
+
+            NotificationManagerCompat.from(context).notify(1, notification.build())
+        }
+    }
+
+    fun syncFail(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channelName  = "App Notification"
+            val channelId = "App Notification"
+            val description = ""
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val chanel = NotificationChannel(channelId, channelName, importance)
+            chanel.description = description
+
+            val notification = NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(R.drawable.ic_next_day_64)
+                    .setContentTitle("Đang theo dõi lịch học")
+                    .setContentText("Lỗi tải lịch lên Google Calendar")
+                    .setColor(Color.parseColor("#2c73b3"))
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                    .setAutoCancel(false) // remove notification after touch
+
+            NotificationManagerCompat.from(context).notify(1, notification.build())
+        }
     }
 
     fun foreground(): NotificationCompat.Builder{

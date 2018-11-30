@@ -43,7 +43,7 @@
             android:theme="@style/InfoStudentTheme" />
 
         <service
-            android:name=".process.runInBackground.AppService"
+            android:name=".process.service.AppService"
             android:exported="false" />
 
         <activity

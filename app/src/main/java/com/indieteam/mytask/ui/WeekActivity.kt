@@ -43,7 +43,8 @@ import com.indieteam.mytask.process.IsNet
 import com.indieteam.mytask.process.domHTML.DomUpdateCalendar
 import com.indieteam.mytask.process.sync.SyncGoogleCalendar
 import com.indieteam.mytask.process.json.ParseCalendarJson
-import com.indieteam.mytask.process.runInBackground.AppService
+import com.indieteam.mytask.process.notification.AppNotification
+import com.indieteam.mytask.process.service.AppService
 import com.indieteam.mytask.sqlite.SqLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -440,7 +441,7 @@ class WeekActivity : AppCompatActivity() {
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_sync_google, R.drawable.ic_export)
-                                .setLabel("Đ.bộ Google Calendar")
+                                .setLabel("Tải lên Google Calendar")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -502,6 +503,9 @@ class WeekActivity : AppCompatActivity() {
                             if (!sharedPref.getBoolean("isSyncing", false)) {
                                 checkAccountPermission()
                                 if (isAccountPermission == 1) {
+                                    val appNotification = AppNotification(this)
+                                    appNotification.syncing()
+
                                     sharedPref.edit().apply {
                                         putBoolean("isSyncing", true)
                                         apply()
@@ -673,7 +677,7 @@ class WeekActivity : AppCompatActivity() {
                 }
                 else {
                     credential.selectedAccountName = GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email
-                    Toast.makeText(this, GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email, Toast.LENGTH_LONG).show()
+                    //Toast.makeText(this, GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email, Toast.LENGTH_LONG).show()
                     sharedPref.edit().apply{
                         putString("accSelected", GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email)
                                 .apply()
