@@ -157,7 +157,7 @@ class AppNotification(val context: Context) {
     }
 
     fun foreground(): NotificationCompat.Builder{
-        return NotificationCompat.Builder(context, "calendar_notification")
+        return NotificationCompat.Builder(context, "App Notification")
                 .setSmallIcon(R.drawable.ic_date_range_256)
                 .setContentTitle("Đang theo dõi lịch học")
                 .setColor(Color.parseColor("#2c73b3"))

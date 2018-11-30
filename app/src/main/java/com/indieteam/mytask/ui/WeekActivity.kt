@@ -506,7 +506,8 @@ class WeekActivity : AppCompatActivity() {
                             if (!sharedPref.getBoolean("isSyncing", false)) {
                                 checkAccountPermission()
                                 if (isAccountPermission == 1) {
-                                    appNotification.syncing()
+                                    if (sharedPref.getString("accSelected", "null") != "null")
+                                        appNotification.syncing()
 
                                     sharedPref.edit().apply {
                                         putBoolean("isSyncing", true)
