@@ -71,6 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:elevation="2dp"
+        app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="1">
 
         <com.leinardi.android.speeddial.SpeedDialView

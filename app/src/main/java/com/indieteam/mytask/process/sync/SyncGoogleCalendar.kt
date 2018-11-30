@@ -29,7 +29,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
     private var sqLite = SqLite(context)
     @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
-    val date = "${CalendarDay.today().day}/${CalendarDay.today().month+1}/${CalendarDay.today().year}"
+    private val date = "${CalendarDay.today().day}/${CalendarDay.today().month+1}/${CalendarDay.today().year}"
     private val timeDetails = TimeDetails()
     private lateinit var service: com.google.api.services.calendar.Calendar
     private var weekActivity = context as WeekActivity
@@ -39,11 +39,12 @@ class SyncGoogleCalendar(val context: Context): Thread() {
 
     private fun init(){
         weekActivity.apply{
+            Log.d("accSelected", sharedPref.getString("accSelected", "null"))
             credential = GoogleAccountCredential.usingOAuth2(context, Collections.singleton(CalendarScopes.CALENDAR_EVENTS))
             credential.selectedAccountName = sharedPref.getString("accSelected", "null")
             service = Calendar.Builder(httpTransport, jsonFactory, credential)
-                    .setApplicationName(appName).build()
-            this@SyncGoogleCalendar.service = weekActivity.service
+                        .setApplicationName(appName).build()
+            this@SyncGoogleCalendar.service = service
         }
     }
 
@@ -59,9 +60,6 @@ class SyncGoogleCalendar(val context: Context): Thread() {
                 startActivityForResult(signInIntent, RC_SIGN_IN)
             } else {
                 sync()
-                runOnUiThread {
-                    syncGoogleCallback = 0
-                }
             }
         }
     }
@@ -76,9 +74,14 @@ class SyncGoogleCalendar(val context: Context): Thread() {
             calendarId = insert.id
         }catch (e: IOException){
             e.printStackTrace()
-            weekActivity.runOnUiThread {
-                Toast.makeText(weekActivity, "Lỗi insert calendar", Toast.LENGTH_SHORT).show()
-                weekActivity.syncGoogleCallback = 0
+            weekActivity.apply {
+                runOnUiThread {
+                    Toast.makeText(weekActivity, "Lỗi insert calendar", Toast.LENGTH_SHORT).show()
+                    sharedPref.edit().apply {
+                        putBoolean("isSyncing", false)
+                        apply()
+                    }
+                }
             }
             this@SyncGoogleCalendar.join()
         }
@@ -89,6 +92,16 @@ class SyncGoogleCalendar(val context: Context): Thread() {
             service.calendars().delete(id).execute()
         }catch (e: IOException){
             e.printStackTrace()
+            weekActivity.apply {
+                runOnUiThread {
+                    Toast.makeText(weekActivity, "Lỗi delete calendar", Toast.LENGTH_SHORT).show()
+                    sharedPref.edit().apply {
+                        putBoolean("isSyncing", false)
+                        apply()
+                    }
+                }
+            }
+            this@SyncGoogleCalendar.join()
         }
     }
 
@@ -98,7 +111,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
         do {
             for (calendar in calendarList.items) {
                 Log.d("calendar_summary", calendar.summary)
-                if (calendar.summary == "Lich hoc ictu"){
+                if (calendar.summary == "Lich hoc ictu") {
                     deleteCalendar(calendar.id)
                 }
             }
@@ -137,9 +150,14 @@ class SyncGoogleCalendar(val context: Context): Thread() {
             service.events().insert(id, event).execute()
         }catch (e: IOException){
             e.printStackTrace()
-            weekActivity.runOnUiThread {
-                Toast.makeText(weekActivity, "Lỗi insert event", Toast.LENGTH_SHORT).show()
-                weekActivity.syncGoogleCallback = 0
+            weekActivity.apply {
+                runOnUiThread {
+                    Toast.makeText(weekActivity, "Lỗi insert event", Toast.LENGTH_SHORT).show()
+                    sharedPref.edit().apply {
+                        putBoolean("isSyncing", false)
+                        apply()
+                    }
+                }
             }
             this@SyncGoogleCalendar.join()
         }
@@ -160,11 +178,16 @@ class SyncGoogleCalendar(val context: Context): Thread() {
 
         for (i in 0 until jsonArr.length()) {
             if (!checkNet.check()){
-                weekActivity.runOnUiThread {
-                    Toast.makeText(weekActivity, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
-                    weekActivity.syncGoogleCallback = 0
+                weekActivity.apply {
+                    runOnUiThread {
+                        Toast.makeText(weekActivity, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
+                        sharedPref.edit().apply {
+                            putBoolean("isSyncing", false)
+                            apply()
+                        }
+                    }
                 }
-                break
+                this@SyncGoogleCalendar.join()
             }
 
             val subjectName = jsonArr.getJSONObject(i).getString("subjectName")
@@ -184,9 +207,15 @@ class SyncGoogleCalendar(val context: Context): Thread() {
             }
         }
 
-        weekActivity.runOnUiThread {
-            Toast.makeText(weekActivity, "Hoàn tất đồng bộ", Toast.LENGTH_SHORT).show()
-            weekActivity.syncGoogleCallback = 0
+        weekActivity.apply{
+            runOnUiThread {
+                Toast.makeText(weekActivity, "Hoàn tất đồng bộ", Toast.LENGTH_SHORT).show()
+                Log.d("Sync", "Done")
+                sharedPref.edit().apply {
+                    putBoolean("isSyncing", false)
+                    apply()
+                }
+            }
         }
     }
 
@@ -194,6 +223,6 @@ class SyncGoogleCalendar(val context: Context): Thread() {
     override fun run() {
         init()
         checkCalendarPermission()
-        join()
+        this@SyncGoogleCalendar.join()
     }
 }

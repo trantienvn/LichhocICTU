@@ -62,7 +62,7 @@ import kotlin.collections.ArrayList
 @Suppress("DEPRECATION")
 class WeekActivity : AppCompatActivity() {
 
-    private val REQUEST_CODE = 1
+    private val REQUEST_ACCOUNT = 1
     private lateinit var sqLite: SqLite
     private var calendarJson: JSONObject? = null
     private var parseCalendarJson: ParseCalendarJson? = null
@@ -71,26 +71,25 @@ class WeekActivity : AppCompatActivity() {
     private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
     private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
     private lateinit var calendarListViewAdapter: CalendarListViewAdapter
-    private var isPermission = 0
+    private var isAccountPermission = 0
     private val swipe = Swipe()
     private lateinit var customSwipe: CustomSwipe
     private var screenHeight = 0
     private var statusBarHeight = 0
     private var navigationBarHeight = 0
     private var calendarMode = 0
-    lateinit var sharedPref: SharedPreferences
+    public lateinit var sharedPref: SharedPreferences
     //private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_i)
     @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private val timeDetails = TimeDetails()
-    var syncGoogleCallback = 0
     private lateinit var isNet: IsNet
 
     // Google oauth2
     lateinit var credential: GoogleAccountCredential
     var scope = Scope("https://www.googleapis.com/auth/calendar")
     var scope2 = Scope("https://www.googleapis.com/auth/calendar.events")
-    var RC_SIGN_IN = 4
+    var RC_SIGN_IN = 2
     val httpTransport = AndroidHttp.newCompatibleTransport()
     var jsonFactory = GsonFactory.getDefaultInstance()
     lateinit var service: com.google.api.services.calendar.Calendar
@@ -212,11 +211,11 @@ class WeekActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if(requestCode == REQUEST_CODE){
-            if(grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[1] == PackageManager.PERMISSION_GRANTED){
-                isPermission = 1
-                run()
+        if(requestCode == REQUEST_ACCOUNT){
+            if(grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                isAccountPermission = 1
+                val syncGoogle = SyncGoogleCalendar(this)
+                syncGoogle.start()
             }else{
                 Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
             }
@@ -238,16 +237,15 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkPermission(){
+    private fun checkAccountPermission(){
         if(Build.VERSION.SDK_INT >= 23) {
-            if(checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE)
+            if(checkSelfPermission(android.Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.GET_ACCOUNTS), REQUEST_ACCOUNT)
             }else{
-                isPermission = 1
+                isAccountPermission = 1
             }
         }else{
-            run()
+            isAccountPermission = 1
         }
     }
 
@@ -430,7 +428,7 @@ class WeekActivity : AppCompatActivity() {
                         .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                         .create(),
                         SpeedDialActionItem.Builder(R.id.fab_donate, R.drawable.ic_coin)
-                                .setLabel("Donate/Giới thiệu")
+                                .setLabel("Giới thiệu")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -442,7 +440,7 @@ class WeekActivity : AppCompatActivity() {
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_sync_google, R.drawable.ic_export)
-                                .setLabel("Đ.bộ Google lịch (Beta)")
+                                .setLabel("Đ.bộ Google Calendar")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -499,12 +497,19 @@ class WeekActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.fab_sync_google ->{
+                    Toast.makeText(this, sharedPref.getString("accSelected", "null"), Toast.LENGTH_LONG).show()
                     if(isNet.check()) {
                         if (isGooglePlayServicesAvailable()) {
-                            if (syncGoogleCallback == 0) {
-                                syncGoogleCallback = 1
-                                val syncGoogle = SyncGoogleCalendar(this)
-                                syncGoogle.start()
+                            if (!sharedPref.getBoolean("isSyncing", false)) {
+                                checkAccountPermission()
+                                if (isAccountPermission == 1) {
+                                    sharedPref.edit().apply {
+                                        putBoolean("isSyncing", true)
+                                        apply()
+                                    }
+                                    val syncGoogle = SyncGoogleCalendar(this)
+                                    syncGoogle.start()
+                                }
                             }
                         }
                     } else{
@@ -653,14 +658,7 @@ class WeekActivity : AppCompatActivity() {
         setContentView(R.layout.activity_week)
         init()
         calendarSetting()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkPermission()
-            if (isPermission == 1)
-                run()
-            else
-                checkPermission()
-        }else
-            run()
+        run()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -669,19 +667,20 @@ class WeekActivity : AppCompatActivity() {
             RC_SIGN_IN->{
                 if (resultCode != Activity.RESULT_OK && data != null) {
                     Toast.makeText(this@WeekActivity, "Oauth false", Toast.LENGTH_LONG).show()
-                    syncGoogleCallback = 0
+                    sharedPref.edit().apply {
+                        putBoolean("isSyncing", false)
+                        apply()
+                    }
                 }
                 else {
                     credential.selectedAccountName = GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email
+                    Toast.makeText(this, GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email, Toast.LENGTH_LONG).show()
                     sharedPref.edit().apply{
                         putString("accSelected", GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email)
                                 .apply()
                     }
-                    if(credential.selectedAccountName != null ) {
-                        val syncGoogle = SyncGoogleCalendar(this)
-                        syncGoogle.start()
-                    }else
-                        syncGoogleCallback = 0
+                    val syncGoogle = SyncGoogleCalendar(this)
+                    syncGoogle.start()
                 }
             }
         }

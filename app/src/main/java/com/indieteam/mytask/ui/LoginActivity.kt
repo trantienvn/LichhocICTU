@@ -126,17 +126,12 @@ class LoginActivity : AppCompatActivity() {
         try {
             sqLite.readCalendar()
             readDb = 1
-        }catch (e: Exception){ Log.d("Err", e.toString()) }
+        }catch (e: Exception){
+            Log.d("Err", e.toString())
+        }
 
         if(readDb == 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                checkPermission()
-                if (isPermission == 1)
-                    run()
-                else
-                    checkPermission()
-            }else
-                run()
+            run()
         }else{
             val intent = Intent(this@LoginActivity, WeekActivity::class.java)
             startActivity(intent)
