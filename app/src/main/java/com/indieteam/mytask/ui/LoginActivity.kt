@@ -1,10 +1,7 @@
 package com.indieteam.mytask.ui
 
-import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
@@ -20,36 +17,10 @@ import java.security.NoSuchAlgorithmException
 
 class LoginActivity : AppCompatActivity() {
 
-    private val REQUEST_CODE = 1
-    private var isPermission= 0
     lateinit var sqLite: SqLite
     private var readDb = 0
     lateinit var isNet: IsNet
     private lateinit var sharedPref: SharedPreferences
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if(requestCode == REQUEST_CODE){
-            if(grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[1] == PackageManager.PERMISSION_GRANTED){
-                run()
-            }
-        }else{
-            Toast.makeText(this@LoginActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    private fun checkPermission(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if(checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE)
-            }else{
-                isPermission = 1
-            }
-        }else{
-            run()
-        }
-    }
 
     private fun init(){
         sqLite = SqLite(this)
