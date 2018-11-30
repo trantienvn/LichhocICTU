@@ -85,6 +85,7 @@ class WeekActivity : AppCompatActivity() {
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private val timeDetails = TimeDetails()
     private lateinit var isNet: IsNet
+    private lateinit var appNotification: AppNotification
 
     // Google oauth2
     lateinit var credential: GoogleAccountCredential
@@ -216,6 +217,7 @@ class WeekActivity : AppCompatActivity() {
             if(grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 isAccountPermission = 1
                 val syncGoogle = SyncGoogleCalendar(this)
+                appNotification.syncing()
                 syncGoogle.start()
             }else{
                 Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
@@ -268,6 +270,7 @@ class WeekActivity : AppCompatActivity() {
         calender_list_view.adapter = calendarListViewAdapter
         isNet = IsNet(this)
         ads = Ads(this)
+        appNotification = AppNotification(this)
     }
 
     fun preDate(){
@@ -503,7 +506,6 @@ class WeekActivity : AppCompatActivity() {
                             if (!sharedPref.getBoolean("isSyncing", false)) {
                                 checkAccountPermission()
                                 if (isAccountPermission == 1) {
-                                    val appNotification = AppNotification(this)
                                     appNotification.syncing()
 
                                     sharedPref.edit().apply {

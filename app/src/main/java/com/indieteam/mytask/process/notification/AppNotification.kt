@@ -71,6 +71,18 @@ class AppNotification(val context: Context) {
                     .setAutoCancel(false) // remove notification after touch
 
             NotificationManagerCompat.from(context).notify(1, notification.build())
+        } else {
+            val channelId = "App Notification"
+
+            val notification = NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(R.drawable.ic_next_day_64)
+                    .setContentTitle("Đang tải lịch lên Google Calendar...")
+                    .setColor(Color.parseColor("#2c73b3"))
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                    .setAutoCancel(false) // remove notification after touch
+
+            NotificationManagerCompat.from(context).notify(3, notification.build())
         }
     }
 
@@ -93,6 +105,19 @@ class AppNotification(val context: Context) {
                     .setAutoCancel(false) // remove notification after touch
 
             NotificationManagerCompat.from(context).notify(1, notification.build())
+        } else {
+            val channelId = "App Notification"
+
+            val notification = NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(R.drawable.ic_next_day_64)
+                    .setContentTitle("Đang theo dõi lịch học")
+                    .setContentText("Đã tải lịch lên Google Calendar")
+                    .setColor(Color.parseColor("#2c73b3"))
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                    .setAutoCancel(false) // remove notification after touch
+
+            NotificationManagerCompat.from(context).notify(3, notification.build())
         }
     }
 
@@ -115,6 +140,19 @@ class AppNotification(val context: Context) {
                     .setAutoCancel(false) // remove notification after touch
 
             NotificationManagerCompat.from(context).notify(1, notification.build())
+        } else {
+            val channelId = "App Notification"
+
+            val notification = NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(R.drawable.ic_next_day_64)
+                    .setContentTitle("Đang theo dõi lịch học")
+                    .setContentText("Lỗi tải lịch lên Google Calendar")
+                    .setColor(Color.parseColor("#2c73b3"))
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                    .setAutoCancel(false) // remove notification after touch
+
+            NotificationManagerCompat.from(context).notify(3, notification.build())
         }
     }
 
