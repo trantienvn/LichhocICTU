@@ -497,7 +497,6 @@ class WeekActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.fab_sync_google ->{
-                    Toast.makeText(this, sharedPref.getString("accSelected", "null"), Toast.LENGTH_LONG).show()
                     if(isNet.check()) {
                         if (isGooglePlayServicesAvailable()) {
                             if (!sharedPref.getBoolean("isSyncing", false)) {
@@ -666,7 +665,7 @@ class WeekActivity : AppCompatActivity() {
         when(requestCode) {
             RC_SIGN_IN->{
                 if (resultCode != Activity.RESULT_OK && data != null) {
-                    Toast.makeText(this@WeekActivity, "Oauth false", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(this@WeekActivity, "Oauth false", Toast.LENGTH_LONG).show()
                     sharedPref.edit().apply {
                         putBoolean("isSyncing", false)
                         apply()
