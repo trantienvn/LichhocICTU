@@ -16,6 +16,7 @@ import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.fragment_process_bar.*
 import org.jsoup.Connection
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import java.io.File
 import java.io.FileOutputStream
 
@@ -35,6 +36,8 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
     private var classContextName = ""
     private var readExel = ReadExel(context)
     private val dataMap = mutableMapOf<String, String>()
+    private var emptyCalendar = false
+    private var requestTime = 0
 
     init {
         classContextName = context.javaClass.name.substring(context.javaClass.name.lastIndexOf(".") + 1, context.javaClass.name.length)
@@ -91,16 +94,30 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
     private fun loadPageWithSemester(){
         if(sessionUrl.isNotBlank()) {
             try {
-                val request = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
-                        .data(dataMap)
-                        .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
-                        .data("drpTerm", drpTerm)
-                        .data("drpType", "B")
-                        .data("drpSemester", semesterSelected)
-                        .cookie("SignIn", signIn)
-                        .method(Connection.Method.POST)
-                        .ignoreContentType(true)
-                        .execute()
+                requestTime++
+                val request: Connection.Response
+                if (!emptyCalendar) {
+                    request = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
+                            .data(dataMap)
+                            .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
+                            .data("drpTerm", drpTerm)
+                            .data("drpType", "B")
+                            .data("drpSemester", semesterSelected)
+                            .cookie("SignIn", signIn)
+                            .method(Connection.Method.POST)
+                            .ignoreContentType(true)
+                            .execute()
+                } else{
+                    request = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
+                            .data(dataMap)
+                            .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
+                            .data("drpType", "B")
+                            .data("drpSemester", semesterSelected)
+                            .cookie("SignIn", signIn)
+                            .method(Connection.Method.POST)
+                            .ignoreContentType(true)
+                            .execute()
+                }
 
                 val pageParse = request.parse()
 
@@ -126,17 +143,46 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
 
                 dataMap.clear()
 
-                for (i in pageParse.select("input")) {
-                    dataMap[i.attr("name")] = i.`val`()
+                if (drpSemester == "") {
+                    Log.d("drpSemester", "blank")
+                    emptyCalendar = true
+                    if (emptyCalendar && requestTime == 1)
+                        loadPageWithSemester()
+                    else {
+                        for (i in pageParse.select("input")) {
+                            dataMap[i.attr("name")] = i.`val`()
+                        }
+                    }
+                } else {
+                    Log.d("drpSemester", "not blank")
+                    for (i in pageParse.select("input")) {
+                        dataMap[i.attr("name")] = i.`val`()
+                    }
                 }
+
             }catch (e: java.lang.Exception){
-                appException("Error request #2")
+                if (drpSemester.isBlank()) {
+                    Log.d("drpSemester", "blank")
+                    emptyCalendar = true
+                    if (emptyCalendar && requestTime == 1)
+                        loadPageWithSemester()
+                } else
+                    appException("Error request #2")
             }
         }
     }
 
     private fun download(){
         try {
+            Log.d("sessionUrl", sessionUrl)
+            Log.d("drpSemester", drpSemester)
+            Log.d("semesterSelected", semesterSelected)
+            dataMap.forEach{
+                Log.d("dataMap", it.value)
+            }
+            drpTermArr.forEach {
+                Log.d("drpTermArr", it)
+            }
             if(sessionUrl.isNotBlank() && dataMap.isNotEmpty() &&
                     drpSemester.isNotBlank() && drpTermArr.isNotEmpty()) {
 
