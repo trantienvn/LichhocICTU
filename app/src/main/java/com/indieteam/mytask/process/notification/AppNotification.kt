@@ -19,12 +19,12 @@ class AppNotification(val context: Context) {
         val intent = Intent(context, WeekActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val channelName  = "Calendar Notification"
+        val channelId = "Calendar Notification"
+        val description = ""
 
         //set channelId
-        if(Build.VERSION.SDK_INT >= 26){
-            val channelName  = "Calendar Notification"
-            val channelId = "Calendar Notification"
-            val description = ""
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val chanel = NotificationChannel(channelId, channelName, importance)
             chanel.description = description
@@ -32,12 +32,11 @@ class AppNotification(val context: Context) {
             notificationManager.createNotificationChannel(chanel)
         }
 
-        // builder
         val badgeContent: String = if (numberSubjects != "0")
             "Có $numberSubjects môn"
         else
             "Nghỉ"
-        val mBuilder = NotificationCompat.Builder(context, "calendar_notification")
+        val notification = NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.ic_next_day_256)
                 .setContentTitle("Ngày mai")
                 .setContentText(badgeContent)
@@ -50,7 +49,7 @@ class AppNotification(val context: Context) {
                 .setAutoCancel(true) // remove notification after touch
 
         //show
-        NotificationManagerCompat.from(context).notify(2, mBuilder.build())
+        NotificationManagerCompat.from(context).notify(2, notification.build())
     }
 
     fun syncing(){

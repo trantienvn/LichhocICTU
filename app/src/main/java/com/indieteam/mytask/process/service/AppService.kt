@@ -38,7 +38,7 @@ class AppService: Service(){
 
     inner class CheckTimeInBackground: Thread(){
         override fun run() {
-            Timer().scheduleAtFixedRate(0, 40000) {
+            Timer().scheduleAtFixedRate(0, 30000) {
                 calendarForNow = Calendar.getInstance()!!
                 Log.d("hour", calendarForNow.get(Calendar.HOUR_OF_DAY).toString() + " " + calendarForNow.get(Calendar.MINUTE))
                 if (calendarForNow.get(Calendar.HOUR_OF_DAY) == 20 && calendarForNow.get(Calendar.MINUTE) == 0) {
