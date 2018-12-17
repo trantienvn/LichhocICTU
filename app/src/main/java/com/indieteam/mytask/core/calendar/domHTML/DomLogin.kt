@@ -1,4 +1,4 @@
-package com.indieteam.mytask.process.domHTML
+package com.indieteam.mytask.core.calendar.domHTML
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,7 +8,7 @@ import android.text.Html
 import android.util.Log
 import android.widget.Toast
 import com.indieteam.mytask.address.UrlAddress
-import com.indieteam.mytask.sqlite.SqLite
+import com.indieteam.mytask.core.sqlite.SqLite
 import com.indieteam.mytask.ui.LoginActivity
 import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.fragment_process_bar.*
@@ -18,9 +18,7 @@ import org.jsoup.Jsoup
 @Suppress("DEPRECATION")
 class DomLogin(val context: Context, private val userName: String, private val passWord: String): Thread(){
 
-    private val urlAddress = UrlAddress()
     private var sessionUrl = ""
-
     var pageHeader1drpNgonNgu = "010527EFBEB84BCA8919321CFD5C3A34"
     private var __EVENTTARGET = ""
     private var __EVENTARGUMENT = ""
@@ -46,7 +44,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
     @SuppressLint("SetTextI18n")
     override fun run() {
         try{
-            val res = Jsoup.connect(urlAddress.urlLoginClean)
+            val res = Jsoup.connect(UrlAddress.urlLoginClean)
                     .followRedirects(false)
                     .method(Connection.Method.GET)
                     .execute()
@@ -55,7 +53,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
             Log.d("sessionUrlInLogin", sessionUrl)
 
             if(sessionUrl.isNotBlank()) {
-                val resFirst = Jsoup.connect(urlAddress.urlLoginSession(sessionUrl))
+                val resFirst = Jsoup.connect(UrlAddress.urlLoginSession(sessionUrl))
                         .method(Connection.Method.GET)
                         .execute()
 
@@ -87,7 +85,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
             }
 
             if(sessionUrl.isNotBlank()) {
-                val resLogin = Jsoup.connect(urlAddress.urlLoginSession(sessionUrl))
+                val resLogin = Jsoup.connect(UrlAddress.urlLoginSession(sessionUrl))
                         .data("__EVENTTARGET", __EVENTTARGET)
                         .data("__EVENTARGUMENT", __EVENTARGUMENT)
                         .data("__LASTFOCUS", __LASTFOCUS)
@@ -149,7 +147,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
             }
 
         }catch (e: Exception) {
-           appException("Kiểm tra lại kết nối")
+           appException("Mất kết nối")
         }
         this.join()
     }

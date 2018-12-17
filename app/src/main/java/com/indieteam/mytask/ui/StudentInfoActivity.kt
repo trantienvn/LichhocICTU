@@ -1,17 +1,15 @@
 package com.indieteam.mytask.ui
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
-import com.google.android.gms.ads.AdSize
 import com.indieteam.mytask.R
 import com.indieteam.mytask.ads.Ads
-import com.indieteam.mytask.sqlite.SqLite
+import com.indieteam.mytask.core.sqlite.SqLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import kotlinx.android.synthetic.main.activity_student_info.*
 import org.json.JSONObject

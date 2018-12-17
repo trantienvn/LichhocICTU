@@ -1,4 +1,4 @@
-package com.indieteam.mytask.process.service
+package com.indieteam.mytask.core.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,9 +9,9 @@ import android.os.Build
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.util.Log
-import com.indieteam.mytask.process.notification.AppNotification
-import com.indieteam.mytask.process.json.ParseCalendarJson
-import com.indieteam.mytask.sqlite.SqLite
+import com.indieteam.mytask.core.notification.AppNotification
+import com.indieteam.mytask.core.parse.ParseCalendarJson
+import com.indieteam.mytask.core.sqlite.SqLite
 import org.json.JSONObject
 import java.util.*
 import kotlin.concurrent.scheduleAtFixedRate
@@ -28,7 +28,6 @@ class AppService: Service(){
     private lateinit var appNotification: AppNotification
     private var numberSubjects = 0
     private var countNotification = 0
-    private var notificationThread = CheckTimeInBackground()
     private lateinit var sharedPreferences: SharedPreferences
 
     init {
@@ -36,19 +35,17 @@ class AppService: Service(){
         calendarForTomorrow.add(Calendar.DAY_OF_MONTH, 1)
     }
 
-    inner class CheckTimeInBackground: Thread(){
-        override fun run() {
-            Timer().scheduleAtFixedRate(0, 30000) {
-                calendarForNow = Calendar.getInstance()!!
-                Log.d("hour", calendarForNow.get(Calendar.HOUR_OF_DAY).toString() + " " + calendarForNow.get(Calendar.MINUTE))
-                if (calendarForNow.get(Calendar.HOUR_OF_DAY) == 20 && calendarForNow.get(Calendar.MINUTE) == 0) {
-                    if (countNotification == 0) {
-                        pushNotification()
-                        countNotification++
-                    }
-                }else
-                    countNotification = 0
-            }
+    fun checkTimeBackground(){
+        Timer().scheduleAtFixedRate(0, 20000) {
+            calendarForNow = Calendar.getInstance()!!
+            Log.d("hour", calendarForNow.get(Calendar.HOUR_OF_DAY).toString() + " " + calendarForNow.get(Calendar.MINUTE))
+            if (calendarForNow.get(Calendar.HOUR_OF_DAY) == 20 && calendarForNow.get(Calendar.MINUTE) == 0) {
+                if (countNotification == 0) {
+                    pushNotification()
+                    countNotification++
+                }
+            }else
+                countNotification = 0
         }
     }
 
@@ -108,7 +105,7 @@ class AppService: Service(){
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("service", "started")
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        notificationThread.start()
+        checkTimeBackground()
         return START_STICKY
     }
 
@@ -117,7 +114,6 @@ class AppService: Service(){
         super.onDestroy()
         try {
             stopSelf()
-            notificationThread.join()
         }catch (e: java.lang.Exception){ e.printStackTrace() }
     }
 }

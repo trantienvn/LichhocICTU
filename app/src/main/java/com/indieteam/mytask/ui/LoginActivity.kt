@@ -9,8 +9,8 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.indieteam.mytask.R
-import com.indieteam.mytask.process.IsNet
-import com.indieteam.mytask.sqlite.SqLite
+import com.indieteam.mytask.core.IsNet
+import com.indieteam.mytask.core.sqlite.SqLite
 import kotlinx.android.synthetic.main.activity_login.*
 import java.security.NoSuchAlgorithmException
 
@@ -79,7 +79,7 @@ class LoginActivity : AppCompatActivity() {
                     supportFragmentManager.executePendingTransactions()
                     val md5Password = toMD5(text_password.text.toString().trim())
                     Log.d("md5password", md5Password)
-                    com.indieteam.mytask.process.domHTML.DomLogin(this, text_username.text.toString().trim(), md5Password).start()
+                    com.indieteam.mytask.core.calendar.domHTML.DomLogin(this, text_username.text.toString().trim(), md5Password).start()
                     clickLogin++
                 }
             } else {

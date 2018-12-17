@@ -1,4 +1,4 @@
-package com.indieteam.mytask.process.notification
+package com.indieteam.mytask.core.notification
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

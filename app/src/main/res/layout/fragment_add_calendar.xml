@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.AddCalendarFragment"
+    android:background="@color/colorWhite">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="@color/colorBlueDark"
+            android:text="Thêm lịch học"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="30dp"/>
+
+        <EditText
+            android:id="@+id/new_subject_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:hint="Môn học"
+            android:inputType="text"
+            android:backgroundTint="@color/colorBlue"
+            android:textColor="@color/colorBlue"
+            android:textColorHint="@color/colorBlue"
+            android:textCursorDrawable="@color/colorBlue"/>
+
+        <EditText
+            android:id="@+id/new_subject_place"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:hint="Địa điểm"
+            android:inputType="text"
+            android:backgroundTint="@color/colorBlue"
+            android:textColor="@color/colorBlue"
+            android:textColorHint="@color/colorBlue"
+            android:textCursorDrawable="@color/colorBlue"/>
+
+        <EditText
+            android:id="@+id/new_subject_teacher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:hint="Giảng viên"
+            android:inputType="text"
+            android:backgroundTint="@color/colorBlue"
+            android:textColor="@color/colorBlue"
+            android:textColorHint="@color/colorBlue"
+            android:textCursorDrawable="@color/colorBlue"/>
+
+        <EditText
+            android:id="@+id/new_subject_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:hint="dd/mm/yyyy"
+            android:editable="false"
+            android:backgroundTint="@color/colorBlue"
+            android:textColor="@color/colorBlue"
+            android:textColorHint="@color/colorBlue"
+            android:textCursorDrawable="@color/colorBlue"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:textColor="@color/colorBlueDark"
+            android:text="Tiết:"
+            android:layout_marginBottom="5dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/t_1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="1"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue" />
+
+            <CheckBox
+                android:id="@+id/t_2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="2"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+            <CheckBox
+                android:id="@+id/t_3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="3"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+            <CheckBox
+                android:id="@+id/t_4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="4"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+            <CheckBox
+                android:id="@+id/t_5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="5"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+            <CheckBox
+                android:id="@+id/t_6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="6"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/t_7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="7"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+            <CheckBox
+                android:id="@+id/t_8"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="8"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+            <CheckBox
+                android:id="@+id/t_9"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="9"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+            <CheckBox
+                android:id="@+id/t_10"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="10"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+            <CheckBox
+                android:id="@+id/t_11"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="11"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+            <CheckBox
+                android:id="@+id/t_12"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="12"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/t_13"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="13"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+            <CheckBox
+                android:id="@+id/t_14"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="14"
+                android:textColor="@color/colorBlue"
+                android:buttonTint="@color/colorBlue"/>
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="15"
+                android:visibility="invisible"/>
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="10"
+                android:visibility="invisible" />
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="11"
+                android:visibility="invisible" />
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="12"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/add_calendar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_button_login"
+            android:textColor="@color/colorWhite"
+            android:text="Thêm"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"/>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

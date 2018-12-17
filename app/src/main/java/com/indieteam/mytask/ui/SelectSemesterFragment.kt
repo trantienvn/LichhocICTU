@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Toast
 import com.indieteam.mytask.R
-import com.indieteam.mytask.process.domHTML.DomDownloadExcel
+import com.indieteam.mytask.core.calendar.domHTML.DomDownloadExcel
 import kotlinx.android.synthetic.main.fragment_select_semester.*
 import kotlinx.android.synthetic.main.item_semester.view.*
 import org.json.JSONArray

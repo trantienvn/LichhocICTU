@@ -1,4 +1,4 @@
-package com.indieteam.mytask.process.excel
+package com.indieteam.mytask.core.parse.excel
 
 import android.annotation.SuppressLint
 import com.indieteam.mytask.dataStruct.RawCalendarStruct

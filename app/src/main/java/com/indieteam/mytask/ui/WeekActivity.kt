@@ -39,13 +39,13 @@ import com.indieteam.mytask.adapter.CalendarListViewAdapter
 import com.indieteam.mytask.ads.Ads
 import com.indieteam.mytask.dataStruct.StudentCalendarStruct
 import com.indieteam.mytask.dataStruct.TimeDetails
-import com.indieteam.mytask.process.IsNet
-import com.indieteam.mytask.process.domHTML.DomUpdateCalendar
-import com.indieteam.mytask.process.sync.SyncGoogleCalendar
-import com.indieteam.mytask.process.json.ParseCalendarJson
-import com.indieteam.mytask.process.notification.AppNotification
-import com.indieteam.mytask.process.service.AppService
-import com.indieteam.mytask.sqlite.SqLite
+import com.indieteam.mytask.core.IsNet
+import com.indieteam.mytask.core.calendar.domHTML.DomUpdateCalendar
+import com.indieteam.mytask.core.sync.SyncGoogleCalendar
+import com.indieteam.mytask.core.parse.ParseCalendarJson
+import com.indieteam.mytask.core.notification.AppNotification
+import com.indieteam.mytask.core.service.AppService
+import com.indieteam.mytask.core.sqlite.SqLite
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
@@ -86,6 +86,7 @@ class WeekActivity : AppCompatActivity() {
     private val timeDetails = TimeDetails()
     private lateinit var isNet: IsNet
     private lateinit var appNotification: AppNotification
+    private lateinit var addCalendarFragment: AddCalendarFragment
 
     // Google oauth2
     lateinit var credential: GoogleAccountCredential
@@ -174,18 +175,29 @@ class WeekActivity : AppCompatActivity() {
                                     charSequence: CharSequence,
                                     start: Int, end: Int, lineNum: Int) {
             val lastColor = p.color
-            if (text.length == 1)
+            var length = 0
+            if (text.length == 1) {
                 p.color = colors[0]
-            if (text.length == 2)
+                length = text.length
+            }
+            if (text.length == 2){
                 p.color = colors[1]
-            if (text.length >= 3)
+                length = text.length
+            }
+            if (text.length in 3..5) {
                 p.color = colors[2]
+                length = text.length
+            }
+            if (text.length >5){
+                p.color = colors[2]
+                length = 5
+            }
             var totalWidth = 0f
-            for (i in 0 until text.length)
+            for (i in 0 until length)
                 if (i != 0)
                     totalWidth += (right.toFloat()/100f) * 7.5f // 7.5 is space (percent) margin left of dots
             var cX = right/2f - totalWidth/2
-            for (i in 0 until text.length){
+            for (i in 0 until length){
                 c.drawCircle(cX, bottom.toFloat() + (bottom.toFloat()/100f) * 10f, (right.toFloat()/100f) * 2.1f  , p)
                 cX += (right.toFloat()/100f) * 7.5f
             }
@@ -225,12 +237,21 @@ class WeekActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        var quit = true
         if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null) {
+            if (supportFragmentManager.findFragmentByTag("addCalendarFragment") != null){
+                supportFragmentManager.beginTransaction().remove(addCalendarFragment)
+                        .commit()
+                visible()
+                quit = false
+            }
             if (supportFragmentManager.findFragmentByTag("selectSemesterFragment") != null){
                 supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("selectSemesterFragment")!!)
                         .commit()
                 visible()
-            }else {
+                quit = false
+            }
+            if (quit){
                 if (calendarView.selectedDate == CalendarDay.today())
                     super.onBackPressed()
                 else
@@ -266,6 +287,7 @@ class WeekActivity : AppCompatActivity() {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         calendarMode = sharedPref.getInt("CalendarMode", 0)
         calendarListViewAdapter = CalendarListViewAdapter(this@WeekActivity, studentCalendarObjArr)
+        eventListView()
         calender_list_view.adapter = calendarListViewAdapter
         isNet = IsNet(this)
         ads = Ads(this)
@@ -342,31 +364,14 @@ class WeekActivity : AppCompatActivity() {
             updateListView(date)
         }
         calendarView.setOnDateLongClickListener { materialCalendarView, calendarDay ->
+            gone()
             val date = "${calendarDay.day}/${calendarDay.month+1}/${calendarDay.year}"
-            if (parseCalendarJson != null){
-                parseCalendarJson!!.apply {
-                    getSubject(date)
-                    if (!subjectName.isEmpty() &&
-                            !subjectTime.isEmpty() &&
-                            !subjectPlace.isEmpty() &&
-                            !teacher.isEmpty()) {
-                        if (subjectName.size == subjectTime.size &&
-                                subjectName.size == subjectPlace.size &&
-                                subjectName.size == teacher.size) {
-                            var result = ""
-                            var count = 1
-                            for (j in 0 until subjectName.size) {
-                                result += "$count. ${subjectName[j]} \n"
-                                count++
-                            }
-                            result = result.trim()
-                            Toast.makeText(this@WeekActivity, result, Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        // Nghi
-                    }
-                }
-            }
+            val bundle = Bundle()
+            bundle.putString("date", date)
+            addCalendarFragment = AddCalendarFragment()
+            addCalendarFragment.arguments = bundle
+            supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, addCalendarFragment, "addCalendarFragment")
+                    .commit()
         }
         calendarView.setOnMonthChangedListener { materialCalendarView, calendarDay ->
             /*object: CalendarView(this) {
@@ -391,13 +396,25 @@ class WeekActivity : AppCompatActivity() {
                             subjectName.size == subjectPlace.size &&
                             subjectName.size == teacher.size) {
                         for (j in 0 until subjectName.size) {
-                            val firstTime = subjectTime[j].substring(0, subjectTime[j].indexOf(",")).toInt() -1
-                            val endTime = subjectTime[j].substring(subjectTime[j].lastIndexOf(",") + 1, subjectTime[j].length).toInt() - 1
-                            if (simpleDateFormat.parse(date) >= CalendarDay.from(CalendarDay().year, 3, 15).date &&
-                                    simpleDateFormat.parse(date) < CalendarDay.from(CalendarDay().year, 9, 15).date)
-                                studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
-                            else
-                                studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
+                            var firstTime = -1
+                            var endTime = -1
+                            if (subjectTime[j].indexOf(",") > -1) {
+                                firstTime = subjectTime[j].substring(0, subjectTime[j].indexOf(",")).toInt() - 1
+                                endTime = subjectTime[j].substring(subjectTime[j].lastIndexOf(",") + 1, subjectTime[j].length).toInt() - 1
+                                if (simpleDateFormat.parse(date) >= CalendarDay.from(CalendarDay().year, 3, 15).date &&
+                                        simpleDateFormat.parse(date) < CalendarDay.from(CalendarDay().year, 9, 15).date)
+                                    studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
+                                else
+                                    studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
+                            }
+                            else {
+                                firstTime = subjectTime[j].toInt()
+                                if (simpleDateFormat.parse(date) >= CalendarDay.from(CalendarDay().year, 3, 15).date &&
+                                        simpleDateFormat.parse(date) < CalendarDay.from(CalendarDay().year, 9, 15).date)
+                                    studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
+                                else
+                                    studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
+                            }
                         }
                         calendarListViewAdapter.notifyDataSetChanged()
                     }
@@ -406,6 +423,13 @@ class WeekActivity : AppCompatActivity() {
                     calendarListViewAdapter.notifyDataSetChanged()
                 }
             }
+        }
+    }
+
+     private fun eventListView(){
+        calender_list_view.setOnItemLongClickListener { parent, view, position, id ->
+           Toast.makeText(this, position.toString(), Toast.LENGTH_LONG).show()
+            true
         }
     }
 
@@ -502,12 +526,10 @@ class WeekActivity : AppCompatActivity() {
                 R.id.fab_sync_google ->{
                     if(isNet.check()) {
                         if (isGooglePlayServicesAvailable()) {
-                            if (!sharedPref.getBoolean("isSyncing", false)) {
-                                checkAccountPermission()
-                                if (isAccountPermission == 1) {
-                                    if (sharedPref.getString("accSelected", "null") != "null")
-                                        appNotification.syncing()
-
+                            checkAccountPermission()
+                            if (isAccountPermission == 1) {
+                                if (sharedPref.getString("accSelected", "null") != "null") {
+                                    appNotification.syncing()
                                     sharedPref.edit().apply {
                                         putBoolean("isSyncing", true)
                                         apply()
@@ -518,7 +540,7 @@ class WeekActivity : AppCompatActivity() {
                             }
                         }
                     } else{
-                        Toast.makeText(this, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Mất kết nối", Toast.LENGTH_SHORT).show()
                     }
                 }
                 R.id.fab_update ->{
@@ -541,7 +563,7 @@ class WeekActivity : AppCompatActivity() {
                             Log.d("Err", e.toString())
                         }
                     } else{
-                        Toast.makeText(this, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Mất kết nối", Toast.LENGTH_SHORT).show()
                     }
                 }
                 R.id.fab_donate ->{

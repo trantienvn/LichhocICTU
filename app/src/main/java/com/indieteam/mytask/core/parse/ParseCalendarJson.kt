@@ -1,6 +1,7 @@
-package com.indieteam.mytask.process.json
+package com.indieteam.mytask.core.parse
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -37,8 +38,18 @@ class ParseCalendarJson(val calendar: JSONObject){
         if (subjectName.isNotEmpty() && subjectPlace.isNotEmpty() && subjectTime.isNotEmpty() && teacher.isNotEmpty()) {
             for (j in 0 until subjectTime.size - 1) {
                 for (k in j + 1 until subjectTime.size) {
-                    val firstI = subjectTime[j].substring(0, subjectTime[j].indexOf(",")).toInt()
-                    val firstJ = subjectTime[k].substring(0, subjectTime[k].indexOf(",")).toInt()
+                    var firstI = -1
+                    var firstJ = -1
+                    if (subjectTime[j].indexOf(",") > -1)
+                        firstI = subjectTime[j].substring(0, subjectTime[j].indexOf(",")).toInt()
+                    else
+                       firstI = subjectTime[j] .toInt()
+
+                    if (subjectTime[k].indexOf(",") > -1)
+                        firstJ = subjectTime[k].substring(0, subjectTime[k].indexOf(",")).toInt()
+                    else
+                        firstJ = subjectTime[k].toInt()
+
                     if (firstI > firstJ) {
                         var temp = subjectName[j]
                         subjectName[j] = subjectName[k]

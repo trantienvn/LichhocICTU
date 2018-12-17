@@ -1,7 +1,7 @@
-package com.indieteam.mytask.process.domHTML
+package com.indieteam.mytask.core.calendar.domHTML
 
 import android.content.Context
-import com.indieteam.mytask.sqlite.SqLite
+import com.indieteam.mytask.core.sqlite.SqLite
 
 @Suppress("DEPRECATION")
 class DomUpdateCalendar(val context: Context, private val signIn: String): Thread() {

@@ -1,4 +1,4 @@
-package com.indieteam.mytask.process.domHTML
+package com.indieteam.mytask.core.calendar.domHTML
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,23 +8,20 @@ import android.util.Log
 import android.widget.Toast
 import com.indieteam.mytask.R
 import com.indieteam.mytask.address.UrlAddress
-import com.indieteam.mytask.process.excel.ReadExel
-import com.indieteam.mytask.sqlite.SqLite
+import com.indieteam.mytask.core.parse.excel.ReadExel
+import com.indieteam.mytask.core.sqlite.SqLite
 import com.indieteam.mytask.ui.LoginActivity
 import com.indieteam.mytask.ui.ProcessBarFragment
 import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.fragment_process_bar.*
 import org.jsoup.Connection
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import java.io.File
 import java.io.FileOutputStream
 
 @Suppress("DEPRECATION")
 class DomDownloadExcel(val context: Context, private val sessionUrl: String, private val signIn: String,
                        val semesterSelected: String): Thread() {
-
-    private var urlAddress = UrlAddress()
 
     var pageHeader1drpNgonNgu = "010527EFBEB84BCA8919321CFD5C3A34"
     private var drpSemester = ""
@@ -75,7 +72,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
     private fun loadPageToGetParams(){
         if(sessionUrl.isNotBlank()) {
             try {
-                val request = Jsoup.connect(urlAddress.urlSemester(sessionUrl))
+                val request = Jsoup.connect(UrlAddress.urlSemester(sessionUrl))
                         .cookie("SignIn", signIn)
                         .method(Connection.Method.GET)
                         .execute()
@@ -86,7 +83,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                     dataMap[i.attr("name")] = i.`val`()
                 }
             }catch (e: Exception){
-                appException("Error request #1")
+                appException("Mất kết nối")
             }
         }
     }
@@ -97,7 +94,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                 requestTime++
                 val request: Connection.Response
                 if (!emptyCalendar) {
-                    request = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
+                    request = Jsoup.connect(UrlAddress.urlDownloadExel(sessionUrl))
                             .data(dataMap)
                             .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
                             .data("drpTerm", drpTerm)
@@ -108,7 +105,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                             .ignoreContentType(true)
                             .execute()
                 } else{
-                    request = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
+                    request = Jsoup.connect(UrlAddress.urlDownloadExel(sessionUrl))
                             .data(dataMap)
                             .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
                             .data("drpType", "B")
@@ -167,7 +164,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                     if (emptyCalendar && requestTime == 1)
                         loadPageWithSemester()
                 } else
-                    appException("Error request #2")
+                    appException("Mất kết nối")
             }
         }
     }
@@ -189,7 +186,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                 //loop all dot hoc
                 for (drpTerm in drpTermArr) {
                     try {
-                        val resDownloadExel = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
+                        val resDownloadExel = Jsoup.connect(UrlAddress.urlDownloadExel(sessionUrl))
                                 .data(dataMap)
                                 .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
                                 .data("drpSemester", semesterSelected)
@@ -204,9 +201,8 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                         if (resDownloadExel.contentType() == "application/vnd.ms-excel; charset=utf-8") {
                             try {
                                 val dir = File(context.filesDir, "exel")
-                                if (!dir.exists()) {
+                                if (!dir.exists())
                                     dir.mkdirs()
-                                }
 
                                 val file = File(context.filesDir, "exel/tkb_v2.xls")
                                 if (file.exists())
@@ -228,7 +224,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                             appException("Cannot Download Excel")
                         }
                     }catch (e: Exception){
-                        appException("Error request #3")
+                        appException("Mất kết nối")
                         break
                     }
                 }
@@ -238,7 +234,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                 appException("Lịch rỗng")
             }
         }catch (e: Exception){
-            appException("Kiểm tra lại kết nối")
+            appException("Mất kết nối")
         }
     }
 

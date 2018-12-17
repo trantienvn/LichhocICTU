@@ -1,4 +1,4 @@
-package com.indieteam.mytask.sqlite
+package com.indieteam.mytask.core.sqlite
 
 import android.content.ContentValues
 import android.content.Context

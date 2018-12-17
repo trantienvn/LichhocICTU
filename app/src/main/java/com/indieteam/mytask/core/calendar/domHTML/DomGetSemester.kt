@@ -1,4 +1,4 @@
-package com.indieteam.mytask.process.domHTML
+package com.indieteam.mytask.core.calendar.domHTML
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -18,7 +18,6 @@ import org.jsoup.Jsoup
 @Suppress("DEPRECATION")
 class DomGetSemester(val context: Context, private val sessionUrl: String, private val signIn: String): Thread() {
 
-    private var urlAddress = UrlAddress()
     private var jsonArray = JSONArray()
     private var drpSemesterObject = JSONObject()
     private var err = 0
@@ -41,7 +40,7 @@ class DomGetSemester(val context: Context, private val sessionUrl: String, priva
             }
             // start get post params
             if(sessionUrl.isNotBlank()) {
-                val resFirst = Jsoup.connect(urlAddress.urlDownloadExel(sessionUrl))
+                val resFirst = Jsoup.connect(UrlAddress.urlDownloadExel(sessionUrl))
                         .cookie("SignIn", signIn)
                         .method(Connection.Method.GET)
                         .execute()
@@ -61,7 +60,7 @@ class DomGetSemester(val context: Context, private val sessionUrl: String, priva
                 drpSemesterObject.put("semester", jsonArray)
             }
         }catch (e: Exception){
-            appException("Kiểm tra lại kết nối")
+            appException("Mất kết nối")
             err = 1
         }
         if (err == 0){

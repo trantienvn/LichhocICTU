@@ -1,4 +1,4 @@
-package com.indieteam.mytask.process.sync
+package com.indieteam.mytask.core.sync
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,9 +13,9 @@ import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.indieteam.mytask.dataStruct.TimeDetails
-import com.indieteam.mytask.process.IsNet
-import com.indieteam.mytask.process.notification.AppNotification
-import com.indieteam.mytask.sqlite.SqLite
+import com.indieteam.mytask.core.IsNet
+import com.indieteam.mytask.core.notification.AppNotification
+import com.indieteam.mytask.core.sqlite.SqLite
 import com.indieteam.mytask.ui.WeekActivity
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import org.json.JSONObject
@@ -79,10 +79,6 @@ class SyncGoogleCalendar(val context: Context): Thread() {
             weekActivity.apply {
                 runOnUiThread {
                     Toast.makeText(weekActivity, "Lỗi insert calendar", Toast.LENGTH_SHORT).show()
-                    sharedPref.edit().apply {
-                        putBoolean("isSyncing", false)
-                        apply()
-                    }
                     appNotification.syncFail()
                 }
             }
@@ -99,10 +95,6 @@ class SyncGoogleCalendar(val context: Context): Thread() {
             weekActivity.apply {
                 runOnUiThread {
                     Toast.makeText(weekActivity, "Lỗi delete calendar", Toast.LENGTH_SHORT).show()
-                    sharedPref.edit().apply {
-                        putBoolean("isSyncing", false)
-                        apply()
-                    }
                     appNotification.syncFail()
                 }
             }
@@ -113,15 +105,24 @@ class SyncGoogleCalendar(val context: Context): Thread() {
     private fun findCalendarExist(){
         var pageToken: String? = null
         val calendarList = service.calendarList().list().setPageToken(pageToken).execute()
-        do {
-            for (calendar in calendarList.items) {
-                Log.d("calendar_summary", calendar.summary)
-                if (calendar.summary == "Lich hoc ictu") {
-                    deleteCalendar(calendar.id)
+        try {
+            do {
+                for (calendar in calendarList.items) {
+                    Log.d("calendar_summary", calendar.summary)
+                    if (calendar.summary == "Lich hoc ictu") {
+                        deleteCalendar(calendar.id)
+                    }
+                }
+                pageToken = calendarList.nextPageToken
+            } while (pageToken != null)
+        } catch (e: Exception){
+            weekActivity.apply {
+                runOnUiThread {
+                    Toast.makeText(weekActivity, "Lỗi đọc calendar", Toast.LENGTH_SHORT).show()
+                    appNotification.syncFail()
                 }
             }
-            pageToken = calendarList.nextPageToken
-        } while (pageToken != null)
+        }
     }
 
     private fun insertEvents(id: String, summaryEvent: String, location: String, date: String, timeStart: String, timeEnd: String){
@@ -158,10 +159,6 @@ class SyncGoogleCalendar(val context: Context): Thread() {
             weekActivity.apply {
                 runOnUiThread {
                     Toast.makeText(weekActivity, "Lỗi insert event", Toast.LENGTH_SHORT).show()
-                    sharedPref.edit().apply {
-                        putBoolean("isSyncing", false)
-                        apply()
-                    }
                     appNotification.syncFail()
                 }
             }
@@ -186,11 +183,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
             if (!checkNet.check()){
                 weekActivity.apply {
                     runOnUiThread {
-                        Toast.makeText(weekActivity, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
-                        sharedPref.edit().apply {
-                            putBoolean("isSyncing", false)
-                            apply()
-                        }
+                        Toast.makeText(weekActivity, "Mất kết nối", Toast.LENGTH_SHORT).show()
                         appNotification.syncFail()
                     }
                 }
@@ -218,10 +211,6 @@ class SyncGoogleCalendar(val context: Context): Thread() {
             runOnUiThread {
                 Toast.makeText(weekActivity, "Đã tải lịch lên Google Calendar", Toast.LENGTH_SHORT).show()
                 Log.d("Sync", "Done")
-                sharedPref.edit().apply {
-                    putBoolean("isSyncing", false)
-                    apply()
-                }
             }
         }
 

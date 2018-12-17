@@ -10,8 +10,8 @@ android {
         applicationId "com.indieteam.mytask"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 23
-        versionName "1.5.7"
+        versionCode 24
+        versionName "1.5.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -27,16 +27,17 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        debug {
+        /*debug {
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+        }*/
     }
 
 
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/proguard/androidx-annotations.pro'
     }
 
     configurations {
@@ -74,5 +75,5 @@ dependencies {
 
     implementation 'com.android.support:multidex:1.0.3'
 
-    implementation 'com.google.android.gms:play-services-ads:17.1.1'
+    implementation 'com.google.android.gms:play-services-ads:17.1.2'
 }

@@ -1,4 +1,4 @@
-package com.indieteam.mytask.process
+package com.indieteam.mytask.core
 
 import android.content.Context
 import android.net.ConnectivityManager
