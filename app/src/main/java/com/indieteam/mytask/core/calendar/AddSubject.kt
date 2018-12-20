@@ -3,13 +3,14 @@ package com.indieteam.mytask.core.calendar
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import com.indieteam.mytask.core.StringRandom
 import com.indieteam.mytask.core.sqlite.SqLite
 import com.indieteam.mytask.ui.WeekActivity
 import org.json.JSONObject
 import java.lang.Exception
 import java.util.*
 
-class AddCalendar(private val context: Context) {
+class AddSubject(private val context: Context) {
 
     private val sqLite = SqLite(context)
 
@@ -29,6 +30,7 @@ class AddCalendar(private val context: Context) {
         val jsonArray = calendarStudent.getJSONArray("calendar")
 
         val elementJsonObject = JSONObject()
+        elementJsonObject.put("subjectId", StringRandom.get(40))
         elementJsonObject.put("subjectName", subjectName)
         elementJsonObject.put("subjectDate", newDate)
         elementJsonObject.put("subjectDayOfWeek", dayOfWeek)

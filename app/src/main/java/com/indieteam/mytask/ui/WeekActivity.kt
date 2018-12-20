@@ -66,9 +66,9 @@ class WeekActivity : AppCompatActivity() {
     private val REQUEST_ACCOUNT = 1
     private lateinit var sqLite: SqLite
     private var calendarJson: JSONObject? = null
-    private var parseCalendarJson: ParseCalendarJson? = null
+    var parseCalendarJson: ParseCalendarJson? = null
     var dots = mutableMapOf<CalendarDay, String>()
-    private var studentCalendarObjArr = ArrayList<StudentCalendarStruct>()
+    var studentCalendarObjArr = ArrayList<StudentCalendarStruct>()
     private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
     private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
     private lateinit var calendarListViewAdapter: CalendarListViewAdapter
@@ -100,6 +100,8 @@ class WeekActivity : AppCompatActivity() {
     lateinit var gso: GoogleSignInOptions
     lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var signInIntent: Intent
+
+    lateinit var calendarDialog: CalendarDialog
 
     //Ads
     private lateinit var ads: Ads
@@ -251,6 +253,12 @@ class WeekActivity : AppCompatActivity() {
                 visible()
                 quit = false
             }
+            if (supportFragmentManager.findFragmentByTag("updateCalendarFragment") != null){
+                supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("updateCalendarFragment")!!)
+                        .commit()
+                visible()
+                quit = false
+            }
             if (quit){
                 if (calendarView.selectedDate == CalendarDay.today())
                     super.onBackPressed()
@@ -287,11 +295,11 @@ class WeekActivity : AppCompatActivity() {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         calendarMode = sharedPref.getInt("CalendarMode", 0)
         calendarListViewAdapter = CalendarListViewAdapter(this@WeekActivity, studentCalendarObjArr)
-        eventListView()
         calender_list_view.adapter = calendarListViewAdapter
         isNet = IsNet(this)
         ads = Ads(this)
         appNotification = AppNotification(this)
+        calendarDialog = CalendarDialog(this)
     }
 
     fun preDate(){
@@ -423,13 +431,6 @@ class WeekActivity : AppCompatActivity() {
                     calendarListViewAdapter.notifyDataSetChanged()
                 }
             }
-        }
-    }
-
-     private fun eventListView(){
-        calender_list_view.setOnItemLongClickListener { parent, view, position, id ->
-           Toast.makeText(this, position.toString(), Toast.LENGTH_LONG).show()
-            true
         }
     }
 
@@ -590,7 +591,7 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
-    private fun gone(){
+    fun gone(){
         calendarView.visibility = GONE
         view.visibility = GONE
         content_layout.visibility = GONE
@@ -615,6 +616,15 @@ class WeekActivity : AppCompatActivity() {
             calendarView.selectedDate = CalendarDay.today()
             val date = "${CalendarDay.today().day}/${CalendarDay.today().month+1}/${CalendarDay.today().year}"
             updateListView(date)
+    }
+
+    private fun selectedDate(date: String){
+        val day = date.substring(0, date.indexOf("/")).toInt()
+        val month = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/")).toInt()
+        val year = date.substring(date.lastIndexOf("/") + 1, date.length).toInt()
+        calendarView.currentDate = CalendarDay.today()
+        calendarView.selectedDate = CalendarDay.from(year, month - 1, day)
+        updateListView("$day/$month/$year")
     }
 
     private fun startService(){
@@ -651,6 +661,7 @@ class WeekActivity : AppCompatActivity() {
         //changeBackground()
         var readDb: Int
         var valueDb= ""
+
         try{
             valueDb = sqLite.readCalendar()
             readDb = 1
@@ -667,8 +678,14 @@ class WeekActivity : AppCompatActivity() {
             calendarJson = JSONObject(valueDb)
             parseCalendarJson = ParseCalendarJson(calendarJson!!)
         }
+
         initFloatButton()
-        toDay()
+
+        if (intent.getStringExtra("date") != null)
+            selectedDate(intent.getStringExtra("date"))
+        else
+            toDay()
+
         drawBackgroundToday()
         dots = parseCalendarJson!!.initDots()
         setCalendarDots()

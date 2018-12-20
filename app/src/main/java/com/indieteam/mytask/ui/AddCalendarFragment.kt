@@ -3,14 +3,13 @@ package com.indieteam.mytask.ui
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.Toast
 import com.indieteam.mytask.R
-import com.indieteam.mytask.core.calendar.AddCalendar
+import com.indieteam.mytask.core.calendar.AddSubject
 import kotlinx.android.synthetic.main.fragment_add_calendar.*
 
 class AddCalendarFragment : Fragment() {
@@ -76,11 +75,41 @@ class AddCalendarFragment : Fragment() {
             arg.getString("date")?.let {
                 subjectDate = it
                 new_subject_date.setText(it)
+
+                add_calendar.setOnClickListener {
+                    subjectName = new_subject_name.text.toString()
+                    subjectPlace = new_subject_place.text.toString()
+                    subjectTeacher = new_subject_teacher.text.toString()
+                    if (subjectName.isNotBlank() && subjectPlace.isNotBlank() && subjectTeacher.isNotBlank()
+                            && subjectTime.isNotEmpty()){
+                        sorted()
+                        if (isSubjectTimeContinuity()) {
+                            var time = ""
+                            subjectTime.forEach {
+                                time += "$it,"
+                            }
+                            time = time.substring(0, time.length-1)
+                            if (subjectDate.isNotBlank()) {
+                                AddSubject(requireContext())
+                                        .addCalendar(subjectName, subjectPlace, subjectTeacher, time, subjectDate)
+                                val intent = Intent(requireActivity(), WeekActivity::class.java)
+                                intent.putExtra("date", subjectDate)
+                                startActivity(intent)
+                                requireActivity().finish()
+                            } else
+                                Toast.makeText(requireContext(), "Ngày không xác định", Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(requireContext(), "Tiết học phải được đánh dấu liền mạch", Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Hãy nhập đủ thông tin", Toast.LENGTH_LONG).show()
+                    }
+                }
             }
         }
         for (i in 1..14) {
             val idName = "t_$i"
-            val checkBoxId = getResId("$idName", R.id::class.java)
+            val checkBoxId = getResId(idName, R.id::class.java)
 
             if (checkBoxId != -1) {
                 val checkBoxView = requireActivity().findViewById<CheckBox>(checkBoxId)
@@ -89,33 +118,6 @@ class AddCalendarFragment : Fragment() {
                         subjectTime.add(buttonView.text.toString().toInt())
                     else
                         removeASubjectTime(buttonView.text.toString().toInt())
-                }
-            }
-        }
-
-        add_calendar.setOnClickListener {
-            subjectName = new_subject_name.text.toString()
-            subjectPlace = new_subject_place.text.toString()
-            subjectTeacher = new_subject_teacher.text.toString()
-            sorted()
-            if (subjectName.isNotBlank() && subjectPlace.isNotBlank() && subjectTeacher.isNotBlank()
-            && subjectTime.isNotEmpty()){
-                if (isSubjectTimeContinuity()) {
-                    var time = ""
-                    subjectTime.forEach {
-                        time += "$it,"
-                    }
-                    time = time.substring(0, time.length-1)
-                    if (subjectDate.isNotBlank())
-                        AddCalendar(requireContext())
-                            .addCalendar(subjectName, subjectPlace, subjectTeacher, time, subjectDate)
-                    else
-                        Toast.makeText(requireContext(), "Ngày không xác định", Toast.LENGTH_LONG).show()
-                    val intent = Intent(requireActivity(), WeekActivity::class.java)
-                    startActivity(intent)
-                    requireActivity().finish()
-                } else {
-                    Toast.makeText(requireActivity(), "Tiết học phải được đánh dấu liên tục", Toast.LENGTH_LONG).show()
                 }
             }
         }

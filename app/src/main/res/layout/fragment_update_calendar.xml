@@ -23,7 +23,7 @@
             android:textStyle="bold"
             android:textSize="20sp"
             android:textColor="@color/colorBlueDark"
-            android:text="Thêm lịch học"
+            android:text="Sửa lịch học"
             android:gravity="center"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="30dp"/>
@@ -261,12 +261,12 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/add_calendar"
+            android:id="@+id/update_calendar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_button_login"
             android:textColor="@color/colorWhite"
-            android:text="Thêm"
+            android:text="Lưu"
             android:gravity="center"
             android:layout_gravity="center"
             android:layout_marginTop="25dp"/>

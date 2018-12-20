@@ -1,6 +1,7 @@
 package com.indieteam.mytask.core.parse.excel
 
 import android.annotation.SuppressLint
+import com.indieteam.mytask.core.StringRandom
 import com.indieteam.mytask.dataStruct.RawCalendarStruct
 import org.json.JSONArray
 import org.json.JSONObject
@@ -63,6 +64,7 @@ class ExcelToJson{
 //                    Log.d("teacher", i.teacher)
 
                     val jsonObjectChild = JSONObject()
+                    jsonObjectChild.put("subjectId", StringRandom.get(40))
                     jsonObjectChild.put("subjectName", i.subjectName)
                     jsonObjectChild.put("subjectDate", "${calendarStart.get(Calendar.DAY_OF_MONTH)}/"+
                             "${calendarStart.get(Calendar.MONTH) + 1}/" +

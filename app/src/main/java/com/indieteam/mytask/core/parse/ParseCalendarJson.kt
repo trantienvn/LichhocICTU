@@ -13,12 +13,14 @@ class ParseCalendarJson(val calendar: JSONObject){
     var subjectTime = ArrayList<String>()
     var subjectPlace = ArrayList<String>()
     var teacher = ArrayList<String>()
+    var subjectId = ArrayList<String>()
 
     fun getSubject(key: String){
         subjectName = arrayListOf()
         subjectTime = arrayListOf()
         subjectPlace = arrayListOf()
         teacher = arrayListOf()
+        subjectId = arrayListOf()
 
         val calendarValue = calendar.getJSONArray("calendar")
 
@@ -29,6 +31,7 @@ class ParseCalendarJson(val calendar: JSONObject){
                 subjectTime.add(calendarValue.getJSONObject(i).getString("subjectTime"))
                 subjectPlace.add(calendarValue.getJSONObject(i).getString("subjectPlace"))
                 teacher.add(calendarValue.getJSONObject(i).getString("teacher"))
+                subjectId.add(calendarValue.getJSONObject(i).getString("subjectId"))
             }
         }
         sort()
@@ -66,13 +69,16 @@ class ParseCalendarJson(val calendar: JSONObject){
                         temp = teacher[j]
                         teacher[j] = teacher[k]
                         teacher[k] = temp
+
+                        temp = subjectId[j]
+                        subjectId[j] = subjectId[k]
+                        subjectId[k] = temp
                     }
                 }
             }
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
     fun initDots(): MutableMap<CalendarDay, String>{
         val dots = mutableMapOf<CalendarDay, String>()
         val calendarValue = calendar.getJSONArray("calendar")

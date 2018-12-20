@@ -1,0 +1,49 @@
+package com.indieteam.mytask.ui
+
+import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import com.indieteam.mytask.R
+import com.indieteam.mytask.core.calendar.DeleteSubject
+import kotlinx.android.synthetic.main.dialog_calendar.view.*
+
+class CalendarDialog(private val context: Context){
+
+    private val alertDialog = AlertDialog.Builder(context)
+    private lateinit var updateCalendarFragment: UpdateCalendarFragment
+
+    fun show(subjectId: String){
+        updateCalendarFragment = UpdateCalendarFragment()
+        val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val view = layoutInflater.inflate(R.layout.dialog_calendar, null)
+        context as WeekActivity
+        alertDialog.setView(view)
+        val create = alertDialog.create()
+        create.show()
+
+        view.item_edit.setOnClickListener {
+            context.runOnUiThread {
+                view.item_edit.background = context.resources.getDrawable(R.color.colorGrayDark)
+            }
+            create.dismiss()
+            context.gone()
+            val bundle = Bundle()
+            bundle.putString("subjectId", subjectId)
+            updateCalendarFragment.arguments = bundle
+            context.supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, updateCalendarFragment, "updateCalendarFragment")
+                    .commit()
+        }
+
+        view.item_delete.setOnClickListener {
+            create.dismiss()
+            val deleteSubject = DeleteSubject(context)
+            deleteSubject.delete(subjectId)
+            val intent = Intent(context, WeekActivity::class.java)
+            intent.putExtra("date", deleteSubject.dateDeleted)
+            context.startActivity(intent)
+            context.finish()
+        }
+    }
+}
