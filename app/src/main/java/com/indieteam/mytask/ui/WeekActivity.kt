@@ -455,7 +455,7 @@ class WeekActivity : AppCompatActivity() {
                         .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                         .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                         .create(),
-                        SpeedDialActionItem.Builder(R.id.fab_donate, R.drawable.ic_coin)
+                        SpeedDialActionItem.Builder(R.id.fab_donate, R.drawable.ic_info)
                                 .setLabel("Giới thiệu")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -467,7 +467,7 @@ class WeekActivity : AppCompatActivity() {
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
-                        SpeedDialActionItem.Builder(R.id.fab_sync_google, R.drawable.ic_export)
+                        SpeedDialActionItem.Builder(R.id.fab_sync_google, R.drawable.ic_cloud_upload_24dp)
                                 .setLabel("Tải lên Google Calendar")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -479,7 +479,7 @@ class WeekActivity : AppCompatActivity() {
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
-                        SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_info)
+                        SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_profile)
                                 .setLabel("Cá nhân/QR")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
