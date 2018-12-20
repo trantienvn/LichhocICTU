@@ -260,6 +260,17 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/adding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="5dp"
+            android:textColor="@color/colorBlueDark"
+            android:text="Đang thêm..."
+            android:gravity="center"
+            android:visibility="invisible"/>
+
         <Button
             android:id="@+id/add_calendar"
             android:layout_width="wrap_content"
@@ -268,9 +279,7 @@
             android:textColor="@color/colorWhite"
             android:text="Thêm"
             android:gravity="center"
-            android:layout_gravity="center"
-            android:layout_marginTop="25dp"/>
-
+            android:layout_gravity="center"/>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

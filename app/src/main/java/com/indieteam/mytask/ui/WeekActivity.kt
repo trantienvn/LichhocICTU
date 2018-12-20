@@ -657,6 +657,22 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkCompatible(): Boolean{
+        val valueDb = sqLite.readCalendar()
+        val studentCalendar = JSONObject(valueDb)
+        val jsonArray = studentCalendar.getJSONArray("calendar")
+
+        for (i in 0 until jsonArray.length()){
+            try{
+                jsonArray.getJSONObject(i).getString("subjectId")
+                return true
+            } catch (e: Exception){
+                return false
+            }
+        }
+        return false
+    }
+
     private fun run(){
         //changeBackground()
         var readDb: Int
@@ -674,27 +690,39 @@ class WeekActivity : AppCompatActivity() {
 
         if(readDb == 0){
             moveToLogin()
-        }else{
-            calendarJson = JSONObject(valueDb)
-            parseCalendarJson = ParseCalendarJson(calendarJson!!)
-        }
+        }else {
+            if (checkCompatible()) {
+                calendarJson = JSONObject(valueDb)
+                parseCalendarJson = ParseCalendarJson(calendarJson!!)
 
-        initFloatButton()
+                initFloatButton()
 
-        if (intent.getStringExtra("date") != null)
-            selectedDate(intent.getStringExtra("date"))
-        else
-            toDay()
+                if (intent.getStringExtra("date") != null)
+                    selectedDate(intent.getStringExtra("date"))
+                else
+                    toDay()
 
-        drawBackgroundToday()
-        dots = parseCalendarJson!!.initDots()
-        setCalendarDots()
-        swipe.setListener(OnSwipeListener())
-        Log.d("service", checkServiceRunning().toString())
-        if (!checkServiceRunning())
-            startService()
+                drawBackgroundToday()
+                dots = parseCalendarJson!!.initDots()
+                setCalendarDots()
+                swipe.setListener(OnSwipeListener())
+                Log.d("service", checkServiceRunning().toString())
+                if (!checkServiceRunning())
+                    startService()
 //        if (Build.VERSION.SDK_INT >= 21)
 //            loadAds()
+            } else {
+                try {
+                    sqLite.deleteCalendar()
+                    sqLite.deleteInfo()
+                    if (checkServiceRunning())
+                        stopService(Intent(this, AppService::class.java))
+                } catch (e: Exception) {
+                    Log.d("Err", e.toString())
+                }
+                moveToLogin()
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

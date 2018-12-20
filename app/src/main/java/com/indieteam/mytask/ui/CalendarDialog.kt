@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View.GONE
 import com.indieteam.mytask.R
 import com.indieteam.mytask.core.calendar.DeleteSubject
 import kotlinx.android.synthetic.main.dialog_calendar.view.*
@@ -20,14 +21,14 @@ class CalendarDialog(private val context: Context){
         val view = layoutInflater.inflate(R.layout.dialog_calendar, null)
         context as WeekActivity
         alertDialog.setView(view)
-        val create = alertDialog.create()
-        create.show()
+        val created = alertDialog.create()
+        created.show()
 
         view.item_edit.setOnClickListener {
             context.runOnUiThread {
                 view.item_edit.background = context.resources.getDrawable(R.color.colorGrayDark)
             }
-            create.dismiss()
+            created.dismiss()
             context.gone()
             val bundle = Bundle()
             bundle.putString("subjectId", subjectId)
@@ -37,7 +38,8 @@ class CalendarDialog(private val context: Context){
         }
 
         view.item_delete.setOnClickListener {
-            create.dismiss()
+            view.item_delete.text = "Đang xoá..."
+            view.item_edit.visibility = GONE
             val deleteSubject = DeleteSubject(context)
             deleteSubject.delete(subjectId)
             val intent = Intent(context, WeekActivity::class.java)

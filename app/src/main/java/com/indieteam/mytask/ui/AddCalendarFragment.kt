@@ -84,6 +84,7 @@ class AddCalendarFragment : Fragment() {
                             && subjectTime.isNotEmpty()){
                         sorted()
                         if (isSubjectTimeContinuity()) {
+                            adding.visibility = View.VISIBLE
                             var time = ""
                             subjectTime.forEach {
                                 time += "$it,"

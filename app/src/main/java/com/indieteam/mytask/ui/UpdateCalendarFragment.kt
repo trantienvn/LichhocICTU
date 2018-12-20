@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.Toast
@@ -121,6 +123,7 @@ class UpdateCalendarFragment : Fragment() {
                             subjectTimeArray.add(time.toInt())
                             autoCheckBox(time)
                         } else {
+                            subjectTimeArray.add(subjectTime.toInt())
                             autoCheckBox(subjectTime)
                         }
 
@@ -135,6 +138,7 @@ class UpdateCalendarFragment : Fragment() {
                             && subjectTimeArray.isNotEmpty() && subjectDate.isNotBlank()){
                         sorted()
                         if (isSubjectTimeContinuity()) {
+                            saving.visibility = VISIBLE
                             var time = ""
                             subjectTimeArray.forEach {
                                 time += "$it,"
