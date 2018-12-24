@@ -23,12 +23,12 @@
         app:mcv_arrowColor="@color/colorWhite"
         app:mcv_calendarMode="week"
         app:mcv_firstDayOfWeek="sunday"
+        app:mcv_headerTextAppearance="@style/calendarHeader"
         app:mcv_selectionColor="@color/colorGrayDark"
         app:mcv_showOtherDates="none"
         app:mcv_showWeekDays="true"
         app:mcv_tileHeight="match_parent"
         app:mcv_titleAnimationOrientation="horizontal"
-        app:mcv_headerTextAppearance="@style/calendarHeader"
         app:mcv_weekDayTextAppearance="@style/calendarWeekHeader" />
 
     <View
@@ -47,8 +47,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/colorWhite"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.77"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +62,6 @@
             android:divider="@color/colorWhite"
             android:dividerHeight="10dp"
             android:scrollbars="none">
-
         </ListView>
 
     </RelativeLayout>
@@ -82,20 +81,20 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_gravity="bottom|end"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="5dp"
             app:sdMainFabClosedBackgroundColor="@color/colorBlue"
             app:sdMainFabClosedSrc="@drawable/ic_more"
             app:sdMainFabOpenedBackgroundColor="@color/colorBlue" />
 
-        <com.google.android.gms.ads.AdView
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
+        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/ads_bottom"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-1117482668766229/2522668559"
             android:visibility="gone"
-            />
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-1117482668766229/2522668559" />
 
     </RelativeLayout>
 

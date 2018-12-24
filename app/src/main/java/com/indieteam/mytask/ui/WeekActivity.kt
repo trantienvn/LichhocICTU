@@ -453,13 +453,13 @@ class WeekActivity : AppCompatActivity() {
     private fun initFloatButton(){
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_logout, R.drawable.ic_logout)
-                        .setLabel("Đăng xuất")
+                        .setLabel("Đ.xuất")
                         .setLabelColor(Color.BLACK)
                         .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                         .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                         .create(),
                         SpeedDialActionItem.Builder(R.id.fab_donate, R.drawable.ic_info)
-                                .setLabel("Giới thiệu")
+                                .setLabel("G.thiệu")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -477,13 +477,13 @@ class WeekActivity : AppCompatActivity() {
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_update, R.drawable.ic_update)
-                                .setLabel("Cập nhật lịch")
+                                .setLabel("C.nhật lịch")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_profile)
-                                .setLabel("Cá nhân/QR")
+                                .setLabel("C.nhân/QR")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
