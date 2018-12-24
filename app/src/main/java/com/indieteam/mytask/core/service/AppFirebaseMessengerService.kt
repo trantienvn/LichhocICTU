@@ -14,7 +14,8 @@ class AppFirebaseMessengerService: FirebaseMessagingService() {
 
     override fun onMessageReceived(p0: RemoteMessage?) {
         super.onMessageReceived(p0)
-        Log.d("Messenger", "data is " + p0?.notification?.body)
-        AppNotification(this).firebaseNotification(p0!!.notification!!.title!!, p0.notification!!.body!!)
+        p0?.let {
+            AppNotification(this).firebaseNotification(p0.notification?.title, p0.notification?.body)
+        }
     }
 }

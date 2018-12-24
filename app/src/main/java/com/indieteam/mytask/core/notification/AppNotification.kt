@@ -155,7 +155,7 @@ class AppNotification(val context: Context) {
         }
     }
 
-    fun firebaseNotification(title: String, body: String){
+    fun firebaseNotification(title: String?, body: String?){
         val channelName  = "App Notification"
         val channelId = "App Notification"
         val description = ""
@@ -174,8 +174,6 @@ class AppNotification(val context: Context) {
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                 .setVibrate(longArrayOf(1))
-                .setContentIntent(null)
-
 
         NotificationManagerCompat.from(context).notify(4, notification.build())
     }
