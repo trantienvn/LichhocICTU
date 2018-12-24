@@ -195,16 +195,37 @@ class SyncGoogleCalendar(val context: Context): Thread() {
             val subjectTime = jsonArr.getJSONObject(i).getString("subjectTime")
             val subjectPlace = jsonArr.getJSONObject(i).getString("subjectPlace")
             //val teacher = jsonArr.getJSONObject(i).getString("teacher")
-            val firstTime = subjectTime.substring(0, subjectTime.indexOf(",")).toInt() - 1
-            val endTime = subjectTime.substring(subjectTime.lastIndexOf(",") + 1, subjectTime.length).toInt() - 1
-            if (simpleDateFormat.parse(date) >= CalendarDay.from(CalendarDay().year, 3, 15).date &&
-                    simpleDateFormat.parse(date) < CalendarDay.from(CalendarDay().year, 9, 15).date) {
-                if (calendarId != null)
-                    insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeSummerArr[firstTime].timeIn, timeDetails.timeSummerArr[endTime].timeOut)
-            } else {
-                if (calendarId != null)
-                    insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeWinterArr[firstTime].timeIn, timeDetails.timeWinterArr[endTime].timeOut)
+
+            val day = subjectDate.substring(0, subjectDate.indexOf("/")).toInt()
+            val month = subjectDate.substring(subjectDate.indexOf("/") + 1, subjectDate.lastIndexOf("/")).toInt()
+            val year = subjectDate.substring(subjectDate.lastIndexOf("/") + 1, subjectDate.length).toInt()
+
+            val firstTime: Int
+            val endTime: Int
+            if(subjectTime.indexOf(",") > -1) {
+                firstTime = subjectTime.substring(0, subjectTime.indexOf(",")).toInt() - 1
+                endTime = subjectTime.substring(subjectTime.lastIndexOf(",") + 1, subjectTime.length).toInt() - 1
+                if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
+                        CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date) {
+                    if (calendarId != null)
+                        insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeSummerArr[firstTime].timeIn, timeDetails.timeSummerArr[endTime].timeOut)
+                } else {
+                    if (calendarId != null)
+                        insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeWinterArr[firstTime].timeIn, timeDetails.timeWinterArr[endTime].timeOut)
+                }
             }
+            else {
+                firstTime = subjectTime.toInt() - 1
+                if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
+                        CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date) {
+                    if (calendarId != null)
+                        insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeSummerArr[firstTime].timeIn, timeDetails.timeSummerArr[firstTime].timeOut)
+                } else {
+                    if (calendarId != null)
+                        insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeWinterArr[firstTime].timeIn, timeDetails.timeWinterArr[firstTime].timeOut)
+                }
+            }
+
         }
 
         weekActivity.apply{

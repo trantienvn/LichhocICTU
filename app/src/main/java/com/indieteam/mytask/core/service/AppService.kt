@@ -35,7 +35,7 @@ class AppService: Service(){
         calendarForTomorrow.add(Calendar.DAY_OF_MONTH, 1)
     }
 
-    fun checkTimeBackground(){
+    private fun checkTimeBackground(){
         Timer().scheduleAtFixedRate(0, 20000) {
             calendarForNow = Calendar.getInstance()!!
             Log.d("hour", calendarForNow.get(Calendar.HOUR_OF_DAY).toString() + " " + calendarForNow.get(Calendar.MINUTE))
@@ -110,7 +110,7 @@ class AppService: Service(){
     }
 
     override fun onDestroy() {
-        Log.d("service", "stoped")
+        Log.d("service", "stopped")
         super.onDestroy()
         try {
             stopSelf()

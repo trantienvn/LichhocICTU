@@ -34,6 +34,7 @@ import com.google.android.gms.common.api.Scope
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.json.gson.GsonFactory
+import com.google.firebase.messaging.FirebaseMessaging
 import com.indieteam.mytask.R
 import com.indieteam.mytask.adapter.CalendarListViewAdapter
 import com.indieteam.mytask.ads.Ads

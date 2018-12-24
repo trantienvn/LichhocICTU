@@ -136,7 +136,7 @@ class AppNotification(val context: Context) {
                     .setColor(Color.parseColor("#2c73b3"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
-                    .setAutoCancel(false) // remove notification after touch
+                    .setAutoCancel(false)
 
             NotificationManagerCompat.from(context).notify(1, notification.build())
         } else {
@@ -149,10 +149,35 @@ class AppNotification(val context: Context) {
                     .setColor(Color.parseColor("#2c73b3"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
-                    .setAutoCancel(false) // remove notification after touch
+                    .setAutoCancel(false)
 
             NotificationManagerCompat.from(context).notify(3, notification.build())
         }
+    }
+
+    fun firebaseNotification(title: String, body: String){
+        val channelName  = "App Notification"
+        val channelId = "App Notification"
+        val description = ""
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val chanel = NotificationChannel(channelId, channelName, importance)
+            chanel.description = description
+        }
+
+        val notification = NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(R.drawable.ic_message_64)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setColor(Color.parseColor("#2c73b3"))
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                .setVibrate(longArrayOf(1))
+                .setContentIntent(null)
+
+
+        NotificationManagerCompat.from(context).notify(4, notification.build())
     }
 
     fun foreground(): NotificationCompat.Builder{
