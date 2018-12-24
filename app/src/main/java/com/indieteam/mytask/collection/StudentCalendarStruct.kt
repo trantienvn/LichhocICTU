@@ -1,4 +1,4 @@
-package com.indieteam.mytask.dataStruct
+package com.indieteam.mytask.collection
 
 class StudentCalendarStruct(val subjectName: String,
                             val subjectDate: String,

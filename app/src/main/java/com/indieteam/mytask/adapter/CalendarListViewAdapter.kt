@@ -8,7 +8,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import com.indieteam.mytask.R
-import com.indieteam.mytask.dataStruct.StudentCalendarStruct
+import com.indieteam.mytask.collection.StudentCalendarStruct
 import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.item_calendar_list_view.view.*
 import java.util.*

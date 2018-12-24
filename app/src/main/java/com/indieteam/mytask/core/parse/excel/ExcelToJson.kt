@@ -2,7 +2,7 @@ package com.indieteam.mytask.core.parse.excel
 
 import android.annotation.SuppressLint
 import com.indieteam.mytask.core.StringRandom
-import com.indieteam.mytask.dataStruct.RawCalendarStruct
+import com.indieteam.mytask.collection.RawCalendarStruct
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat

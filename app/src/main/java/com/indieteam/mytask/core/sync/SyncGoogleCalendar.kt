@@ -12,7 +12,7 @@ import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
-import com.indieteam.mytask.dataStruct.TimeDetails
+import com.indieteam.mytask.collection.TimeDetails
 import com.indieteam.mytask.core.IsNet
 import com.indieteam.mytask.core.notification.AppNotification
 import com.indieteam.mytask.core.sqlite.SqLite

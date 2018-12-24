@@ -2,7 +2,7 @@ package com.indieteam.mytask.core.parse.excel
 
 import android.content.Context
 import android.util.Log
-import com.indieteam.mytask.dataStruct.RawCalendarStruct
+import com.indieteam.mytask.collection.RawCalendarStruct
 import jxl.Sheet
 import jxl.Workbook
 import org.json.JSONObject

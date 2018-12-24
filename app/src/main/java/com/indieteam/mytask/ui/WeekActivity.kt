@@ -37,8 +37,8 @@ import com.google.api.client.json.gson.GsonFactory
 import com.indieteam.mytask.R
 import com.indieteam.mytask.adapter.CalendarListViewAdapter
 import com.indieteam.mytask.ads.Ads
-import com.indieteam.mytask.dataStruct.StudentCalendarStruct
-import com.indieteam.mytask.dataStruct.TimeDetails
+import com.indieteam.mytask.collection.StudentCalendarStruct
+import com.indieteam.mytask.collection.TimeDetails
 import com.indieteam.mytask.core.IsNet
 import com.indieteam.mytask.core.calendar.domHTML.DomUpdateCalendar
 import com.indieteam.mytask.core.sync.SyncGoogleCalendar
@@ -79,7 +79,7 @@ class WeekActivity : AppCompatActivity() {
     private var statusBarHeight = 0
     private var navigationBarHeight = 0
     private var calendarMode = 0
-    public lateinit var sharedPref: SharedPreferences
+    lateinit var sharedPref: SharedPreferences
     //private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_i)
     @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
@@ -392,6 +392,9 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun updateListView(date: String){
+        val day = date.substring(0, date.indexOf("/")).toInt()
+        val month = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/")).toInt()
+        val year = date.substring(date.lastIndexOf("/") + 1, date.length).toInt()
         if (parseCalendarJson != null){
             studentCalendarObjArr.removeAll(studentCalendarObjArr)
             parseCalendarJson!!.apply {
@@ -404,21 +407,21 @@ class WeekActivity : AppCompatActivity() {
                             subjectName.size == subjectPlace.size &&
                             subjectName.size == teacher.size) {
                         for (j in 0 until subjectName.size) {
-                            var firstTime = -1
-                            var endTime = -1
+                            var firstTime: Int
+                            var endTime: Int
                             if (subjectTime[j].indexOf(",") > -1) {
                                 firstTime = subjectTime[j].substring(0, subjectTime[j].indexOf(",")).toInt() - 1
                                 endTime = subjectTime[j].substring(subjectTime[j].lastIndexOf(",") + 1, subjectTime[j].length).toInt() - 1
-                                if (simpleDateFormat.parse(date) >= CalendarDay.from(CalendarDay().year, 3, 15).date &&
-                                        simpleDateFormat.parse(date) < CalendarDay.from(CalendarDay().year, 9, 15).date)
+                                if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
+                                        CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date)
                                     studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
                                 else
                                     studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
                             }
                             else {
-                                firstTime = subjectTime[j].toInt()
-                                if (simpleDateFormat.parse(date) >= CalendarDay.from(CalendarDay().year, 3, 15).date &&
-                                        simpleDateFormat.parse(date) < CalendarDay.from(CalendarDay().year, 9, 15).date)
+                                firstTime = subjectTime[j].toInt() - 1
+                                if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
+                                        CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date)
                                     studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
                                 else
                                     studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
