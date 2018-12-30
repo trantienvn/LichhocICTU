@@ -26,7 +26,6 @@ class AppService: Service(){
     private  lateinit var calendarForNow: Calendar
     private var result = ""
     private lateinit var appNotification: AppNotification
-    private var numberSubjects = 0
     private var countNotification = 0
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -51,6 +50,7 @@ class AppService: Service(){
 
 
     private fun pushNotification(){
+        var numberSubjects = 0
         result = ""
         val date = "${calendarForTomorrow.get(Calendar.DAY_OF_MONTH)}/${calendarForTomorrow.get(Calendar.MONTH)+1}/${calendarForTomorrow.get(Calendar.YEAR)}"
         sqLite = SqLite(this)
