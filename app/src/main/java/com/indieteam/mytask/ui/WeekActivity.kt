@@ -34,15 +34,15 @@ import com.google.android.gms.common.api.Scope
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.json.gson.GsonFactory
-import com.google.firebase.messaging.FirebaseMessaging
 import com.indieteam.mytask.R
 import com.indieteam.mytask.adapter.CalendarListViewAdapter
 import com.indieteam.mytask.ads.Ads
 import com.indieteam.mytask.collection.StudentCalendarStruct
 import com.indieteam.mytask.collection.TimeDetails
 import com.indieteam.mytask.core.IsNet
-import com.indieteam.mytask.core.calendar.domHTML.DomUpdateCalendar
-import com.indieteam.mytask.core.sync.SyncGoogleCalendar
+import com.indieteam.mytask.core.schedule.domHTML.DomTestSchedule
+import com.indieteam.mytask.core.schedule.domHTML.DomUpdateSchedule
+import com.indieteam.mytask.core.sync.SyncToGoogleCalendar
 import com.indieteam.mytask.core.parse.ParseCalendarJson
 import com.indieteam.mytask.core.notification.AppNotification
 import com.indieteam.mytask.core.service.AppService
@@ -66,10 +66,10 @@ class WeekActivity : AppCompatActivity() {
 
     private val REQUEST_ACCOUNT = 1
     private lateinit var sqLite: SqLite
-    private var calendarJson: JSONObject? = null
-    var parseCalendarJson: ParseCalendarJson? = null
+    private var scheduleJson: JSONObject? = null
+    var parseScheduleJson: ParseCalendarJson? = null
     var dots = mutableMapOf<CalendarDay, String>()
-    var studentCalendarObjArr = ArrayList<StudentCalendarStruct>()
+    var studentScheduleObjArr = ArrayList<StudentCalendarStruct>()
     private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
     private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
     private lateinit var calendarListViewAdapter: CalendarListViewAdapter
@@ -79,7 +79,7 @@ class WeekActivity : AppCompatActivity() {
     private var screenHeight = 0
     private var statusBarHeight = 0
     private var navigationBarHeight = 0
-    private var calendarMode = 0
+    private var layoutCalendarMode = 0
     lateinit var sharedPref: SharedPreferences
     //private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_i)
     @SuppressLint("SimpleDateFormat")
@@ -87,7 +87,7 @@ class WeekActivity : AppCompatActivity() {
     private val timeDetails = TimeDetails()
     private lateinit var isNet: IsNet
     private lateinit var appNotification: AppNotification
-    private lateinit var addCalendarFragment: AddCalendarFragment
+    private lateinit var addScheduleFragment: AddScheduleFragment
 
     // Google oauth2
     lateinit var credential: GoogleAccountCredential
@@ -102,12 +102,12 @@ class WeekActivity : AppCompatActivity() {
     lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var signInIntent: Intent
 
-    lateinit var calendarDialog: CalendarDialog
+    lateinit var modifyDialog: ModifyDialog
 
     //Ads
     private lateinit var ads: Ads
 
-    inner class OnSwipeListener: com.github.pwittchen.swipe.library.rx2.SwipeListener{
+    inner class OnSwipeListener : com.github.pwittchen.swipe.library.rx2.SwipeListener {
         private var startTouchY = 0f
 
         override fun onSwipedUp(event: MotionEvent?): Boolean {
@@ -135,7 +135,7 @@ class WeekActivity : AppCompatActivity() {
 
         private var countSwipeLeft = 0
         override fun onSwipingLeft(event: MotionEvent?) {
-            if(countSwipeLeft == 0) {
+            if (countSwipeLeft == 0) {
                 event?.let {
                     startTouchY = event.y
                 }
@@ -146,7 +146,7 @@ class WeekActivity : AppCompatActivity() {
 
         private var countSwipeRight = 0
         override fun onSwipingRight(event: MotionEvent?) {
-            if(countSwipeRight == 0){
+            if (countSwipeRight == 0) {
                 event?.let {
                     startTouchY = event.y
                 }
@@ -183,7 +183,7 @@ class WeekActivity : AppCompatActivity() {
                 p.color = colors[0]
                 length = text.length
             }
-            if (text.length == 2){
+            if (text.length == 2) {
                 p.color = colors[1]
                 length = text.length
             }
@@ -191,24 +191,24 @@ class WeekActivity : AppCompatActivity() {
                 p.color = colors[2]
                 length = text.length
             }
-            if (text.length >5){
+            if (text.length > 5) {
                 p.color = colors[2]
                 length = 5
             }
             var totalWidth = 0f
             for (i in 0 until length)
                 if (i != 0)
-                    totalWidth += (right.toFloat()/100f) * 7.5f // 7.5 is space (percent) margin left of dots
-            var cX = right/2f - totalWidth/2
-            for (i in 0 until length){
-                c.drawCircle(cX, bottom.toFloat() + (bottom.toFloat()/100f) * 10f, (right.toFloat()/100f) * 2.1f  , p)
-                cX += (right.toFloat()/100f) * 7.5f
+                    totalWidth += (right.toFloat() / 100f) * 7.5f // 7.5 is space (percent) margin left of dots
+            var cX = right / 2f - totalWidth / 2
+            for (i in 0 until length) {
+                c.drawCircle(cX, bottom.toFloat() + (bottom.toFloat() / 100f) * 10f, (right.toFloat() / 100f) * 2.1f, p)
+                cX += (right.toFloat() / 100f) * 7.5f
             }
             p.color = lastColor
         }
     }
 
-    inner class EventDecorator(private val mode: String, private val colors: List<Int>, val date: CalendarDay, private val dot: String): DayViewDecorator {
+    inner class EventDecorator(private val mode: String, private val colors: List<Int>, val date: CalendarDay, private val dot: String) : DayViewDecorator {
         override fun shouldDecorate(day: CalendarDay): Boolean {
             return date == day
         }
@@ -222,18 +222,21 @@ class WeekActivity : AppCompatActivity() {
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        try { swipe.dispatchTouchEvent(event)
-        }catch (e: Exception){e.printStackTrace()}
+        try {
+            swipe.dispatchTouchEvent(event)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         return super.dispatchTouchEvent(event)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if(requestCode == REQUEST_ACCOUNT){
-            if(grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == REQUEST_ACCOUNT) {
+            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 isAccountPermission = 1
-                val syncGoogle = SyncGoogleCalendar(this)
+                val syncGoogle = SyncToGoogleCalendar(this)
                 syncGoogle.start()
-            }else{
+            } else {
                 Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
             }
         }
@@ -242,25 +245,31 @@ class WeekActivity : AppCompatActivity() {
     override fun onBackPressed() {
         var quit = true
         if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null) {
-            if (supportFragmentManager.findFragmentByTag("addCalendarFragment") != null){
-                supportFragmentManager.beginTransaction().remove(addCalendarFragment)
+            if (supportFragmentManager.findFragmentByTag("addScheduleFragment") != null) {
+                supportFragmentManager.beginTransaction().remove(addScheduleFragment)
                         .commit()
                 visible()
                 quit = false
             }
-            if (supportFragmentManager.findFragmentByTag("selectSemesterFragment") != null){
+            if (supportFragmentManager.findFragmentByTag("selectSemesterFragment") != null) {
                 supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("selectSemesterFragment")!!)
                         .commit()
                 visible()
                 quit = false
             }
-            if (supportFragmentManager.findFragmentByTag("updateCalendarFragment") != null){
+            if (supportFragmentManager.findFragmentByTag("updateCalendarFragment") != null) {
                 supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("updateCalendarFragment")!!)
                         .commit()
                 visible()
                 quit = false
             }
-            if (quit){
+            if (supportFragmentManager.findFragmentByTag("selectTestScheduleFragment") != null) {
+                supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("selectTestScheduleFragment")!!)
+                        .commit()
+                visible()
+                quit = false
+            }
+            if (quit) {
                 if (calendarView.selectedDate == CalendarDay.today())
                     super.onBackPressed()
                 else
@@ -269,19 +278,19 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkAccountPermission(){
-        if(Build.VERSION.SDK_INT >= 23) {
-            if(checkSelfPermission(android.Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
+    private fun checkAccountPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(arrayOf(Manifest.permission.GET_ACCOUNTS), REQUEST_ACCOUNT)
-            }else{
+            } else {
                 isAccountPermission = 1
             }
-        }else{
+        } else {
             isAccountPermission = 1
         }
     }
 
-    private fun init(){
+    private fun init() {
         sqLite = SqLite(this)
         customSwipe = CustomSwipe(this)
         calenderEvents()
@@ -294,16 +303,16 @@ class WeekActivity : AppCompatActivity() {
         val resourcesId2 = resources.getIdentifier("navigation_bar_height", "dimen", "android")
         navigationBarHeight = resources.getDimensionPixelSize(resourcesId2)
         sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        calendarMode = sharedPref.getInt("CalendarMode", 0)
-        calendarListViewAdapter = CalendarListViewAdapter(this@WeekActivity, studentCalendarObjArr)
+        layoutCalendarMode = sharedPref.getInt("CalendarMode", 0)
+        calendarListViewAdapter = CalendarListViewAdapter(this@WeekActivity, studentScheduleObjArr)
         calender_list_view.adapter = calendarListViewAdapter
         isNet = IsNet(this)
         ads = Ads(this)
         appNotification = AppNotification(this)
-        calendarDialog = CalendarDialog(this)
+        modifyDialog = ModifyDialog(this)
     }
 
-    fun preDate(){
+    fun preDate() {
         val calendarSelected = Calendar.getInstance()
         calendarSelected.set(calendarView.selectedDate.year, calendarView.selectedDate.month, calendarView.selectedDate.day)
         calendarSelected.add(Calendar.DAY_OF_MONTH, -1)
@@ -315,7 +324,7 @@ class WeekActivity : AppCompatActivity() {
         updateListView(date)
     }
 
-    fun nextDate(){
+    fun nextDate() {
         val calendarSelected = Calendar.getInstance()
         calendarSelected.set(calendarView.selectedDate.year, calendarView.selectedDate.month, calendarView.selectedDate.day)
         calendarSelected.add(Calendar.DAY_OF_MONTH, 1)
@@ -327,22 +336,20 @@ class WeekActivity : AppCompatActivity() {
         updateListView(date)
     }
 
-    private fun calendarSetting(){
+    private fun calendarSetting() {
         calendarView.topbarVisible = true
-        calendarView.state().edit().
-                setMinimumDate(dateStart)
+        calendarView.state().edit().setMinimumDate(dateStart)
                 .setMaximumDate(dateEnd)
                 .commit()
         view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 view.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 //view.height //height is ready?
-                if (calendarMode == 0) {
+                if (layoutCalendarMode == 0) {
                     calendarView.state().edit()
                             .setCalendarDisplayMode(CalendarMode.WEEKS)
                             .commit()
-                }
-                else {
+                } else {
                     calendarView.layoutParams.height = (screenHeight / 2.3).toInt()
                     content_layout.layoutParams.height = (screenHeight - (screenHeight / 2.3f) - view.height - statusBarHeight).toInt()
                     calendarView.state().edit()
@@ -357,29 +364,29 @@ class WeekActivity : AppCompatActivity() {
         calendarView.selectionMode = SELECTION_MODE_SINGLE
     }
 
-    private fun setCalendarDots(){
-        for(i in dots){
+    private fun setCalendarDots() {
+        for (i in dots) {
             calendarView.addDecorator(EventDecorator("Dots", listOf(resources.getColor(R.color.colorBlue), resources.getColor(R.color.colorOrange), resources.getColor(R.color.colorRed)), i.key, i.value))
         }
     }
 
-    private fun drawBackgroundToday(){
+    private fun drawBackgroundToday() {
         calendarView.addDecorator(EventDecorator("ToDay", listOf(resources.getColor(R.color.colorGrayDark)), CalendarDay.today(), "null"))
     }
 
-    private fun calenderEvents(){
+    private fun calenderEvents() {
         calendarView.setOnDateChangedListener { materialCalendarView, calendarDay, b ->
-            val date = "${calendarDay.day}/${calendarDay.month+1}/${calendarDay.year}"
+            val date = "${calendarDay.day}/${calendarDay.month + 1}/${calendarDay.year}"
             updateListView(date)
         }
         calendarView.setOnDateLongClickListener { materialCalendarView, calendarDay ->
             gone()
-            val date = "${calendarDay.day}/${calendarDay.month+1}/${calendarDay.year}"
+            val date = "${calendarDay.day}/${calendarDay.month + 1}/${calendarDay.year}"
             val bundle = Bundle()
             bundle.putString("date", date)
-            addCalendarFragment = AddCalendarFragment()
-            addCalendarFragment.arguments = bundle
-            supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, addCalendarFragment, "addCalendarFragment")
+            addScheduleFragment = AddScheduleFragment()
+            addScheduleFragment.arguments = bundle
+            supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, addScheduleFragment, "addScheduleFragment")
                     .commit()
         }
         calendarView.setOnMonthChangedListener { materialCalendarView, calendarDay ->
@@ -388,17 +395,17 @@ class WeekActivity : AppCompatActivity() {
                     return
                 }
             }*/
-            calendarView.setTitleFormatter{ "Tháng ${calendarDay.month+1} Năm ${calendarDay.year}" }
+            calendarView.setTitleFormatter { "Tháng ${calendarDay.month + 1} Năm ${calendarDay.year}" }
         }
     }
 
-    private fun updateListView(date: String){
+    private fun updateListView(date: String) {
         val day = date.substring(0, date.indexOf("/")).toInt()
         val month = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/")).toInt()
         val year = date.substring(date.lastIndexOf("/") + 1, date.length).toInt()
-        if (parseCalendarJson != null){
-            studentCalendarObjArr.removeAll(studentCalendarObjArr)
-            parseCalendarJson!!.apply {
+        if (parseScheduleJson != null) {
+            studentScheduleObjArr.removeAll(studentScheduleObjArr)
+            parseScheduleJson!!.apply {
                 getSubject(date)
                 if (!subjectName.isEmpty() &&
                         !subjectTime.isEmpty() &&
@@ -415,17 +422,16 @@ class WeekActivity : AppCompatActivity() {
                                 endTime = subjectTime[j].substring(subjectTime[j].lastIndexOf(",") + 1, subjectTime[j].length).toInt() - 1
                                 if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
                                         CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date)
-                                    studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
+                                    studentScheduleObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
                                 else
-                                    studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
-                            }
-                            else {
+                                    studentScheduleObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
+                            } else {
                                 firstTime = subjectTime[j].toInt() - 1
                                 if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
                                         CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date)
-                                    studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
+                                    studentScheduleObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
                                 else
-                                    studentCalendarObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
+                                    studentScheduleObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
                             }
                         }
                         calendarListViewAdapter.notifyDataSetChanged()
@@ -438,20 +444,20 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
-     private fun isGooglePlayServicesAvailable(): Boolean {
-         val googleApiAvailability = GoogleApiAvailability.getInstance()
-         val status = googleApiAvailability.isGooglePlayServicesAvailable(this)
-         if(status != ConnectionResult.SUCCESS) {
-             if(googleApiAvailability.isUserResolvableError(status)) {
+    private fun isGooglePlayServicesAvailable(): Boolean {
+        val googleApiAvailability = GoogleApiAvailability.getInstance()
+        val status = googleApiAvailability.isGooglePlayServicesAvailable(this)
+        if (status != ConnectionResult.SUCCESS) {
+            if (googleApiAvailability.isUserResolvableError(status)) {
                 googleApiAvailability.getErrorDialog(this, status, 2404).show()
-             }
-             return false
-         }
-         return true
+            }
+            return false
+        }
+        return true
     }
 
     @SuppressLint("SetTextI18n")
-    private fun initFloatButton(){
+    private fun initFloatButton() {
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_logout, R.drawable.ic_logout)
                         .setLabel("Đ.xuất")
@@ -483,6 +489,12 @@ class WeekActivity : AppCompatActivity() {
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
+                        SpeedDialActionItem.Builder(R.id.fab_test, R.drawable.ic_schedule_24dp)
+                                .setLabel("Xem lịch thi")
+                                .setLabelColor(Color.BLACK)
+                                .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
+                                .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
+                                .create(),
                         SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_profile)
                                 .setLabel("C.nhân/QR")
                                 .setLabelColor(Color.BLACK)
@@ -490,25 +502,25 @@ class WeekActivity : AppCompatActivity() {
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create()
 
-        )
+                )
         float_button.addAllActionItems(listItem)
 
         float_button.setOnActionSelectedListener { it ->
-            when(it.id){
-                R.id.fab_setting ->{
-                    if(calendarMode == 1) {
+            when (it.id) {
+                R.id.fab_setting -> {
+                    if (layoutCalendarMode == 1) {
                         calendarView.layoutParams.height = ((screenHeight / 100f) * 21f).toInt()
                         content_layout.layoutParams.height = ((screenHeight - (screenHeight / 100f) * 21f) - view.height - statusBarHeight).toInt()
                         calendarView.state().edit()
                                 .setCalendarDisplayMode(CalendarMode.WEEKS)
                                 .commit()
                         sharedPref.apply {
-                            with(edit()){
+                            with(edit()) {
                                 putInt("CalendarMode", 0)
                                 apply()
                             }
                         }
-                        calendarMode = sharedPref.getInt("CalendarMode", 0)
+                        layoutCalendarMode = sharedPref.getInt("CalendarMode", 0)
                     } else {
                         calendarView.layoutParams.height = (screenHeight / 2.3f).toInt()
                         content_layout.layoutParams.height = (screenHeight - (screenHeight / 2.3f) - view.height - statusBarHeight).toInt()
@@ -516,20 +528,20 @@ class WeekActivity : AppCompatActivity() {
                                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                                 .commit()
                         sharedPref.apply {
-                            with(edit()){
+                            with(edit()) {
                                 putInt("CalendarMode", 1)
                                 apply()
                             }
                         }
-                        calendarMode = sharedPref.getInt("CalendarMode", 0)
+                        layoutCalendarMode = sharedPref.getInt("CalendarMode", 0)
                     }
                 }
-                R.id.fab_info ->{
+                R.id.fab_info -> {
                     val intent = Intent(this@WeekActivity, StudentInfoActivity::class.java)
                     startActivity(intent)
                 }
-                R.id.fab_sync_google ->{
-                    if(isNet.check()) {
+                R.id.fab_sync_google -> {
+                    if (isNet.check()) {
                         if (isGooglePlayServicesAvailable()) {
                             checkAccountPermission()
                             if (isAccountPermission == 1) {
@@ -539,16 +551,28 @@ class WeekActivity : AppCompatActivity() {
                                         putBoolean("isSyncing", true)
                                         apply()
                                     }
-                                    val syncGoogle = SyncGoogleCalendar(this)
+                                    val syncGoogle = SyncToGoogleCalendar(this)
                                     syncGoogle.start()
                                 }
                             }
                         }
-                    } else{
+                    } else {
                         Toast.makeText(this, "Mất kết nối", Toast.LENGTH_SHORT).show()
                     }
                 }
-                R.id.fab_update ->{
+                R.id.fab_test -> {
+                    gone()
+                    supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, SelectTestScheduleFragment(), "selectTestScheduleFragment")
+                            .commit()
+                    supportFragmentManager.executePendingTransactions()
+                    supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
+                            .commit()
+                    supportFragmentManager.executePendingTransactions()
+                    supportFragmentManager.findFragmentByTag("processBarUpdate")?.apply {
+                        process?.text = "Tải lịch thi..."
+                    }
+                }
+                R.id.fab_update -> {
                     if (isNet.check()) {
                         supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
                                 .commit()
@@ -558,7 +582,7 @@ class WeekActivity : AppCompatActivity() {
                         }
                         gone()
                         try {
-                            DomUpdateCalendar(this, sqLite.readCookie()).start()
+                            DomUpdateSchedule(this, sqLite.readCookie()).start()
                         } catch (e: Exception) {
                             visible()
                             supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
@@ -567,15 +591,15 @@ class WeekActivity : AppCompatActivity() {
                             Toast.makeText(this, "Err update", Toast.LENGTH_SHORT).show()
                             Log.d("Err", e.toString())
                         }
-                    } else{
+                    } else {
                         Toast.makeText(this, "Mất kết nối", Toast.LENGTH_SHORT).show()
                     }
                 }
-                R.id.fab_donate ->{
+                R.id.fab_donate -> {
                     val intent = Intent(this, AboutActivity::class.java)
                     startActivity(intent)
                 }
-                R.id.fab_logout ->{
+                R.id.fab_logout -> {
                     if (isNet.check()) {
                         try {
                             sqLite.deleteCalendar()
@@ -586,7 +610,7 @@ class WeekActivity : AppCompatActivity() {
                             Log.d("Err", e.toString())
                         }
                         moveToLogin()
-                    } else{
+                    } else {
                         Toast.makeText(this, "Đang giữ lịch an toàn khi ngoại tuyến", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -595,34 +619,34 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
-    fun gone(){
+    fun gone() {
         calendarView.visibility = GONE
         view.visibility = GONE
         content_layout.visibility = GONE
         float_button.visibility = GONE
     }
 
-    fun visible(){
+    fun visible() {
         calendarView.visibility = VISIBLE
         view.visibility = VISIBLE
         content_layout.visibility = VISIBLE
         float_button.visibility = VISIBLE
     }
 
-    private fun moveToLogin(){
+    private fun moveToLogin() {
         val intent = Intent(this@WeekActivity, LoginActivity::class.java)
         startActivity(intent)
         finish()
     }
 
-    private fun toDay(){
-            calendarView.currentDate = CalendarDay.today()
-            calendarView.selectedDate = CalendarDay.today()
-            val date = "${CalendarDay.today().day}/${CalendarDay.today().month+1}/${CalendarDay.today().year}"
-            updateListView(date)
+    private fun toDay() {
+        calendarView.currentDate = CalendarDay.today()
+        calendarView.selectedDate = CalendarDay.today()
+        val date = "${CalendarDay.today().day}/${CalendarDay.today().month + 1}/${CalendarDay.today().year}"
+        updateListView(date)
     }
 
-    private fun selectedDate(date: String){
+    private fun selectedDate(date: String) {
         val day = date.substring(0, date.indexOf("/")).toInt()
         val month = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/")).toInt()
         val year = date.substring(date.lastIndexOf("/") + 1, date.length).toInt()
@@ -631,7 +655,7 @@ class WeekActivity : AppCompatActivity() {
         updateListView("$day/$month/$year")
     }
 
-    private fun startService(){
+    private fun startService() {
         val intent = Intent(this, AppService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             ContextCompat.startForegroundService(this, intent)
@@ -649,55 +673,57 @@ class WeekActivity : AppCompatActivity() {
                     return true
                 }
             }
-        }catch (e: Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         Log.d("service", "not running")
         return false
     }
 
-    private fun loadAds(){
+    private fun loadAds() {
         ads = Ads(this)
         ads.apply {
             loadBottomAds(ads_bottom)
         }
     }
 
-    private fun checkCompatible(): Boolean{
+    private fun checkCompatible(): Boolean {
         val valueDb = sqLite.readCalendar()
         val studentCalendar = JSONObject(valueDb)
         val jsonArray = studentCalendar.getJSONArray("calendar")
 
-        for (i in 0 until jsonArray.length()){
-            try{
+        for (i in 0 until jsonArray.length()) {
+            try {
                 jsonArray.getJSONObject(i).getString("subjectId")
                 return true
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 return false
             }
         }
         return false
     }
 
-    private fun run(){
+    private fun run() {
         //changeBackground()
         var readDb: Int
-        var valueDb= ""
+        var valueDb = ""
 
-        try{
+        try {
             valueDb = sqLite.readCalendar()
             readDb = 1
             Log.d("readdb", "readCalendar db done")
-        }catch (e: Exception){
+        } catch (e: Exception) {
             readDb = 0
             Log.d("readdb", "db is not exits, cannot readCalendar")
             Log.d("err", e.toString())
         }
 
-        if(readDb == 0){
+        if (readDb == 0) {
             moveToLogin()
-        }else {
+        } else {
             if (checkCompatible()) {
-                calendarJson = JSONObject(valueDb)
-                parseCalendarJson = ParseCalendarJson(calendarJson!!)
+                scheduleJson = JSONObject(valueDb)
+                parseScheduleJson = ParseCalendarJson(scheduleJson!!)
 
                 initFloatButton()
 
@@ -707,7 +733,7 @@ class WeekActivity : AppCompatActivity() {
                     toDay()
 
                 drawBackgroundToday()
-                dots = parseCalendarJson!!.initDots()
+                dots = parseScheduleJson!!.initDots()
                 setCalendarDots()
                 swipe.setListener(OnSwipeListener())
                 Log.d("service", checkServiceRunning().toString())
@@ -739,19 +765,18 @@ class WeekActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when(requestCode) {
-            RC_SIGN_IN->{
+        when (requestCode) {
+            RC_SIGN_IN -> {
                 if (resultCode != Activity.RESULT_OK && data != null) {
                     //Toast.makeText(this@WeekActivity, "Oauth false", Toast.LENGTH_LONG).show()
                     sharedPref.edit().apply {
                         putBoolean("isSyncing", false)
                         apply()
                     }
-                }
-                else {
+                } else {
                     credential.selectedAccountName = GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email
                     //Toast.makeText(this, GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email, Toast.LENGTH_LONG).show()
-                    sharedPref.edit().apply{
+                    sharedPref.edit().apply {
                         putString("accSelected", GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email)
                                 .apply()
                     }
@@ -761,7 +786,7 @@ class WeekActivity : AppCompatActivity() {
                         putBoolean("isSyncing", true)
                         apply()
                     }
-                    val syncGoogle = SyncGoogleCalendar(this)
+                    val syncGoogle = SyncToGoogleCalendar(this)
                     syncGoogle.start()
                 }
             }

@@ -1,4 +1,4 @@
-package com.indieteam.mytask.core.calendar
+package com.indieteam.mytask.core.schedule
 
 import android.content.Context
 import com.indieteam.mytask.core.sqlite.SqLite

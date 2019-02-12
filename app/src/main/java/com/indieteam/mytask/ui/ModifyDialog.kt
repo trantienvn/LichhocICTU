@@ -7,18 +7,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View.GONE
 import com.indieteam.mytask.R
-import com.indieteam.mytask.core.calendar.DeleteSubject
-import kotlinx.android.synthetic.main.dialog_calendar.view.*
+import com.indieteam.mytask.core.schedule.DeleteSubject
+import kotlinx.android.synthetic.main.dialog_modify.view.*
 
-class CalendarDialog(private val context: Context){
+class ModifyDialog(private val context: Context){
 
     private val alertDialog = AlertDialog.Builder(context)
-    private lateinit var updateCalendarFragment: UpdateCalendarFragment
+    private lateinit var updateScheduleFragment: UpdateScheduleFragment
 
     fun show(subjectId: String){
-        updateCalendarFragment = UpdateCalendarFragment()
+        updateScheduleFragment = UpdateScheduleFragment()
         val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view = layoutInflater.inflate(R.layout.dialog_calendar, null)
+        val view = layoutInflater.inflate(R.layout.dialog_modify, null)
         context as WeekActivity
         alertDialog.setView(view)
         val created = alertDialog.create()
@@ -32,8 +32,8 @@ class CalendarDialog(private val context: Context){
             context.gone()
             val bundle = Bundle()
             bundle.putString("subjectId", subjectId)
-            updateCalendarFragment.arguments = bundle
-            context.supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, updateCalendarFragment, "updateCalendarFragment")
+            updateScheduleFragment.arguments = bundle
+            context.supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, updateScheduleFragment, "updateScheduleFragment")
                     .commit()
         }
 

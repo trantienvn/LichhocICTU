@@ -4,6 +4,7 @@
     <item name="fab_logout" type="id" />
     <item name="fab_info" type="id" />
     <item name="fab_update" type="id" />
+    <item name="fab_test" type="id"/>
     <item name="fab_sync_google" type="id" />
     <item name="fab_donate" type="id" />
     <item name="fab_gen_qr" type="id" />

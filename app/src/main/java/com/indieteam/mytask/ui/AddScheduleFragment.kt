@@ -9,10 +9,10 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.Toast
 import com.indieteam.mytask.R
-import com.indieteam.mytask.core.calendar.AddSubject
-import kotlinx.android.synthetic.main.fragment_add_calendar.*
+import com.indieteam.mytask.core.schedule.AddSubject
+import kotlinx.android.synthetic.main.fragment_add_schedule.*
 
-class AddCalendarFragment : Fragment() {
+class AddScheduleFragment : Fragment() {
 
     private var subjectName = ""
     private var subjectPlace = ""
@@ -64,7 +64,7 @@ class AddCalendarFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_calendar, container, false)
+        return inflater.inflate(R.layout.fragment_add_schedule, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

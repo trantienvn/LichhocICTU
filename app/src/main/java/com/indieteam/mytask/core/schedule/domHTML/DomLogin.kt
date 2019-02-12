@@ -1,4 +1,4 @@
-package com.indieteam.mytask.core.calendar.domHTML
+package com.indieteam.mytask.core.schedule.domHTML
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -125,14 +125,14 @@ class DomLogin(val context: Context, private val userName: String, private val p
                         try {
                             sqlLite.insertInfo(userName, passWord, cookie)
                         }catch (e: SQLiteConstraintException){ Log.d("err", e.toString()) }
-                        DomGetSemester(context, sessionUrl, cookie).start()
+                        DomSemesterSchedule(context, sessionUrl, cookie).start()
                     }
 
                     if (classContextName == "WeekActivity") {
                         try {
                             sqlLite.updateInfo(userName, passWord, cookie)
                         }catch (e: SQLiteConstraintException){ Log.d("err", e.toString()) }
-                        DomGetSemester(context, sessionUrl, cookie).start()
+                        DomSemesterSchedule(context, sessionUrl, cookie).start()
                     }
                 } else {
                     appException("Sai mã sinh viên hoặc mật khẩu")

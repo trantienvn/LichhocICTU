@@ -33,9 +33,9 @@ class CalendarListViewAdapter(val activity: WeekActivity, val data: ArrayList<St
         }
 
         view.edit_image_button.setOnClickListener {
-            if (activity.studentCalendarObjArr.isNotEmpty() && activity.parseCalendarJson!!.subjectId.isNotEmpty()) {
-                val subjectId = activity.parseCalendarJson!!.subjectId[p0]
-                activity.calendarDialog.show(subjectId)
+            if (activity.studentScheduleObjArr.isNotEmpty() && activity.parseScheduleJson!!.subjectId.isNotEmpty()) {
+                val subjectId = activity.parseScheduleJson!!.subjectId[p0]
+                activity.modifyDialog.show(subjectId)
             }
         }
 

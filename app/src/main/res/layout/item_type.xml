@@ -9,10 +9,10 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/semester_name"
+            android:id="@+id/type_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1_2016_2017"
+            android:text="Thi lai"
             android:textColor="@color/colorBlue"
             android:textSize="18sp"
             android:gravity="center"

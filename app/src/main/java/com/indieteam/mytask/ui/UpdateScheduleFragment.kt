@@ -3,22 +3,20 @@ package com.indieteam.mytask.ui
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.Toast
 import com.indieteam.mytask.R
-import com.indieteam.mytask.core.calendar.AddSubject
-import com.indieteam.mytask.core.calendar.DeleteSubject
+import com.indieteam.mytask.core.schedule.AddSubject
+import com.indieteam.mytask.core.schedule.DeleteSubject
 import com.indieteam.mytask.core.sqlite.SqLite
-import kotlinx.android.synthetic.main.fragment_update_calendar.*
+import kotlinx.android.synthetic.main.fragment_update_schedule.*
 import org.json.JSONObject
 
-class UpdateCalendarFragment : Fragment() {
+class UpdateScheduleFragment : Fragment() {
 
     private var subjectName = ""
     private var subjectPlace = ""
@@ -83,7 +81,7 @@ class UpdateCalendarFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_update_calendar, container, false)
+        return inflater.inflate(R.layout.fragment_update_schedule, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

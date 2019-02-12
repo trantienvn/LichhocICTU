@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.AddCalendarFragment"
+    tools:context=".ui.AddScheduleFragment"
     android:background="@color/colorWhite">
 
     <LinearLayout
@@ -23,7 +23,7 @@
             android:textStyle="bold"
             android:textSize="20sp"
             android:textColor="@color/colorBlueDark"
-            android:text="Thêm lịch học"
+            android:text="Sửa lịch học"
             android:gravity="center"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="30dp"/>
@@ -261,25 +261,26 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/adding"
+            android:id="@+id/saving"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:layout_marginBottom="5dp"
             android:textColor="@color/colorBlueDark"
-            android:text="Đang thêm..."
+            android:text="Đang lưu..."
             android:gravity="center"
             android:visibility="invisible"/>
 
         <Button
-            android:id="@+id/add_calendar"
+            android:id="@+id/update_calendar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_button_login"
             android:textColor="@color/colorWhite"
-            android:text="Thêm"
+            android:text="Lưu"
             android:gravity="center"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

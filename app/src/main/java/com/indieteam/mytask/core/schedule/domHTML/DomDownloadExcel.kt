@@ -1,4 +1,4 @@
-package com.indieteam.mytask.core.calendar.domHTML
+package com.indieteam.mytask.core.schedule.domHTML
 
 import android.annotation.SuppressLint
 import android.content.Context

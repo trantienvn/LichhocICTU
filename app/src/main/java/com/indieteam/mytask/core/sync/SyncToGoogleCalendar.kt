@@ -25,7 +25,7 @@ import java.util.*
 
 
 @Suppress("DEPRECATION")
-class SyncGoogleCalendar(val context: Context): Thread() {
+class SyncToGoogleCalendar(val context: Context): Thread() {
 
     private var sqLite = SqLite(context)
     @SuppressLint("SimpleDateFormat")
@@ -46,7 +46,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
             credential.selectedAccountName = sharedPref.getString("accSelected", "null")
             service = Calendar.Builder(httpTransport, jsonFactory, credential)
                         .setApplicationName(appName).build()
-            this@SyncGoogleCalendar.service = service
+            this@SyncToGoogleCalendar.service = service
         }
     }
 
@@ -83,7 +83,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
                 }
             }
             appNotification.syncFail()
-            this@SyncGoogleCalendar.join()
+            this@SyncToGoogleCalendar.join()
         }
     }
 
@@ -98,7 +98,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
                     appNotification.syncFail()
                 }
             }
-            this@SyncGoogleCalendar.join()
+            this@SyncToGoogleCalendar.join()
         }
     }
 
@@ -162,7 +162,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
                     appNotification.syncFail()
                 }
             }
-            this@SyncGoogleCalendar.join()
+            this@SyncToGoogleCalendar.join()
         }
     }
 
@@ -187,7 +187,7 @@ class SyncGoogleCalendar(val context: Context): Thread() {
                         appNotification.syncFail()
                     }
                 }
-                this@SyncGoogleCalendar.join()
+                this@SyncToGoogleCalendar.join()
             }
 
             val subjectName = jsonArr.getJSONObject(i).getString("subjectName")
@@ -243,6 +243,6 @@ class SyncGoogleCalendar(val context: Context): Thread() {
     override fun run() {
         init()
         checkCalendarPermission()
-        this@SyncGoogleCalendar.join()
+        this@SyncToGoogleCalendar.join()
     }
 }

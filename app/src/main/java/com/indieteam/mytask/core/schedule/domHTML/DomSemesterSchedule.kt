@@ -1,4 +1,4 @@
-package com.indieteam.mytask.core.calendar.domHTML
+package com.indieteam.mytask.core.schedule.domHTML
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -16,7 +16,7 @@ import org.jsoup.Connection
 import org.jsoup.Jsoup
 
 @Suppress("DEPRECATION")
-class DomGetSemester(val context: Context, private val sessionUrl: String, private val signIn: String): Thread() {
+class DomSemesterSchedule(val context: Context, private val sessionUrl: String, private val signIn: String): Thread() {
 
     private var jsonArray = JSONArray()
     private var drpSemesterObject = JSONObject()
@@ -44,6 +44,7 @@ class DomGetSemester(val context: Context, private val sessionUrl: String, priva
                         .cookie("SignIn", signIn)
                         .method(Connection.Method.GET)
                         .execute()
+
                 val resFirstParse = resFirst.parse()
                 for (i in resFirstParse.select("select")) {
                     //Hoc ky
