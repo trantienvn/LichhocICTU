@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.database.sqlite.SQLiteConstraintException
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -35,18 +36,21 @@ import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.json.gson.GsonFactory
 import com.indieteam.mytask.R
-import com.indieteam.mytask.adapter.CalendarListViewAdapter
-import com.indieteam.mytask.ads.Ads
+import com.indieteam.mytask.ui.adapter.CalendarListViewAdapter
+import com.indieteam.mytask.model.ads.Ads
 import com.indieteam.mytask.collection.StudentCalendarStruct
-import com.indieteam.mytask.collection.TimeDetails
-import com.indieteam.mytask.core.IsNet
-import com.indieteam.mytask.core.schedule.domHTML.DomTestSchedule
-import com.indieteam.mytask.core.schedule.domHTML.DomUpdateSchedule
-import com.indieteam.mytask.core.sync.SyncToGoogleCalendar
-import com.indieteam.mytask.core.parse.ParseCalendarJson
-import com.indieteam.mytask.core.notification.AppNotification
-import com.indieteam.mytask.core.service.AppService
-import com.indieteam.mytask.core.sqlite.SqLite
+import com.indieteam.mytask.collection.TimeScheduleDetails
+import com.indieteam.mytask.model.IsNet
+import com.indieteam.mytask.model.schedule.domHTML.DomUpdateSchedule
+import com.indieteam.mytask.model.sync.SyncToGoogleCalendar
+import com.indieteam.mytask.model.parse.ParseCalendarJson
+import com.indieteam.mytask.model.notification.AppNotification
+import com.indieteam.mytask.model.schedule.domHTML.DomSemesterSchedule
+import com.indieteam.mytask.model.service.AppService
+import com.indieteam.mytask.model.sqlite.SqLite
+import com.indieteam.mytask.ui.fragment.*
+import com.indieteam.mytask.ui.interface_.OnLoginListener
+import com.indieteam.mytask.ui.interface_.OnSemesterScheduleListener
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
@@ -82,9 +86,8 @@ class WeekActivity : AppCompatActivity() {
     private var layoutCalendarMode = 0
     lateinit var sharedPref: SharedPreferences
     //private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_i)
-    @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
-    private val timeDetails = TimeDetails()
+    private val timeDetails = TimeScheduleDetails()
     private lateinit var isNet: IsNet
     private lateinit var appNotification: AppNotification
     private lateinit var addScheduleFragment: AddScheduleFragment
@@ -106,6 +109,75 @@ class WeekActivity : AppCompatActivity() {
 
     //Ads
     private lateinit var ads: Ads
+
+    private val onLoginListener = object : OnLoginListener {
+        override fun onLogin() {
+        }
+
+        override fun onSuccess(username: String, password: String, cookie: String, sessionUrl: String) {
+            try {
+                sqLite.updateInfo(username, password, cookie)
+            } catch (e: SQLiteConstraintException) {
+                e.printStackTrace()
+            }
+            DomSemesterSchedule(this@WeekActivity, sessionUrl, cookie, onSemesterScheduleListener).start()
+        }
+
+
+        override fun onFail() {
+        }
+
+        override fun onThrow(t: String) {
+            runOnUiThread {
+                supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
+                    supportFragmentManager.beginTransaction().remove(it)
+                            .commit()
+                }
+                visible()
+                Toast.makeText(this@WeekActivity, t, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private val onSemesterScheduleListener = object : OnSemesterScheduleListener {
+        override fun onSuccess(semester: String, sessionUrl: String, signIn: String) {
+            val bundle = Bundle()
+            bundle.putString("semester", semester)
+            bundle.putString("sessionUrl", sessionUrl)
+            bundle.putString("signIn", signIn)
+
+            val selectSemesterFragment = SelectSemesterFragment()
+            selectSemesterFragment.arguments = bundle
+
+            supportFragmentManager.findFragmentByTag("processBarUpdate")?.let{
+                supportFragmentManager.beginTransaction().remove(it)
+                        .commit()
+            }
+            supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, selectSemesterFragment, "selectSemesterFragment")
+                    .commit()
+        }
+
+        override fun onSemesterSchedule() {
+            runOnUiThread {
+                supportFragmentManager.findFragmentByTag("processBarLogin")?.let {
+                    runOnUiThread {
+                        it.process.text = "Tải học kỳ..."
+                    }
+                }
+            }
+        }
+
+        override fun onThrow(t: String) {
+            runOnUiThread {
+                supportFragmentManager.findFragmentByTag("processBarUpdate")?.let{
+                    supportFragmentManager.beginTransaction().remove(it)
+                            .commit()
+                }
+                visible()
+                Toast.makeText(this@WeekActivity, t, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     inner class OnSwipeListener : com.github.pwittchen.swipe.library.rx2.SwipeListener {
         private var startTouchY = 0f
@@ -402,7 +474,8 @@ class WeekActivity : AppCompatActivity() {
     private fun updateListView(date: String) {
         val day = date.substring(0, date.indexOf("/")).toInt()
         val month = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/")).toInt()
-        val year = date.substring(date.lastIndexOf("/") + 1, date.length).toInt()
+        //val year = date.substring(date.lastIndexOf("/") + 1, date.length).toInt()
+
         if (parseScheduleJson != null) {
             studentScheduleObjArr.removeAll(studentScheduleObjArr)
             parseScheduleJson!!.apply {
@@ -456,7 +529,6 @@ class WeekActivity : AppCompatActivity() {
         return true
     }
 
-    @SuppressLint("SetTextI18n")
     private fun initFloatButton() {
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_logout, R.drawable.ic_logout)
@@ -582,7 +654,7 @@ class WeekActivity : AppCompatActivity() {
                         }
                         gone()
                         try {
-                            DomUpdateSchedule(this, sqLite.readCookie()).start()
+                            DomUpdateSchedule(this, sqLite.readCookie(), onLoginListener).start()
                         } catch (e: Exception) {
                             visible()
                             supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {

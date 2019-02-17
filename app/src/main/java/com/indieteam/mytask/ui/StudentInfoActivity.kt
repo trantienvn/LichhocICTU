@@ -8,8 +8,9 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import com.indieteam.mytask.R
-import com.indieteam.mytask.ads.Ads
-import com.indieteam.mytask.core.sqlite.SqLite
+import com.indieteam.mytask.model.ads.Ads
+import com.indieteam.mytask.model.sqlite.SqLite
+import com.indieteam.mytask.ui.fragment.QrFragment
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import kotlinx.android.synthetic.main.activity_student_info.*
 import org.json.JSONObject

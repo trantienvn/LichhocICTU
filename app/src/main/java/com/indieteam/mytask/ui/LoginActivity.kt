@@ -2,6 +2,7 @@ package com.indieteam.mytask.ui
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
@@ -9,20 +10,119 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.indieteam.mytask.R
-import com.indieteam.mytask.core.IsNet
-import com.indieteam.mytask.core.sqlite.SqLite
+import com.indieteam.mytask.model.IsNet
+import com.indieteam.mytask.model.schedule.domHTML.DomSemesterSchedule
+import com.indieteam.mytask.model.sqlite.SqLite
+import com.indieteam.mytask.ui.fragment.ProcessBarFragment
+import com.indieteam.mytask.ui.fragment.SelectSemesterFragment
+import com.indieteam.mytask.ui.interface_.OnLoginListener
+import com.indieteam.mytask.ui.interface_.OnSemesterScheduleListener
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.fragment_process_bar.*
 import java.security.NoSuchAlgorithmException
 
 
 class LoginActivity : AppCompatActivity() {
+
+    private val onLoginListener = object : OnLoginListener {
+        override fun onLogin() {
+            supportFragmentManager.beginTransaction().add(R.id.login_root_view, ProcessBarFragment(), "processBarLogin")
+                    .commit()
+            supportFragmentManager.executePendingTransactions()
+            gone()
+            val md5Password = toMD5(text_password.text.toString().trim())
+            Log.d("md5password", md5Password)
+            com.indieteam.mytask.model.schedule.domHTML.DomLogin(this@LoginActivity, text_username.text.toString().trim(), md5Password, this).start()
+            clickLogin++
+        }
+
+        override fun onSuccess(username: String, password: String, cookie: String, sessionUrl: String) {
+            supportFragmentManager.findFragmentByTag("processBarLogin")?.let {
+                runOnUiThread {
+                    it.process.text = "Đăng nhập...OK"
+                }
+            }
+
+            try {
+                sqLite.insertInfo(username, password, cookie)
+            } catch (e: SQLiteConstraintException) {
+                e.printStackTrace()
+            }
+            DomSemesterSchedule(this@LoginActivity, sessionUrl, cookie, onSemesterScheduleListener).start()
+        }
+
+        override fun onFail() {
+            runOnUiThread {
+                supportFragmentManager.findFragmentByTag("processBarLogin")?.let {
+                    supportFragmentManager.beginTransaction().remove(it)
+                            .commit()
+                }
+                visible()
+                clickLogin = 0
+                Toast.makeText(this@LoginActivity, "Sai mã sinh viên hoặc mật khẩu", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        override fun onThrow(t: String) {
+            runOnUiThread {
+                supportFragmentManager.findFragmentByTag("processBarLogin")?.let {
+                    supportFragmentManager.beginTransaction().remove(it)
+                            .commit()
+                }
+                visible()
+                clickLogin = 0
+                Toast.makeText(this@LoginActivity, t, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private val onSemesterScheduleListener = object : OnSemesterScheduleListener {
+        override fun onSuccess(semester: String, sessionUrl: String, signIn: String) {
+            val bundle = Bundle()
+            bundle.putString("semester", semester)
+            bundle.putString("sessionUrl", sessionUrl)
+            bundle.putString("signIn", signIn)
+
+            val selectSemesterFragment = SelectSemesterFragment()
+            selectSemesterFragment.arguments = bundle
+
+            supportFragmentManager.findFragmentByTag("processBarLogin")?.let{
+                supportFragmentManager.beginTransaction().remove(it)
+                        .commit()
+            }
+            supportFragmentManager.beginTransaction().add(R.id.login_root_view, selectSemesterFragment, "selectSemesterFragment")
+                    .commit()
+        }
+
+        override fun onSemesterSchedule() {
+            runOnUiThread {
+                supportFragmentManager.findFragmentByTag("processBarLogin")?.let {
+                    runOnUiThread {
+                        it.process.text = "Tải học kỳ..."
+                    }
+                }
+            }
+        }
+
+        override fun onThrow(t: String) {
+            runOnUiThread {
+                supportFragmentManager.findFragmentByTag("processBarLogin")?.let{
+                    supportFragmentManager.beginTransaction().remove(it)
+                            .commit()
+                }
+                visible()
+                clickLogin = 0
+                Toast.makeText(this@LoginActivity, t, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     lateinit var sqLite: SqLite
     private var readDb = 0
     lateinit var isNet: IsNet
     private lateinit var sharedPref: SharedPreferences
 
-    private fun init(){
+    private fun init() {
         sqLite = SqLite(this)
         isNet = IsNet(this)
         sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
@@ -55,13 +155,13 @@ class LoginActivity : AppCompatActivity() {
         return ""
     }
 
-    fun visible(){
+    fun visible() {
         linearLayout.visibility = View.VISIBLE
         btn_login.visibility = View.VISIBLE
         developer.visibility = View.VISIBLE
     }
 
-    private fun gone(){
+    private fun gone() {
         linearLayout.visibility = View.GONE
         btn_login.visibility = View.GONE
         developer.visibility = View.GONE
@@ -69,23 +169,14 @@ class LoginActivity : AppCompatActivity() {
 
     var clickLogin = 0
 
-    private fun run(){
+    private fun run() {
         btn_login.setOnClickListener {
             if (isNet.check()) {
                 if (text_username.text.toString().isNotBlank() && text_password.text.toString().isNotBlank() && clickLogin == 0) {
-                    gone()
-                    supportFragmentManager.beginTransaction().add(R.id.login_root_view, ProcessBarFragment(), "processBarLogin")
-                            .commit()
-                    supportFragmentManager.executePendingTransactions()
-                    val md5Password = toMD5(text_password.text.toString().trim())
-                    Log.d("md5password", md5Password)
-                    com.indieteam.mytask.core.schedule.domHTML.DomLogin(this, text_username.text.toString().trim(), md5Password).start()
-                    clickLogin++
+                    onLoginListener.onLogin()
                 }
             } else {
-                runOnUiThread {
-                    Toast.makeText(this, "Kiểm tra lại kết nối", Toast.LENGTH_SHORT).show()
-                }
+                onLoginListener.onThrow("Kiểm tra lại kết nối")
             }
         }
     }
@@ -97,13 +188,13 @@ class LoginActivity : AppCompatActivity() {
         try {
             sqLite.readCalendar()
             readDb = 1
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Log.d("Err", e.toString())
         }
 
-        if(readDb == 0) {
+        if (readDb == 0) {
             run()
-        }else{
+        } else {
             val intent = Intent(this@LoginActivity, WeekActivity::class.java)
             startActivity(intent)
             finish()
