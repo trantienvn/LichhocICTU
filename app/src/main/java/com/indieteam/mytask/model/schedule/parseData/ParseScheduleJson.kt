@@ -1,4 +1,4 @@
-package com.indieteam.mytask.model.parse
+package com.indieteam.mytask.model.schedule.parseData
 
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import org.json.JSONObject
@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ParseCalendarJson(val calendar: JSONObject){
+class ParseScheduleJson(val calendar: JSONObject){
     var subjectName = ArrayList<String>()
     var subjectTime = ArrayList<String>()
     var subjectPlace = ArrayList<String>()

@@ -10,20 +10,20 @@ import android.os.IBinder
 import android.preference.PreferenceManager
 import android.util.Log
 import com.indieteam.mytask.model.notification.AppNotification
-import com.indieteam.mytask.model.parse.ParseCalendarJson
-import com.indieteam.mytask.model.sqlite.SqLite
+import com.indieteam.mytask.model.schedule.parseData.ParseScheduleJson
+import com.indieteam.mytask.model.SqLite
 import org.json.JSONObject
 import java.util.*
 import kotlin.concurrent.scheduleAtFixedRate
 
-class AppService: Service(){
+class AppService : Service() {
 
     private lateinit var sqLite: SqLite
     private var valueDb = ""
     private lateinit var calendarJson: JSONObject
-    private lateinit var parseCalendarJson: ParseCalendarJson
+    private lateinit var parseScheduleJson: ParseScheduleJson
     private val calendarForTomorrow = Calendar.getInstance()!!
-    private  lateinit var calendarForNow: Calendar
+    private lateinit var calendarNow: Calendar
     private var result = ""
     private lateinit var appNotification: AppNotification
     private var countNotification = 0
@@ -34,51 +34,54 @@ class AppService: Service(){
         calendarForTomorrow.add(Calendar.DAY_OF_MONTH, 1)
     }
 
-    private fun checkTimeBackground(){
+    private fun checkTimeBackground() {
         Timer().scheduleAtFixedRate(0, 20000) {
-            calendarForNow = Calendar.getInstance()!!
-            Log.d("hour", calendarForNow.get(Calendar.HOUR_OF_DAY).toString() + " " + calendarForNow.get(Calendar.MINUTE))
-            if (calendarForNow.get(Calendar.HOUR_OF_DAY) == 20 && calendarForNow.get(Calendar.MINUTE) == 0) {
+            calendarNow = Calendar.getInstance()!!
+            Log.d("hour", calendarNow.get(Calendar.HOUR_OF_DAY).toString() + " " + calendarNow.get(Calendar.MINUTE))
+            if (calendarNow.get(Calendar.HOUR_OF_DAY) == 20 && calendarNow.get(Calendar.MINUTE) == 0) {
                 if (countNotification == 0) {
                     pushNotification()
                     countNotification++
                 }
-            }else
+            } else
                 countNotification = 0
         }
     }
 
 
-    private fun pushNotification(){
+    private fun pushNotification() {
         var numberSubjects = 0
         result = ""
-        val date = "${calendarForTomorrow.get(Calendar.DAY_OF_MONTH)}/${calendarForTomorrow.get(Calendar.MONTH)+1}/${calendarForTomorrow.get(Calendar.YEAR)}"
+        val date = "${calendarForTomorrow.get(Calendar.DAY_OF_MONTH)}/${calendarForTomorrow.get(Calendar.MONTH) + 1}/${calendarForTomorrow.get(Calendar.YEAR)}"
         sqLite = SqLite(this)
-        try { valueDb = sqLite.readCalendar()
-        }catch (e: Exception){ Log.d("Err", e.toString())}
-        if (valueDb.isNotBlank()){
+        try {
+            valueDb = sqLite.readCalendar()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        if (valueDb.isNotBlank()) {
             calendarJson = JSONObject(valueDb)
-            parseCalendarJson = ParseCalendarJson(calendarJson)
-            parseCalendarJson.getSubject(date)
-            if (parseCalendarJson.subjectName.isNotEmpty() && parseCalendarJson.subjectPlace.isNotEmpty() &&
-                    parseCalendarJson.subjectTime.isNotEmpty() && parseCalendarJson.teacher.isNotEmpty()) {
-                if (parseCalendarJson.subjectName.size == parseCalendarJson.subjectPlace.size &&
-                        parseCalendarJson.subjectName.size == parseCalendarJson.subjectTime.size &&
-                        parseCalendarJson.subjectName.size == parseCalendarJson.teacher.size) {
-                    for (i in 0 until parseCalendarJson.subjectName.size) {
-                        numberSubjects ++
-                        result += "$numberSubjects. " + "${parseCalendarJson.subjectName[i]} (${parseCalendarJson.subjectTime[i]})\n"
+            parseScheduleJson = ParseScheduleJson(calendarJson)
+            parseScheduleJson.getSubject(date)
+            if (parseScheduleJson.subjectName.isNotEmpty() && parseScheduleJson.subjectPlace.isNotEmpty() &&
+                    parseScheduleJson.subjectTime.isNotEmpty() && parseScheduleJson.teacher.isNotEmpty()) {
+                if (parseScheduleJson.subjectName.size == parseScheduleJson.subjectPlace.size &&
+                        parseScheduleJson.subjectName.size == parseScheduleJson.subjectTime.size &&
+                        parseScheduleJson.subjectName.size == parseScheduleJson.teacher.size) {
+                    for (i in 0 until parseScheduleJson.subjectName.size) {
+                        numberSubjects++
+                        result += "$numberSubjects. " + "${parseScheduleJson.subjectName[i]} (${parseScheduleJson.subjectTime[i]})\n"
                     }
                 }
-            }else{
+            } else {
                 result += "Nghỉ \n"
             }
             result = result.substring(0, result.lastIndexOf("\n"))
             Log.d("AppService_Log", "Date $date: $result")
             appNotification = AppNotification(this)
-            appNotification.subject(result, numberSubjects.toString())
+            appNotification.subjectToday(result, numberSubjects.toString())
 
-        }else{
+        } else {
             Log.d("AppService_Log", "null")
         }
     }
@@ -86,8 +89,8 @@ class AppService: Service(){
     override fun onCreate() {
         super.onCreate()
         appNotification = AppNotification(this)
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val channelName  = "App Notification"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelName = "App Notification"
             val channelId = "App Notification"
             val description = ""
             val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -100,7 +103,9 @@ class AppService: Service(){
         }
     }
 
-    override fun onBind(intent: Intent?): IBinder? { return null }
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("service", "started")
@@ -114,6 +119,8 @@ class AppService: Service(){
         super.onDestroy()
         try {
             stopSelf()
-        }catch (e: java.lang.Exception){ e.printStackTrace() }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
     }
 }

@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.text.Html
 import android.util.Log
-import com.indieteam.mytask.model.address.UrlAddress
-import com.indieteam.mytask.model.parse.excel.ParseExel
-import com.indieteam.mytask.model.sqlite.SqLite
+import com.indieteam.mytask.collection.UrlAddress
+import com.indieteam.mytask.model.schedule.parseData.ParseExel
+import com.indieteam.mytask.model.SqLite
 import com.indieteam.mytask.ui.interface_.OnDownloadExcelListener
 import org.jsoup.Connection
 import org.jsoup.Jsoup
@@ -38,15 +38,15 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
     override fun run() {
         onDownloadExcelListener.onDownload(context)
         loadPageToGetParams()
-        loadPageWithSemester()
+        loadPageWithParams()
         download()
-        this.join()
+        join()
     }
 
     private fun loadPageToGetParams() {
         if (sessionUrl.isNotBlank()) {
             try {
-                val response = Jsoup.connect(UrlAddress.urlSemester(sessionUrl))
+                val response = Jsoup.connect(UrlAddress.semester(sessionUrl))
                         .cookie("SignIn", signIn)
                         .method(Connection.Method.GET)
                         .execute()
@@ -63,13 +63,13 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
         }
     }
 
-    private fun loadPageWithSemester() {
+    private fun loadPageWithParams() {
         if (sessionUrl.isNotBlank()) {
             try {
                 requestTime++
                 val response: Connection.Response
                 if (!emptyCalendar) {
-                    response = Jsoup.connect(UrlAddress.urlDownloadExel(sessionUrl))
+                    response = Jsoup.connect(UrlAddress.downloadExel(sessionUrl))
                             .data(params)
                             .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
                             .data("drpTerm", drpTerm)
@@ -80,7 +80,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                             .ignoreContentType(true)
                             .execute()
                 } else {
-                    response = Jsoup.connect(UrlAddress.urlDownloadExel(sessionUrl))
+                    response = Jsoup.connect(UrlAddress.downloadExel(sessionUrl))
                             .data(params)
                             .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
                             .data("drpType", "B")
@@ -119,7 +119,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                     Log.d("drpSemester", "blank")
                     emptyCalendar = true
                     if (emptyCalendar && requestTime == 1)
-                        loadPageWithSemester()
+                        loadPageWithParams()
                     else {
                         for (i in html.select("input")) {
                             params[i.attr("name")] = i.`val`()
@@ -137,7 +137,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                     Log.d("drpSemester", "blank")
                     emptyCalendar = true
                     if (emptyCalendar && requestTime == 1)
-                        loadPageWithSemester()
+                        loadPageWithParams()
                 } else {
                     onDownloadExcelListener.onThrow("Mất kết nối", context)
                     e.printStackTrace()
@@ -163,7 +163,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                 //loop all dot hoc
                 for (drpTerm in drpTermArr) {
                     try {
-                        val response = Jsoup.connect(UrlAddress.urlDownloadExel(sessionUrl))
+                        val response = Jsoup.connect(UrlAddress.downloadExel(sessionUrl))
                                 .data(params)
                                 .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
                                 .data("drpSemester", semesterSelected)
@@ -189,7 +189,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                                 fos.write(response.bodyAsBytes())
                                 fos.close()
                                 // read
-                                readExel.readTkb()
+                                readExel.studentSchedule()
                                 if (readExel.readExelCallBack == -1 || readExel.readExelCallBack == 0) {
                                     onDownloadExcelListener.onThrow("Error read Excel", context)
                                 }
@@ -207,7 +207,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                     }
                 }
                 if (err == 0) {
-                    save()
+                    saveLocal()
                     onDownloadExcelListener.onSuccess(context)
                 }
             } else {
@@ -219,7 +219,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
         }
     }
 
-    private fun save() {
+    private fun saveLocal() {
         readExel.exelToJson.toJson(readExel.rawCalendarObjArr)
         readExel.exelToJson.jsonObject.put("info", readExel.infoObj)
         readExel.exelToJson.jsonObject.put("calendar", readExel.exelToJson.jsonArray)
@@ -227,7 +227,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
             sqlLite.deleteCalendar()
             sqlLite.insertCalender(readExel.exelToJson.jsonObject.toString())
         } catch (e: Exception) {
-            Log.d("Error save", e.toString())
+            Log.d("Error saveLocal", e.toString())
         }
     }
 }

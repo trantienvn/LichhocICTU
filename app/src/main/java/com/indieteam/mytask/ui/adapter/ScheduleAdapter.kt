@@ -8,12 +8,12 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import com.indieteam.mytask.R
-import com.indieteam.mytask.collection.StudentCalendarStruct
+import com.indieteam.mytask.collection.StudentCalendarCollection
 import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.item_calendar_list_view.view.*
 import java.util.*
 
-class CalendarListViewAdapter(val activity: WeekActivity, val data: ArrayList<StudentCalendarStruct>): BaseAdapter(){
+class ScheduleAdapter(val activity: WeekActivity, val data: ArrayList<StudentCalendarCollection>): BaseAdapter(){
 
     override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
         val inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

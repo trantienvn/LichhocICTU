@@ -1,7 +1,6 @@
 package com.indieteam.mytask.ui
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
@@ -36,18 +35,18 @@ import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.json.gson.GsonFactory
 import com.indieteam.mytask.R
-import com.indieteam.mytask.ui.adapter.CalendarListViewAdapter
+import com.indieteam.mytask.ui.adapter.ScheduleAdapter
 import com.indieteam.mytask.model.ads.Ads
-import com.indieteam.mytask.collection.StudentCalendarStruct
+import com.indieteam.mytask.collection.StudentCalendarCollection
 import com.indieteam.mytask.collection.TimeScheduleDetails
-import com.indieteam.mytask.model.IsNet
+import com.indieteam.mytask.model.InternetState
 import com.indieteam.mytask.model.schedule.domHTML.DomUpdateSchedule
-import com.indieteam.mytask.model.sync.SyncToGoogleCalendar
-import com.indieteam.mytask.model.parse.ParseCalendarJson
+import com.indieteam.mytask.model.SyncToGoogleCalendar
+import com.indieteam.mytask.model.schedule.parseData.ParseScheduleJson
 import com.indieteam.mytask.model.notification.AppNotification
 import com.indieteam.mytask.model.schedule.domHTML.DomSemesterSchedule
 import com.indieteam.mytask.model.service.AppService
-import com.indieteam.mytask.model.sqlite.SqLite
+import com.indieteam.mytask.model.SqLite
 import com.indieteam.mytask.ui.fragment.*
 import com.indieteam.mytask.ui.interface_.OnLoginListener
 import com.indieteam.mytask.ui.interface_.OnSemesterScheduleListener
@@ -71,12 +70,12 @@ class WeekActivity : AppCompatActivity() {
     private val REQUEST_ACCOUNT = 1
     private lateinit var sqLite: SqLite
     private var scheduleJson: JSONObject? = null
-    var parseScheduleJson: ParseCalendarJson? = null
+    var parseScheduleJson: ParseScheduleJson? = null
     var dots = mutableMapOf<CalendarDay, String>()
-    var studentScheduleObjArr = ArrayList<StudentCalendarStruct>()
+    var studentScheduleObjArr = ArrayList<StudentCalendarCollection>()
     private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
     private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
-    private lateinit var calendarListViewAdapter: CalendarListViewAdapter
+    private lateinit var scheduleAdapter: ScheduleAdapter
     private var isAccountPermission = 0
     private val swipe = Swipe()
     private lateinit var customSwipe: CustomSwipe
@@ -88,7 +87,7 @@ class WeekActivity : AppCompatActivity() {
     //private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_i)
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
     private val timeDetails = TimeScheduleDetails()
-    private lateinit var isNet: IsNet
+    private lateinit var internetState: InternetState
     private lateinit var appNotification: AppNotification
     private lateinit var addScheduleFragment: AddScheduleFragment
 
@@ -376,9 +375,9 @@ class WeekActivity : AppCompatActivity() {
         navigationBarHeight = resources.getDimensionPixelSize(resourcesId2)
         sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         layoutCalendarMode = sharedPref.getInt("CalendarMode", 0)
-        calendarListViewAdapter = CalendarListViewAdapter(this@WeekActivity, studentScheduleObjArr)
-        calender_list_view.adapter = calendarListViewAdapter
-        isNet = IsNet(this)
+        scheduleAdapter = ScheduleAdapter(this@WeekActivity, studentScheduleObjArr)
+        calender_list_view.adapter = scheduleAdapter
+        internetState = InternetState(this)
         ads = Ads(this)
         appNotification = AppNotification(this)
         modifyDialog = ModifyDialog(this)
@@ -495,23 +494,23 @@ class WeekActivity : AppCompatActivity() {
                                 endTime = subjectTime[j].substring(subjectTime[j].lastIndexOf(",") + 1, subjectTime[j].length).toInt() - 1
                                 if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
                                         CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date)
-                                    studentScheduleObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
+                                    studentScheduleObjArr.add(StudentCalendarCollection(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
                                 else
-                                    studentScheduleObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
+                                    studentScheduleObjArr.add(StudentCalendarCollection(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
                             } else {
                                 firstTime = subjectTime[j].toInt() - 1
                                 if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
                                         CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date)
-                                    studentScheduleObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
+                                    studentScheduleObjArr.add(StudentCalendarCollection(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
                                 else
-                                    studentScheduleObjArr.add(StudentCalendarStruct(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
+                                    studentScheduleObjArr.add(StudentCalendarCollection(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
                             }
                         }
-                        calendarListViewAdapter.notifyDataSetChanged()
+                        scheduleAdapter.notifyDataSetChanged()
                     }
                 } else {
                     // Nghi
-                    calendarListViewAdapter.notifyDataSetChanged()
+                    scheduleAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -613,7 +612,7 @@ class WeekActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.fab_sync_google -> {
-                    if (isNet.check()) {
+                    if (internetState.state()) {
                         if (isGooglePlayServicesAvailable()) {
                             checkAccountPermission()
                             if (isAccountPermission == 1) {
@@ -645,7 +644,7 @@ class WeekActivity : AppCompatActivity() {
                     }
                 }
                 R.id.fab_update -> {
-                    if (isNet.check()) {
+                    if (internetState.state()) {
                         supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
                                 .commit()
                         supportFragmentManager.executePendingTransactions()
@@ -672,7 +671,7 @@ class WeekActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.fab_logout -> {
-                    if (isNet.check()) {
+                    if (internetState.state()) {
                         try {
                             sqLite.deleteCalendar()
                             sqLite.deleteInfo()
@@ -795,7 +794,7 @@ class WeekActivity : AppCompatActivity() {
         } else {
             if (checkCompatible()) {
                 scheduleJson = JSONObject(valueDb)
-                parseScheduleJson = ParseCalendarJson(scheduleJson!!)
+                parseScheduleJson = ParseScheduleJson(scheduleJson!!)
 
                 initFloatButton()
 

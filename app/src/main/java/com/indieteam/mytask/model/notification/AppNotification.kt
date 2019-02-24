@@ -14,7 +14,7 @@ import com.indieteam.mytask.ui.WeekActivity
 
 class AppNotification(val context: Context) {
 
-    fun subject(contents: String, numberSubjects: String){
+    fun subjectToday(contents: String, numberSubjects: String){
         //touch
         val intent = Intent(context, WeekActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

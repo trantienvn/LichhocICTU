@@ -1,7 +1,8 @@
 package com.indieteam.mytask.collection
 
-class StudentCalendarStruct(val subjectName: String,
+class RawCalendarCollection(val subjectName: String,
                             val subjectDate: String,
+                            val subjectDayOfWeek: String,
                             val subjectTime: String,
                             val subjectPlace: String,
                             val teacher: String)

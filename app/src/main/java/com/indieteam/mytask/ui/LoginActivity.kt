@@ -10,9 +10,9 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.indieteam.mytask.R
-import com.indieteam.mytask.model.IsNet
+import com.indieteam.mytask.model.InternetState
 import com.indieteam.mytask.model.schedule.domHTML.DomSemesterSchedule
-import com.indieteam.mytask.model.sqlite.SqLite
+import com.indieteam.mytask.model.SqLite
 import com.indieteam.mytask.ui.fragment.ProcessBarFragment
 import com.indieteam.mytask.ui.fragment.SelectSemesterFragment
 import com.indieteam.mytask.ui.interface_.OnLoginListener
@@ -119,12 +119,12 @@ class LoginActivity : AppCompatActivity() {
 
     lateinit var sqLite: SqLite
     private var readDb = 0
-    lateinit var isNet: IsNet
+    lateinit var internetState: InternetState
     private lateinit var sharedPref: SharedPreferences
 
     private fun init() {
         sqLite = SqLite(this)
-        isNet = IsNet(this)
+        internetState = InternetState(this)
         sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         text_username.setText(sharedPref.getString("username", ""))
     }
@@ -171,7 +171,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun run() {
         btn_login.setOnClickListener {
-            if (isNet.check()) {
+            if (internetState.state()) {
                 if (text_username.text.toString().isNotBlank() && text_password.text.toString().isNotBlank() && clickLogin == 0) {
                     onLoginListener.onLogin()
                 }

@@ -2,9 +2,8 @@ package com.indieteam.mytask.model.schedule.domHTML
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.indieteam.mytask.model.address.UrlAddress
+import com.indieteam.mytask.collection.UrlAddress
 import com.indieteam.mytask.ui.interface_.OnSemesterScheduleListener
-import com.indieteam.mytask.ui.fragment.SelectSemesterFragment
 import org.json.JSONArray
 import org.json.JSONObject
 import org.jsoup.Connection
@@ -18,7 +17,6 @@ class DomSemesterSchedule(val context: Context, private val sessionUrl: String, 
     private var drpSemesterObject = JSONObject()
     private var err = 0
     private var classContextName = ""
-    private var selectSemesterFragment = SelectSemesterFragment()
 
     init {
         classContextName = context.javaClass.name.substring(context.javaClass.name.lastIndexOf(".") + 1, context.javaClass.name.length)
@@ -26,11 +24,16 @@ class DomSemesterSchedule(val context: Context, private val sessionUrl: String, 
 
     @SuppressLint("SetTextI18n")
     override fun run() {
+        get()
+        join()
+    }
+
+    private fun get() {
         try {
             onSemesterScheduleListener.onSemesterSchedule()
-            // start get post params
+            // start get_string post params
             if (sessionUrl.isNotBlank()) {
-                val response = Jsoup.connect(UrlAddress.urlDownloadExel(sessionUrl))
+                val response = Jsoup.connect(UrlAddress.downloadExel(sessionUrl))
                         .cookie("SignIn", signIn)
                         .method(Connection.Method.GET)
                         .execute()
@@ -57,7 +60,5 @@ class DomSemesterSchedule(val context: Context, private val sessionUrl: String, 
 
         if (err == 0)
             onSemesterScheduleListener.onSuccess(drpSemesterObject.toString(), sessionUrl, signIn)
-
-        this.join()
     }
 }

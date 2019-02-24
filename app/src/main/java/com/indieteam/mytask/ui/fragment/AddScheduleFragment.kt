@@ -93,7 +93,7 @@ class AddScheduleFragment : Fragment() {
                             time = time.substring(0, time.length-1)
                             if (subjectDate.isNotBlank()) {
                                 AddSubject(requireContext())
-                                        .addCalendar(subjectName, subjectPlace, subjectTeacher, time, subjectDate)
+                                        .add(subjectName, subjectPlace, subjectTeacher, time, subjectDate)
                                 val intent = Intent(requireActivity(), WeekActivity::class.java)
                                 intent.putExtra("date", subjectDate)
                                 startActivity(intent)

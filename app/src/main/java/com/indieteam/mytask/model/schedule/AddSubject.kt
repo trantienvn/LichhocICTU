@@ -3,8 +3,8 @@ package com.indieteam.mytask.model.schedule
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import com.indieteam.mytask.model.StringRandom
-import com.indieteam.mytask.model.sqlite.SqLite
+import com.indieteam.mytask.model.Random
+import com.indieteam.mytask.model.SqLite
 import com.indieteam.mytask.ui.WeekActivity
 import org.json.JSONObject
 import java.lang.Exception
@@ -16,7 +16,7 @@ class AddSubject(private val context: Context) {
 
     private val calendarStudent = JSONObject(sqLite.readCalendar())
 
-    fun addCalendar(subjectName: String, subjectPlace: String, subjectTeacher: String, subjecTime: String, subjectDate: String){
+    fun add(subjectName: String, subjectPlace: String, subjectTeacher: String, subjectTime: String, subjectDate: String){
         val day = subjectDate.substring(0, subjectDate.indexOf("/")).toInt()
         val month = subjectDate.substring(subjectDate.indexOf("/") + 1, subjectDate.lastIndexOf("/")).toInt() - 1
         val year = subjectDate.substring(subjectDate.lastIndexOf("/") + 1, subjectDate.length).toInt()
@@ -30,11 +30,11 @@ class AddSubject(private val context: Context) {
         val jsonArray = calendarStudent.getJSONArray("calendar")
 
         val elementJsonObject = JSONObject()
-        elementJsonObject.put("subjectId", StringRandom.get(40))
+        elementJsonObject.put("subjectId", Random.get_string(40))
         elementJsonObject.put("subjectName", subjectName)
         elementJsonObject.put("subjectDate", newDate)
         elementJsonObject.put("subjectDayOfWeek", dayOfWeek)
-        elementJsonObject.put("subjectTime", subjecTime)
+        elementJsonObject.put("subjectTime", subjectTime)
         elementJsonObject.put("subjectPlace", subjectPlace)
         elementJsonObject.put("teacher", subjectTeacher)
 

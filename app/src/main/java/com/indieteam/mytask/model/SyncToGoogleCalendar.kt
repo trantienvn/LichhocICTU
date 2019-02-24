@@ -1,4 +1,4 @@
-package com.indieteam.mytask.model.sync
+package com.indieteam.mytask.model
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,9 +13,7 @@ import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.indieteam.mytask.collection.TimeScheduleDetails
-import com.indieteam.mytask.model.IsNet
 import com.indieteam.mytask.model.notification.AppNotification
-import com.indieteam.mytask.model.sqlite.SqLite
 import com.indieteam.mytask.ui.WeekActivity
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import org.json.JSONObject
@@ -34,7 +32,7 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
     private val timeDetails = TimeScheduleDetails()
     private lateinit var service: com.google.api.services.calendar.Calendar
     private var weekActivity = context as WeekActivity
-    private var checkNet = IsNet(context)
+    private var checkNet = InternetState(context)
     private var calendarId: String? = null
     private val appNotification = AppNotification(context)
 
@@ -180,7 +178,7 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
         insertCalendar()
 
         for (i in 0 until jsonArr.length()) {
-            if (!checkNet.check()){
+            if (!checkNet.state()){
                 weekActivity.apply {
                     runOnUiThread {
                         Toast.makeText(weekActivity, "Mất kết nối", Toast.LENGTH_SHORT).show()

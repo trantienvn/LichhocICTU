@@ -5,7 +5,7 @@ import android.content.Context
 import android.preference.PreferenceManager
 import android.text.Html
 import android.util.Log
-import com.indieteam.mytask.model.address.UrlAddress
+import com.indieteam.mytask.collection.UrlAddress
 import com.indieteam.mytask.ui.interface_.OnLoginListener
 import org.jsoup.Connection
 import org.jsoup.Jsoup
@@ -37,8 +37,13 @@ class DomLogin(val context: Context, private val userName: String, private val p
 
     @SuppressLint("SetTextI18n")
     override fun run() {
+        login()
+        join()
+    }
+
+    private fun login() {
         try {
-            val response = Jsoup.connect(UrlAddress.urlLoginClean)
+            val response = Jsoup.connect(UrlAddress.loginClean)
                     .followRedirects(false)
                     .method(Connection.Method.GET)
                     .execute()
@@ -47,7 +52,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
             Log.d("sessionUrlInLogin", sessionUrl)
 
             if (sessionUrl.isNotBlank()) {
-                val response2 = Jsoup.connect(UrlAddress.urlLoginSession(sessionUrl))
+                val response2 = Jsoup.connect(UrlAddress.loginSession(sessionUrl))
                         .method(Connection.Method.GET)
                         .execute()
 
@@ -71,7 +76,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
                     }
                 }
 
-                val response3 = Jsoup.connect(UrlAddress.urlLoginSession(sessionUrl))
+                val response3 = Jsoup.connect(UrlAddress.loginSession(sessionUrl))
                         .data("__EVENTTARGET", __EVENTTARGET)
                         .data("__EVENTARGUMENT", __EVENTARGUMENT)
                         .data("__LASTFOCUS", __LASTFOCUS)
@@ -109,6 +114,5 @@ class DomLogin(val context: Context, private val userName: String, private val p
             onLoginListener.onThrow("Mất kết nối")
             e.printStackTrace()
         }
-        this.join()
     }
 }

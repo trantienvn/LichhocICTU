@@ -12,7 +12,9 @@ import android.widget.Toast
 import com.indieteam.mytask.R
 import com.indieteam.mytask.collection.TestScheduleCollection
 import com.indieteam.mytask.collection.TestScheduleTypeCollection
+import com.indieteam.mytask.model.schedule.domHTML.DomTestListSchedule
 import com.indieteam.mytask.model.schedule.domHTML.DomTestSchedule
+import com.indieteam.mytask.ui.interface_.OnDomTestListScheduleListener
 import com.indieteam.mytask.ui.interface_.OnDomTestScheduleListener
 import kotlinx.android.synthetic.main.fragment_select_test_schedule.*
 import kotlinx.android.synthetic.main.item_semester.view.*
@@ -73,7 +75,7 @@ class SelectTestScheduleFragment : Fragment() {
 
     }
 
-    private val onDomTestSchedule = object : OnDomTestScheduleListener {
+    private val onDomTestListSchedule = object : OnDomTestListScheduleListener {
         override fun onDone(testScheduleCollection: ArrayList<TestScheduleCollection>, testScheduleTypeCollection: ArrayList<TestScheduleTypeCollection>) {
             this@SelectTestScheduleFragment.testScheduleCollection = testScheduleCollection
             this@SelectTestScheduleFragment.testScheduleTypeCollection = testScheduleTypeCollection
@@ -81,10 +83,9 @@ class SelectTestScheduleFragment : Fragment() {
                 list_semester.adapter = adapter
                 list_type.adapter = adapter2
 
-                if (requireActivity().supportFragmentManager.findFragmentByTag("processBarUpdate") != null) {
+                if (requireActivity().supportFragmentManager.findFragmentByTag("processBarUpdate") != null)
                     requireActivity().supportFragmentManager.beginTransaction().remove(requireActivity().supportFragmentManager.findFragmentByTag("processBarUpdate")!!)
                             .commit()
-                }
             }
 
         }
@@ -92,6 +93,18 @@ class SelectTestScheduleFragment : Fragment() {
         override fun onFail(t: String) {
         }
 
+    }
+
+    private val onDomTestSchedule = object : OnDomTestScheduleListener {
+        override fun onDone() {
+
+        }
+
+        override fun onFail(t: String) {
+        }
+
+        override fun onThrow(t: String) {
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -102,7 +115,7 @@ class SelectTestScheduleFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        DomTestSchedule(requireContext(), onDomTestSchedule).start()
+        DomTestListSchedule(requireContext(), onDomTestListSchedule).start()
 
         list_semester.setOnItemClickListener { parent, view, position, id ->
             for (i in 0 until parent.childCount) {
@@ -122,10 +135,12 @@ class SelectTestScheduleFragment : Fragment() {
             pos2 = position
         }
 
-        submit_test_schedule.setOnClickListener{
+        submit_test_schedule.setOnClickListener {
             if (pos > -1 && pos2 > -1) {
                 val semesterValue = testScheduleCollection[pos].value
                 val typeValue = testScheduleTypeCollection[pos2].value
+                Toast.makeText(requireContext(), "$semesterValue $typeValue", Toast.LENGTH_SHORT).show()
+                DomTestSchedule(requireContext(), onDomTestSchedule, semesterValue, typeValue).start()
             } else {
                 Toast.makeText(requireContext(), "Hãy chọn cả 2", Toast.LENGTH_SHORT).show()
             }

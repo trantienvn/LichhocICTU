@@ -1,7 +1,7 @@
 package com.indieteam.mytask.model.schedule
 
 import android.content.Context
-import com.indieteam.mytask.model.sqlite.SqLite
+import com.indieteam.mytask.model.SqLite
 import org.json.JSONArray
 import org.json.JSONObject
 

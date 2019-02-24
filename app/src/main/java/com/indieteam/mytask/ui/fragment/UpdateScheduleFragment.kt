@@ -12,7 +12,7 @@ import android.widget.Toast
 import com.indieteam.mytask.R
 import com.indieteam.mytask.model.schedule.AddSubject
 import com.indieteam.mytask.model.schedule.DeleteSubject
-import com.indieteam.mytask.model.sqlite.SqLite
+import com.indieteam.mytask.model.SqLite
 import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.fragment_update_schedule.*
 import org.json.JSONObject
@@ -146,7 +146,7 @@ class UpdateScheduleFragment : Fragment() {
                             DeleteSubject(requireContext())
                                     .delete(subjectId)
                             AddSubject(requireContext())
-                                    .addCalendar(subjectName, subjectPlace, subjectTeacher, time, subjectDate)
+                                    .add(subjectName, subjectPlace, subjectTeacher, time, subjectDate)
 
                             val intent = Intent(requireActivity(), WeekActivity::class.java)
                             intent.putExtra("date", subjectDate)
