@@ -23,7 +23,7 @@ class QrFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_qr, container, false)
     }
 
-    private fun loadAds(){
+    private fun loadAds() {
         ads = Ads(requireContext())
         ads.apply {
             loadBottomAds(ads_bottom)
@@ -40,7 +40,7 @@ class QrFragment : Fragment() {
                         activity?.runOnUiThread {
                             qr_img.setImageBitmap(qrBitmap)
                         }
-                    }catch (e: Exception){
+                    } catch (e: Exception) {
                         Log.d("err", e.toString())
                         activity?.runOnUiThread {
                             Toast.makeText(activity, "Err #02, Không thể tạo mã QR", Toast.LENGTH_SHORT).show()

@@ -11,12 +11,12 @@ import com.indieteam.mytask.model.schedule.DeleteSubject
 import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.dialog_modify.view.*
 
-class ModifyDialog(private val context: Context){
+class ModifyDialog(private val context: Context) {
 
     private val alertDialog = AlertDialog.Builder(context)
     private lateinit var updateScheduleFragment: UpdateScheduleFragment
 
-    fun show(subjectId: String){
+    fun show(subjectId: String) {
         updateScheduleFragment = UpdateScheduleFragment()
         val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = layoutInflater.inflate(R.layout.dialog_modify, null)

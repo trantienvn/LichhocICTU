@@ -5,17 +5,17 @@ import com.indieteam.mytask.model.SqLite
 import org.json.JSONArray
 import org.json.JSONObject
 
-class DeleteSubject(context: Context){
+class DeleteSubject(context: Context) {
 
     private val sqLite = SqLite(context)
     private val calendarStudent = JSONObject(sqLite.readCalendar())
     var dateDeleted = ""
 
-    fun delete(subjectId: String){
+    fun delete(subjectId: String) {
         val jsonArray = calendarStudent.getJSONArray("calendar")
         val newJsonArray = JSONArray()
 
-        for (i in 0 until jsonArray.length()){
+        for (i in 0 until jsonArray.length()) {
             val subject = jsonArray.getJSONObject(i)
             if (subject.getString("subjectId") != subjectId)
                 newJsonArray.put(subject)

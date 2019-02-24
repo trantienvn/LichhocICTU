@@ -26,9 +26,9 @@ class UpdateScheduleFragment : Fragment() {
     private var subjectTimeArray = ArrayList<Int>()
 
 
-    private fun removeASubjectTime(subjectTime: Int){
+    private fun removeASubjectTime(subjectTime: Int) {
         var pos = -1
-        for (i in this.subjectTimeArray){
+        for (i in this.subjectTimeArray) {
             pos++
             if (i == subjectTime)
                 break
@@ -46,10 +46,10 @@ class UpdateScheduleFragment : Fragment() {
         }
     }
 
-    private fun sorted(){
-        for (i in 0 until subjectTimeArray.size - 1){
-            for (j in i+1 until subjectTimeArray.size){
-                if (subjectTimeArray[i] > subjectTimeArray[j]){
+    private fun sorted() {
+        for (i in 0 until subjectTimeArray.size - 1) {
+            for (j in i + 1 until subjectTimeArray.size) {
+                if (subjectTimeArray[i] > subjectTimeArray[j]) {
                     val temp = subjectTimeArray[i]
                     subjectTimeArray[i] = subjectTimeArray[j]
                     subjectTimeArray[j] = temp
@@ -58,15 +58,15 @@ class UpdateScheduleFragment : Fragment() {
         }
     }
 
-    private fun isSubjectTimeContinuity(): Boolean{
-        for (i in 0 until subjectTimeArray.size - 1){
-            if (subjectTimeArray[i] +1 != subjectTimeArray[i+1])
+    private fun isSubjectTimeContinuity(): Boolean {
+        for (i in 0 until subjectTimeArray.size - 1) {
+            if (subjectTimeArray[i] + 1 != subjectTimeArray[i + 1])
                 return false
         }
         return true
     }
 
-    private fun autoCheckBox(time: String){
+    private fun autoCheckBox(time: String) {
         for (i in 1..14) {
             val idName = "t_$i"
             val checkBoxId = getResId(idName, R.id::class.java)
@@ -95,9 +95,9 @@ class UpdateScheduleFragment : Fragment() {
         arg?.let {
             arg.getString("subjectId")?.let {
                 val subjectId = it
-                for (i in 0 until jsonArray.length()){
+                for (i in 0 until jsonArray.length()) {
                     val subject = jsonArray.getJSONObject(i)
-                    if (subject.getString("subjectId") == subjectId){
+                    if (subject.getString("subjectId") == subjectId) {
                         new_subject_name.setText(subject.getString("subjectName"))
                         new_subject_place.setText(subject.getString("subjectPlace"))
                         new_subject_teacher.setText(subject.getString("teacher"))
@@ -105,11 +105,11 @@ class UpdateScheduleFragment : Fragment() {
 
                         val subjectTime = subject.getString("subjectTime")
 
-                        if (subjectTime.indexOf(",") > -1){
+                        if (subjectTime.indexOf(",") > -1) {
                             var time = ""
 
-                            for (char in subjectTime){
-                                if (char.toString() != ","){
+                            for (char in subjectTime) {
+                                if (char.toString() != ",") {
                                     time += char.toString()
                                 } else {
                                     subjectTimeArray.add(time.toInt())
@@ -134,7 +134,7 @@ class UpdateScheduleFragment : Fragment() {
                     subjectTeacher = new_subject_teacher.text.toString()
                     subjectDate = new_subject_date.text.toString()
                     if (subjectName.isNotBlank() && subjectPlace.isNotBlank() && subjectTeacher.isNotBlank()
-                            && subjectTimeArray.isNotEmpty() && subjectDate.isNotBlank()){
+                            && subjectTimeArray.isNotEmpty() && subjectDate.isNotBlank()) {
                         sorted()
                         if (isSubjectTimeContinuity()) {
                             saving.visibility = VISIBLE
@@ -142,7 +142,7 @@ class UpdateScheduleFragment : Fragment() {
                             subjectTimeArray.forEach {
                                 time += "$it,"
                             }
-                            time = time.substring(0, time.length-1)
+                            time = time.substring(0, time.length - 1)
                             DeleteSubject(requireContext())
                                     .delete(subjectId)
                             AddSubject(requireContext())

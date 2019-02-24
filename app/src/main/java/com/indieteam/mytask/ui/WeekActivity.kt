@@ -148,7 +148,7 @@ class WeekActivity : AppCompatActivity() {
             val selectSemesterFragment = SelectSemesterFragment()
             selectSemesterFragment.arguments = bundle
 
-            supportFragmentManager.findFragmentByTag("processBarUpdate")?.let{
+            supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
                 supportFragmentManager.beginTransaction().remove(it)
                         .commit()
             }
@@ -168,7 +168,7 @@ class WeekActivity : AppCompatActivity() {
 
         override fun onThrow(t: String) {
             runOnUiThread {
-                supportFragmentManager.findFragmentByTag("processBarUpdate")?.let{
+                supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
                     supportFragmentManager.beginTransaction().remove(it)
                             .commit()
                 }

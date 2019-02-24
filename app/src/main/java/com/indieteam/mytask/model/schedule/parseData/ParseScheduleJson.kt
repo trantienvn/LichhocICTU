@@ -6,14 +6,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ParseScheduleJson(val calendar: JSONObject){
+class ParseScheduleJson(val calendar: JSONObject) {
     var subjectName = ArrayList<String>()
     var subjectTime = ArrayList<String>()
     var subjectPlace = ArrayList<String>()
     var teacher = ArrayList<String>()
     var subjectId = ArrayList<String>()
 
-    fun getSubject(key: String){
+    fun getSubject(key: String) {
         subjectName = arrayListOf()
         subjectTime = arrayListOf()
         subjectPlace = arrayListOf()
@@ -22,7 +22,7 @@ class ParseScheduleJson(val calendar: JSONObject){
 
         val calendarValue = calendar.getJSONArray("calendar")
 
-        for (i in 0 until calendarValue.length()){
+        for (i in 0 until calendarValue.length()) {
             if (key == calendarValue.getJSONObject(i).getString("subjectDate")) {
                 //subjectDate.add(calendarValue.getJSONObject(i).getString("subjectDate"))
                 subjectName.add(calendarValue.getJSONObject(i).getString("subjectName"))
@@ -35,7 +35,7 @@ class ParseScheduleJson(val calendar: JSONObject){
         sort()
     }
 
-    private fun sort(){
+    private fun sort() {
         if (subjectName.isNotEmpty() && subjectPlace.isNotEmpty() && subjectTime.isNotEmpty() && teacher.isNotEmpty()) {
             for (j in 0 until subjectTime.size - 1) {
                 for (k in j + 1 until subjectTime.size) {
@@ -44,7 +44,7 @@ class ParseScheduleJson(val calendar: JSONObject){
                     if (subjectTime[j].indexOf(",") > -1)
                         firstI = subjectTime[j].substring(0, subjectTime[j].indexOf(",")).toInt()
                     else
-                       firstI = subjectTime[j] .toInt()
+                        firstI = subjectTime[j].toInt()
 
                     if (subjectTime[k].indexOf(",") > -1)
                         firstJ = subjectTime[k].substring(0, subjectTime[k].indexOf(",")).toInt()
@@ -77,7 +77,7 @@ class ParseScheduleJson(val calendar: JSONObject){
         }
     }
 
-    fun initDots(): MutableMap<CalendarDay, String>{
+    fun initDots(): MutableMap<CalendarDay, String> {
         val dots = mutableMapOf<CalendarDay, String>()
         val calendarValue = calendar.getJSONArray("calendar")
         for (i in 0 until calendarValue.length()) {

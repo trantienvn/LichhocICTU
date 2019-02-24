@@ -13,19 +13,19 @@ import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.item_calendar_list_view.view.*
 import java.util.*
 
-class ScheduleAdapter(val activity: WeekActivity, val data: ArrayList<StudentCalendarCollection>): BaseAdapter(){
+class ScheduleAdapter(val activity: WeekActivity, val data: ArrayList<StudentCalendarCollection>) : BaseAdapter() {
 
     override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
         val inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = inflater.inflate(R.layout.item_calendar_list_view, null)
 
-        if (data.isEmpty()){
+        if (data.isEmpty()) {
             view.subject_name.text = "Nghỉ"
             view.subject_time_place.text = ""
             view.teacher.text = ""
             view.edit_image_button.visibility = GONE
 
-        }else {
+        } else {
             view.subject_name.text = "${data[p0].subjectName}"
             view.subject_time_place.text = "${data[p0].subjectTime} tại ${data[p0].subjectPlace}"
             view.teacher.text = "${data[p0].teacher}"

@@ -14,17 +14,17 @@ import com.indieteam.mytask.ui.WeekActivity
 
 class AppNotification(val context: Context) {
 
-    fun subjectToday(contents: String, numberSubjects: String){
+    fun subjectToday(contents: String, numberSubjects: String) {
         //touch
         val intent = Intent(context, WeekActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT)
-        val channelName  = "Calendar Notification"
+        val channelName = "Calendar Notification"
         val channelId = "Calendar Notification"
         val description = ""
 
         //set channelId
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val chanel = NotificationChannel(channelId, channelName, importance)
             chanel.description = description
@@ -52,9 +52,9 @@ class AppNotification(val context: Context) {
         NotificationManagerCompat.from(context).notify(2, notification.build())
     }
 
-    fun syncing(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val channelName  = "App Notification"
+    fun syncing() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelName = "App Notification"
             val channelId = "App Notification"
             val description = ""
             val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -85,9 +85,9 @@ class AppNotification(val context: Context) {
         }
     }
 
-    fun syncDone(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val channelName  = "App Notification"
+    fun syncDone() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelName = "App Notification"
             val channelId = "App Notification"
             val description = ""
             val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -120,9 +120,9 @@ class AppNotification(val context: Context) {
         }
     }
 
-    fun syncFail(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val channelName  = "App Notification"
+    fun syncFail() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelName = "App Notification"
             val channelId = "App Notification"
             val description = ""
             val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -155,12 +155,12 @@ class AppNotification(val context: Context) {
         }
     }
 
-    fun firebaseNotification(title: String?, body: String?){
-        val channelName  = "App Notification"
+    fun firebaseNotification(title: String?, body: String?) {
+        val channelName = "App Notification"
         val channelId = "App Notification"
         val description = ""
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val chanel = NotificationChannel(channelId, channelName, importance)
             chanel.description = description
@@ -178,7 +178,7 @@ class AppNotification(val context: Context) {
         NotificationManagerCompat.from(context).notify(4, notification.build())
     }
 
-    fun foreground(): NotificationCompat.Builder{
+    fun foreground(): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, "App Notification")
                 .setSmallIcon(R.drawable.ic_date_range_256)
                 .setContentTitle("Đang theo dõi lịch học")

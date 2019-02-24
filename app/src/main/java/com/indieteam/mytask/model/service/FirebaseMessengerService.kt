@@ -5,7 +5,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.indieteam.mytask.model.notification.AppNotification
 
-class FirebaseMessengerService: FirebaseMessagingService() {
+class FirebaseMessengerService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String?) {
         super.onNewToken(token)

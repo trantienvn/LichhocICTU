@@ -29,31 +29,31 @@ class StudentInfoActivity : AppCompatActivity() {
     private lateinit var ads: Ads
 
     override fun onBackPressed() {
-        if (supportFragmentManager.findFragmentByTag("qrFragment") != null){
+        if (supportFragmentManager.findFragmentByTag("qrFragment") != null) {
             supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("qrFragment")!!)
                     .commit()
             visible()
             countClick = 0
-        }else {
+        } else {
             super.onBackPressed()
             finish()
         }
     }
 
-    private fun gone(){
+    private fun gone() {
         header_profile.visibility = GONE
         content_profile.visibility = GONE
         gen_qr_btn.visibility = GONE
     }
 
-    private fun visible(){
+    private fun visible() {
         header_profile.visibility = VISIBLE
         content_profile.visibility = VISIBLE
         gen_qr_btn.visibility = VISIBLE
     }
 
     private var countClick = 0
-    private fun genQr(){
+    private fun genQr() {
 
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_gen_qr, R.drawable.ic_gen_qr_code)
@@ -66,7 +66,7 @@ class StudentInfoActivity : AppCompatActivity() {
         header_profile.setOnClickListener {
             countClick++
             if (!studentId.isNullOrBlank()) {
-                if(countClick == 1){
+                if (countClick == 1) {
                     gone()
                     bundle.putString("studentId", studentId)
                     qrFragment.arguments = bundle
@@ -81,12 +81,12 @@ class StudentInfoActivity : AppCompatActivity() {
             }
         }
 
-        gen_qr_btn.setOnActionSelectedListener{
-            when (it.id){
-                R.id.fab_gen_qr ->{
+        gen_qr_btn.setOnActionSelectedListener {
+            when (it.id) {
+                R.id.fab_gen_qr -> {
                     countClick++
                     if (!studentId.isNullOrBlank()) {
-                        if(countClick == 1){
+                        if (countClick == 1) {
                             gone()
                             bundle.putString("studentId", studentId)
                             qrFragment.arguments = bundle
@@ -106,21 +106,21 @@ class StudentInfoActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun readInfo(){
+    private fun readInfo() {
         var readDb: Int
-        var valueDb= ""
+        var valueDb = ""
         sqLite = SqLite(this)
-        try{
+        try {
             valueDb = sqLite.readCalendar()
             readDb = 1
             Log.d("readdb", "readCalendar db done")
-        }catch (e: Exception){
+        } catch (e: Exception) {
             readDb = 0
             Log.d("readdb", "db is not exits, cannot readCalendar")
             Log.d("err", e.toString())
         }
 
-        if (readDb == 1){
+        if (readDb == 1) {
             val jsonObject = JSONObject(valueDb)
             val infoObj = jsonObject.getJSONObject("info")
             studentName = infoObj.getString("studentName").trim()
@@ -136,7 +136,7 @@ class StudentInfoActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadAds(){
+    private fun loadAds() {
         ads = Ads(this)
 
         ads.apply {

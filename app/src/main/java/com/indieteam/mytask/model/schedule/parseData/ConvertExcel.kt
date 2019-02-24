@@ -8,7 +8,7 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ConvertExcel{
+class ConvertExcel {
 
     @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
@@ -25,7 +25,7 @@ class ConvertExcel{
     var size = 0
 
     fun toJson(rawCalendarCollectionArr: ArrayList<RawCalendarCollection>) {
-        for (i in rawCalendarCollectionArr){
+        for (i in rawCalendarCollectionArr) {
 //            Log.d("subjectName", i.subjectName)
 //            Log.d("subjectDate", i.subjectDate)
 //            Log.d("subjectDayOfWeek", i.subjectDayOfWeek)
@@ -49,9 +49,9 @@ class ConvertExcel{
             calendar2.time = dateEnd
             val calendarEnd = calendar2
 
-            while (calendarStart.time <= calendarEnd.time){
+            while (calendarStart.time <= calendarEnd.time) {
                 //Log.d("date", calendar.time.toString())
-                if(calendarStart.get(Calendar.DAY_OF_WEEK) == dayOfWeekMap[i.subjectDayOfWeek]){
+                if (calendarStart.get(Calendar.DAY_OF_WEEK) == dayOfWeekMap[i.subjectDayOfWeek]) {
 //                    Log.d("size", size.toString())
 //                    Log.d("subjectName", i.subjectName)
 //                    Log.d("subjectDate", "${dateStartCalendar.get_string(Calendar.DAY_OF_MONTH)}/"+
@@ -65,7 +65,7 @@ class ConvertExcel{
                     val jsonObjectChild = JSONObject()
                     jsonObjectChild.put("subjectId", Random.get_string(40))
                     jsonObjectChild.put("subjectName", i.subjectName)
-                    jsonObjectChild.put("subjectDate", "${calendarStart.get(Calendar.DAY_OF_MONTH)}/"+
+                    jsonObjectChild.put("subjectDate", "${calendarStart.get(Calendar.DAY_OF_MONTH)}/" +
                             "${calendarStart.get(Calendar.MONTH) + 1}/" +
                             "${calendarStart.get(Calendar.YEAR)}")
                     jsonObjectChild.put("subjectDayOfWeek", i.subjectDayOfWeek)

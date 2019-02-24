@@ -5,7 +5,7 @@ import com.indieteam.mytask.model.SqLite
 import com.indieteam.mytask.ui.interface_.OnLoginListener
 
 @Suppress("DEPRECATION")
-class DomUpdateSchedule(val context: Context, private val signIn: String, private val onLoginListener: OnLoginListener): Thread() {
+class DomUpdateSchedule(val context: Context, private val signIn: String, private val onLoginListener: OnLoginListener) : Thread() {
 
     private var sqLite = SqLite(context)
 

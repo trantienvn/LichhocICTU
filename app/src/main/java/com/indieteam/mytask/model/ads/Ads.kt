@@ -11,7 +11,7 @@ class Ads(context: Context) {
         MobileAds.initialize(context, "ca-app-pub-1117482668766229~6134610505")
     }
 
-    fun loadBottomAds(adView: AdView){
+    fun loadBottomAds(adView: AdView) {
         val request = AdRequest.Builder().build()
         adView.loadAd(request)
     }

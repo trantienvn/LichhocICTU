@@ -22,9 +22,9 @@ class AddScheduleFragment : Fragment() {
     private var subjectTime = ArrayList<Int>()
 
 
-    private fun removeASubjectTime(subjectTime: Int){
+    private fun removeASubjectTime(subjectTime: Int) {
         var pos = -1
-        for (i in this.subjectTime){
+        for (i in this.subjectTime) {
             pos++
             if (i == subjectTime)
                 break
@@ -42,10 +42,10 @@ class AddScheduleFragment : Fragment() {
         }
     }
 
-    private fun sorted(){
-        for (i in 0 until subjectTime.size - 1){
-            for (j in i+1 until subjectTime.size){
-                if (subjectTime[i] > subjectTime[j]){
+    private fun sorted() {
+        for (i in 0 until subjectTime.size - 1) {
+            for (j in i + 1 until subjectTime.size) {
+                if (subjectTime[i] > subjectTime[j]) {
                     val temp = subjectTime[i]
                     subjectTime[i] = subjectTime[j]
                     subjectTime[j] = temp
@@ -54,9 +54,9 @@ class AddScheduleFragment : Fragment() {
         }
     }
 
-    private fun isSubjectTimeContinuity(): Boolean{
-        for (i in 0 until subjectTime.size - 1){
-            if (subjectTime[i] +1 != subjectTime[i+1])
+    private fun isSubjectTimeContinuity(): Boolean {
+        for (i in 0 until subjectTime.size - 1) {
+            if (subjectTime[i] + 1 != subjectTime[i + 1])
                 return false
         }
         return true
@@ -82,7 +82,7 @@ class AddScheduleFragment : Fragment() {
                     subjectPlace = new_subject_place.text.toString()
                     subjectTeacher = new_subject_teacher.text.toString()
                     if (subjectName.isNotBlank() && subjectPlace.isNotBlank() && subjectTeacher.isNotBlank()
-                            && subjectTime.isNotEmpty()){
+                            && subjectTime.isNotEmpty()) {
                         sorted()
                         if (isSubjectTimeContinuity()) {
                             adding.visibility = View.VISIBLE
@@ -90,7 +90,7 @@ class AddScheduleFragment : Fragment() {
                             subjectTime.forEach {
                                 time += "$it,"
                             }
-                            time = time.substring(0, time.length-1)
+                            time = time.substring(0, time.length - 1)
                             if (subjectDate.isNotBlank()) {
                                 AddSubject(requireContext())
                                         .add(subjectName, subjectPlace, subjectTeacher, time, subjectDate)

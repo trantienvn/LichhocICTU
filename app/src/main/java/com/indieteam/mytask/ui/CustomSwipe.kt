@@ -5,7 +5,7 @@ import android.graphics.Point
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_week.*
 
-class CustomSwipe(private val activity: WeekActivity){
+class CustomSwipe(private val activity: WeekActivity) {
 
     private var screenW = 0
     private var screenY = 0
@@ -13,7 +13,7 @@ class CustomSwipe(private val activity: WeekActivity){
     private var timeback: Long = 90
     var lastXListview = 0f
 
-    private fun screenSize(){
+    private fun screenSize() {
         activity.apply {
             val point = Point()
             windowManager.defaultDisplay.getSize(point)
@@ -27,20 +27,20 @@ class CustomSwipe(private val activity: WeekActivity){
     fun left() {
         screenSize()
         i++
-        if(i <= 1)
+        if (i <= 1)
             lastXListview = activity.calender_list_view.x
-        val valueAnimation = ValueAnimator.ofFloat(0f, - screenW.toFloat())
+        val valueAnimation = ValueAnimator.ofFloat(0f, -screenW.toFloat())
         valueAnimation.duration = time
         valueAnimation.addUpdateListener {
             Log.d("lastX", lastXListview.toString())
             Log.d("animatedValue", screenW.toString() + "," + it.animatedValue.toString())
-            if ((it.animatedValue as Float) > - screenW.toFloat()) {
+            if ((it.animatedValue as Float) > -screenW.toFloat()) {
                 activity.apply {
                     runOnUiThread {
                         calender_list_view.x = it.animatedValue as Float
                     }
                 }
-            }else {
+            } else {
                 activity.apply {
                     runOnUiThread {
                         nextDate()
@@ -60,13 +60,13 @@ class CustomSwipe(private val activity: WeekActivity){
         Log.d("lastX", lastXListview.toString())
         valueAnimation.addUpdateListener {
             Log.d("animatedValue", screenW.toString() + "," + it.animatedValue.toString())
-            if ((it.animatedValue as Float) >  0f) {
+            if ((it.animatedValue as Float) > 0f) {
                 activity.apply {
                     runOnUiThread {
-                        calender_list_view.x = - (it.animatedValue as Float)
+                        calender_list_view.x = -(it.animatedValue as Float)
                     }
                 }
-            }else {
+            } else {
                 activity.apply {
                     runOnUiThread {
                         calender_list_view.x = lastXListview
@@ -90,7 +90,7 @@ class CustomSwipe(private val activity: WeekActivity){
                         calender_list_view.x = it.animatedValue as Float
                     }
                 }
-            }else {
+            } else {
                 activity.apply {
                     runOnUiThread {
                         calender_list_view.x = lastXListview
@@ -105,7 +105,7 @@ class CustomSwipe(private val activity: WeekActivity){
     fun right() {
         screenSize()
         i++
-        if(i <= 1)
+        if (i <= 1)
             lastXListview = activity.calender_list_view.x
         val valueAnimation = ValueAnimator.ofFloat(screenW.toFloat(), 0f)
         valueAnimation.duration = time
@@ -117,7 +117,7 @@ class CustomSwipe(private val activity: WeekActivity){
                         calender_list_view.x = screenW - it.animatedValue as Float
                     }
                 }
-            }else {
+            } else {
                 activity.apply {
                     runOnUiThread {
                         preDate()

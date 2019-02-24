@@ -86,7 +86,7 @@ class LoginActivity : AppCompatActivity() {
             val selectSemesterFragment = SelectSemesterFragment()
             selectSemesterFragment.arguments = bundle
 
-            supportFragmentManager.findFragmentByTag("processBarLogin")?.let{
+            supportFragmentManager.findFragmentByTag("processBarLogin")?.let {
                 supportFragmentManager.beginTransaction().remove(it)
                         .commit()
             }
@@ -106,7 +106,7 @@ class LoginActivity : AppCompatActivity() {
 
         override fun onThrow(t: String) {
             runOnUiThread {
-                supportFragmentManager.findFragmentByTag("processBarLogin")?.let{
+                supportFragmentManager.findFragmentByTag("processBarLogin")?.let {
                     supportFragmentManager.beginTransaction().remove(it)
                             .commit()
                 }

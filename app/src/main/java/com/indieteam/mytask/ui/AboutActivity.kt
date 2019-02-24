@@ -18,6 +18,8 @@ class AboutActivity : AppCompatActivity() {
         try {
             val packageManager = packageManager.getPackageInfo(packageName, 0)
             version.text = "Version: " + packageManager.versionName
-        }catch (e: Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

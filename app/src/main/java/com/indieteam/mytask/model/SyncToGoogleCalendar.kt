@@ -23,12 +23,12 @@ import java.util.*
 
 
 @Suppress("DEPRECATION")
-class SyncToGoogleCalendar(val context: Context): Thread() {
+class SyncToGoogleCalendar(val context: Context) : Thread() {
 
     private var sqLite = SqLite(context)
     @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
-    private val date = "${CalendarDay.today().day}/${CalendarDay.today().month+1}/${CalendarDay.today().year}"
+    private val date = "${CalendarDay.today().day}/${CalendarDay.today().month + 1}/${CalendarDay.today().year}"
     private val timeDetails = TimeScheduleDetails()
     private lateinit var service: com.google.api.services.calendar.Calendar
     private var weekActivity = context as WeekActivity
@@ -37,18 +37,18 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
     private val appNotification = AppNotification(context)
 
 
-    private fun init(){
-        weekActivity.apply{
+    private fun init() {
+        weekActivity.apply {
             Log.d("accSelected", sharedPref.getString("accSelected", "null"))
             credential = GoogleAccountCredential.usingOAuth2(context, Collections.singleton(CalendarScopes.CALENDAR_EVENTS))
             credential.selectedAccountName = sharedPref.getString("accSelected", "null")
             service = Calendar.Builder(httpTransport, jsonFactory, credential)
-                        .setApplicationName(appName).build()
+                    .setApplicationName(appName).build()
             this@SyncToGoogleCalendar.service = service
         }
     }
 
-    private fun checkCalendarPermission(){
+    private fun checkCalendarPermission() {
         weekActivity.apply {
             gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestEmail()
@@ -64,7 +64,7 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
         }
     }
 
-    private fun insertCalendar(){
+    private fun insertCalendar() {
         val calendar = com.google.api.services.calendar.model.Calendar()
                 .setSummary("Lich hoc ictu")
                 .setDescription("Lich hoc ictu")
@@ -72,7 +72,7 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
         try {
             val insert = service.Calendars().insert(calendar).execute()
             calendarId = insert.id
-        }catch (e: IOException){
+        } catch (e: IOException) {
             e.printStackTrace()
             weekActivity.apply {
                 runOnUiThread {
@@ -85,10 +85,10 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
         }
     }
 
-    private fun deleteCalendar(id: String){
+    private fun deleteCalendar(id: String) {
         try {
             service.calendars().delete(id).execute()
-        }catch (e: IOException){
+        } catch (e: IOException) {
             e.printStackTrace()
             weekActivity.apply {
                 runOnUiThread {
@@ -100,7 +100,7 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
         }
     }
 
-    private fun findCalendarExist(){
+    private fun findCalendarExist() {
         var pageToken: String? = null
         val calendarList = service.calendarList().list().setPageToken(pageToken).execute()
         try {
@@ -113,7 +113,7 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
                 }
                 pageToken = calendarList.nextPageToken
             } while (pageToken != null)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             weekActivity.apply {
                 runOnUiThread {
                     Toast.makeText(weekActivity, "Lỗi đọc calendar", Toast.LENGTH_SHORT).show()
@@ -123,7 +123,7 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
         }
     }
 
-    private fun insertEvents(id: String, summaryEvent: String, location: String, date: String, timeStart: String, timeEnd: String){
+    private fun insertEvents(id: String, summaryEvent: String, location: String, date: String, timeStart: String, timeEnd: String) {
         val event = Event()
                 .setSummary(summaryEvent)
                 .setLocation(location)
@@ -131,9 +131,9 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
         var month = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"))
         val year = date.substring(date.lastIndexOf("/") + 1, date.length)
 
-        if (day.toInt()<10)
+        if (day.toInt() < 10)
             day = "0$day"
-        if (month.toInt()<10)
+        if (month.toInt() < 10)
             month = "0$month"
 
         val startDateTime = DateTime("$year-$month-${day}T$timeStart:00+07:00")
@@ -152,7 +152,7 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
         event.end = end
         try {
             service.events().insert(id, event).execute()
-        }catch (e: IOException){
+        } catch (e: IOException) {
             e.printStackTrace()
             weekActivity.apply {
                 runOnUiThread {
@@ -164,12 +164,12 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
         }
     }
 
-    fun sync(){
+    fun sync() {
         val jsonObjects = JSONObject(sqLite.readCalendar())
         val jsonArr = jsonObjects.getJSONArray("calendar")
 
-        weekActivity.apply{
-            runOnUiThread{
+        weekActivity.apply {
+            runOnUiThread {
                 Toast.makeText(this, "Đang tải lịch lên Google Calendar trong nền", Toast.LENGTH_SHORT).show()
             }
         }
@@ -178,7 +178,7 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
         insertCalendar()
 
         for (i in 0 until jsonArr.length()) {
-            if (!checkNet.state()){
+            if (!checkNet.state()) {
                 weekActivity.apply {
                     runOnUiThread {
                         Toast.makeText(weekActivity, "Mất kết nối", Toast.LENGTH_SHORT).show()
@@ -200,7 +200,7 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
 
             val firstTime: Int
             val endTime: Int
-            if(subjectTime.indexOf(",") > -1) {
+            if (subjectTime.indexOf(",") > -1) {
                 firstTime = subjectTime.substring(0, subjectTime.indexOf(",")).toInt() - 1
                 endTime = subjectTime.substring(subjectTime.lastIndexOf(",") + 1, subjectTime.length).toInt() - 1
                 if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
@@ -211,8 +211,7 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
                     if (calendarId != null)
                         insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeWinterArr[firstTime].timeIn, timeDetails.timeWinterArr[endTime].timeOut)
                 }
-            }
-            else {
+            } else {
                 firstTime = subjectTime.toInt() - 1
                 if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
                         CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date) {
@@ -226,7 +225,7 @@ class SyncToGoogleCalendar(val context: Context): Thread() {
 
         }
 
-        weekActivity.apply{
+        weekActivity.apply {
             runOnUiThread {
                 Toast.makeText(weekActivity, "Đã tải lịch lên Google Calendar", Toast.LENGTH_SHORT).show()
                 Log.d("Sync", "Done")
