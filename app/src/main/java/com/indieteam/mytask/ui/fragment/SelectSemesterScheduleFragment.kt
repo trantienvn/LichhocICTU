@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.item_semester.view.*
 import org.json.JSONArray
 import org.json.JSONObject
 
-class SelectSemesterFragment : Fragment() {
+class SelectSemesterScheduleFragment : Fragment() {
 
     private var semesterObject = JSONObject()
     private var semesterArray = JSONArray()

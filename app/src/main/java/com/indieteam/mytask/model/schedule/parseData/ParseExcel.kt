@@ -9,7 +9,7 @@ import org.json.JSONObject
 import java.io.File
 import java.util.*
 
-class ParseExel(context: Context) {
+class ParseExcel(context: Context) {
 
     private val fileV2 = File(context.filesDir, "exel/tkb_v2.xls")
 

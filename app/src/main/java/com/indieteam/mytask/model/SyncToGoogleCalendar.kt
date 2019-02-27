@@ -39,9 +39,8 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
 
     private fun init() {
         weekActivity.apply {
-            Log.d("accSelected", sharedPref.getString("accSelected", "null"))
             credential = GoogleAccountCredential.usingOAuth2(context, Collections.singleton(CalendarScopes.CALENDAR_EVENTS))
-            credential.selectedAccountName = sharedPref.getString("accSelected", "null")
+            credential.selectedAccountName = sqLite.readEmail()
             service = Calendar.Builder(httpTransport, jsonFactory, credential)
                     .setApplicationName(appName).build()
             this@SyncToGoogleCalendar.service = service
@@ -56,11 +55,10 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
                     .build()
             mGoogleSignInClient = GoogleSignIn.getClient(context, gso)
             signInIntent = mGoogleSignInClient.signInIntent
-            if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(context), scope, scope2)) {
+            if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(context), scope, scope2))
                 startActivityForResult(signInIntent, RC_SIGN_IN)
-            } else {
+            else
                 sync()
-            }
         }
     }
 
@@ -107,9 +105,8 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
             do {
                 for (calendar in calendarList.items) {
                     Log.d("calendar_summary", calendar.summary)
-                    if (calendar.summary == "Lich hoc ictu") {
+                    if (calendar.summary == "Lich hoc ictu")
                         deleteCalendar(calendar.id)
-                    }
                 }
                 pageToken = calendarList.nextPageToken
             } while (pageToken != null)
@@ -127,6 +124,7 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
         val event = Event()
                 .setSummary(summaryEvent)
                 .setLocation(location)
+
         var day = date.substring(0, date.indexOf("/"))
         var month = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"))
         val year = date.substring(date.lastIndexOf("/") + 1, date.length)
@@ -138,6 +136,7 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
 
         val startDateTime = DateTime("$year-$month-${day}T$timeStart:00+07:00")
         Log.d("startDateTime", "$year-$month-${day}T$timeStart:00+07:00")
+
         val start = EventDateTime()
                 .setDateTime(startDateTime)
                 .setTimeZone("Asia/Ho_Chi_Minh")
@@ -150,6 +149,7 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
                 .setDateTime(endDateTime)
                 .setTimeZone("Asia/Ho_Chi_Minh")
         event.end = end
+
         try {
             service.events().insert(id, event).execute()
         } catch (e: IOException) {
@@ -165,7 +165,7 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
     }
 
     fun sync() {
-        val jsonObjects = JSONObject(sqLite.readCalendar())
+        val jsonObjects = JSONObject(sqLite.readSchedule())
         val jsonArr = jsonObjects.getJSONArray("calendar")
 
         weekActivity.apply {
@@ -200,6 +200,7 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
 
             val firstTime: Int
             val endTime: Int
+
             if (subjectTime.indexOf(",") > -1) {
                 firstTime = subjectTime.substring(0, subjectTime.indexOf(",")).toInt() - 1
                 endTime = subjectTime.substring(subjectTime.lastIndexOf(",") + 1, subjectTime.length).toInt() - 1

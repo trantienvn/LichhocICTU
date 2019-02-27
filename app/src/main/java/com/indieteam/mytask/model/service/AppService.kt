@@ -55,7 +55,7 @@ class AppService : Service() {
         val date = "${calendarForTomorrow.get(Calendar.DAY_OF_MONTH)}/${calendarForTomorrow.get(Calendar.MONTH) + 1}/${calendarForTomorrow.get(Calendar.YEAR)}"
         sqLite = SqLite(this)
         try {
-            valueDb = sqLite.readCalendar()
+            valueDb = sqLite.readSchedule()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -79,7 +79,7 @@ class AppService : Service() {
             result = result.substring(0, result.lastIndexOf("\n"))
             Log.d("AppService_Log", "Date $date: $result")
             appNotification = AppNotification(this)
-            appNotification.subjectToday(result, numberSubjects.toString())
+            appNotification.scheduleToday(result, numberSubjects.toString())
 
         } else {
             Log.d("AppService_Log", "null")

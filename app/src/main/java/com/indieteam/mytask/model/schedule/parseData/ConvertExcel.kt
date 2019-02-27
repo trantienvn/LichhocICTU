@@ -45,13 +45,13 @@ class ConvertExcel {
             val calendar = Calendar.getInstance()
             val calendar2 = Calendar.getInstance()
             calendar.time = dateStart
-            val calendarStart = calendar
+            val firstCalendar = calendar
             calendar2.time = dateEnd
-            val calendarEnd = calendar2
+            val lastCalendar = calendar2
 
-            while (calendarStart.time <= calendarEnd.time) {
+            while (firstCalendar.time <= lastCalendar.time) {
                 //Log.d("date", calendar.time.toString())
-                if (calendarStart.get(Calendar.DAY_OF_WEEK) == dayOfWeekMap[i.subjectDayOfWeek]) {
+                if (firstCalendar.get(Calendar.DAY_OF_WEEK) == dayOfWeekMap[i.subjectDayOfWeek]) {
 //                    Log.d("size", size.toString())
 //                    Log.d("subjectName", i.subjectName)
 //                    Log.d("subjectDate", "${dateStartCalendar.get_string(Calendar.DAY_OF_MONTH)}/"+
@@ -65,9 +65,9 @@ class ConvertExcel {
                     val jsonObjectChild = JSONObject()
                     jsonObjectChild.put("subjectId", Random.get_string(40))
                     jsonObjectChild.put("subjectName", i.subjectName)
-                    jsonObjectChild.put("subjectDate", "${calendarStart.get(Calendar.DAY_OF_MONTH)}/" +
-                            "${calendarStart.get(Calendar.MONTH) + 1}/" +
-                            "${calendarStart.get(Calendar.YEAR)}")
+                    jsonObjectChild.put("subjectDate", "${firstCalendar.get(Calendar.DAY_OF_MONTH)}/" +
+                            "${firstCalendar.get(Calendar.MONTH) + 1}/" +
+                            "${firstCalendar.get(Calendar.YEAR)}")
                     jsonObjectChild.put("subjectDayOfWeek", i.subjectDayOfWeek)
                     jsonObjectChild.put("subjectTime", i.subjectTime)
                     jsonObjectChild.put("subjectPlace", i.subjectPlace)
@@ -76,7 +76,7 @@ class ConvertExcel {
                     jsonArray.put(size, jsonObjectChild)
                     size++
                 }
-                calendarStart.add(Calendar.DAY_OF_MONTH, 1)
+                firstCalendar.add(Calendar.DAY_OF_MONTH, 1)
             }
         }
         //Log.d("exelToJson", jsonObject.toString())

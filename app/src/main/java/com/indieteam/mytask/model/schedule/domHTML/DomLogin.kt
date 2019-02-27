@@ -95,6 +95,7 @@ class DomLogin(val context: Context, private val userName: String, private val p
                         .execute()
 
                 var cookie = ""
+
                 if (response3.cookie("SignIn") != null) {
                     sharedPref.edit().apply {
                         putString("username", userName)
@@ -103,13 +104,12 @@ class DomLogin(val context: Context, private val userName: String, private val p
                     cookie = response3.cookie("SignIn")
 
                     onLoginListener.onSuccess(userName, passWord, cookie, sessionUrl)
-                } else {
+                } else
                     onLoginListener.onFail()
-                }
+
                 Log.d("cookie", cookie)
-            } else {
+            } else
                 onLoginListener.onThrow("sessionUrl is blank")
-            }
         } catch (e: Exception) {
             onLoginListener.onThrow("Mất kết nối")
             e.printStackTrace()

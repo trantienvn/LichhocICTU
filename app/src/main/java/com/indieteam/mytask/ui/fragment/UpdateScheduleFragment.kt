@@ -89,7 +89,7 @@ class UpdateScheduleFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val arg = arguments
         val sqLite = SqLite(requireContext())
-        val studentCalendar = JSONObject(sqLite.readCalendar())
+        val studentCalendar = JSONObject(sqLite.readSchedule())
         val jsonArray = studentCalendar.getJSONArray("calendar")
 
         arg?.let {

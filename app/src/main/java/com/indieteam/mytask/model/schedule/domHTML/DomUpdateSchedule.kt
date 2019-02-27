@@ -14,6 +14,6 @@ class DomUpdateSchedule(val context: Context, private val signIn: String, privat
     }
 
     private fun update() {
-        DomLogin(context, sqLite.readUserName(), sqLite.readPassword(), onLoginListener).start()
+        DomLogin(context, sqLite.readUsername(), sqLite.readPassword(), onLoginListener).start()
     }
 }

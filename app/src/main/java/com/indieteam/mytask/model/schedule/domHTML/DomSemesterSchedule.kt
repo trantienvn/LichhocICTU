@@ -55,6 +55,7 @@ class DomSemesterSchedule(val context: Context, private val sessionUrl: String, 
             }
         } catch (e: Exception) {
             onSemesterScheduleListener.onThrow("Mất kết nối")
+            e.printStackTrace()
             err = 1
         }
 

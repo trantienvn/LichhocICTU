@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="fab_setting" type="id" />
+    <item name="fab_calendar_mode" type="id" />
     <item name="fab_logout" type="id" />
     <item name="fab_info" type="id" />
     <item name="fab_update" type="id" />

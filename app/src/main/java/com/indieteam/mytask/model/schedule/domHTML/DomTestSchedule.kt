@@ -3,6 +3,7 @@ package com.indieteam.mytask.model.schedule.domHTML
 import android.content.Context
 import android.text.Html
 import android.util.Log
+import com.indieteam.mytask.collection.TestScheduleCollection
 import com.indieteam.mytask.collection.UrlAddress
 import com.indieteam.mytask.model.SqLite
 import com.indieteam.mytask.ui.interface_.OnDomTestScheduleListener
@@ -153,8 +154,32 @@ class DomTestSchedule(context: Context, private val onDomTestScheduleListener: O
 
             val html3 = response4.parse()
 
-            for (i in html3.select("tbody")) {
-                Log.d("tbody", i.html())
+            for (table in html3.select("table")) {
+                if (table.attr("id") == "tblCourseList") {
+                    //Log.d("table", table.html())
+                    val testScheduleCollection = ArrayList<TestScheduleCollection>()
+                    val temp = ArrayList<String>()
+
+                    for ((trIndex, tr) in table.select("tr").withIndex()) {
+                        if (trIndex != 0) {
+                            temp.clear()
+                            //Log.d("td", "______________________")
+                            for (td in tr.select("td")) {
+                                //Log.d("td", td.html())
+                                temp.add(td.html())
+                            }
+                            //Log.d("td size", temp.size.toString())
+
+                            if (temp.size == 10)
+                                testScheduleCollection.add(
+                                        TestScheduleCollection(
+                                                temp[0], temp[1], temp[2], temp[3], temp[4], temp[5], temp[6], temp[7], temp[8], temp[9]
+                                        )
+                                )
+                        }
+                    }
+                    onDomTestScheduleListener.onDone(testScheduleCollection)
+                }
             }
 
         } else

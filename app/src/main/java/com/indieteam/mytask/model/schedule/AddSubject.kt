@@ -14,7 +14,7 @@ class AddSubject(private val context: Context) {
 
     private val sqLite = SqLite(context)
 
-    private val calendarStudent = JSONObject(sqLite.readCalendar())
+    private val calendarStudent = JSONObject(sqLite.readSchedule())
 
     fun add(subjectName: String, subjectPlace: String, subjectTeacher: String, subjectTime: String, subjectDate: String) {
         val day = subjectDate.substring(0, subjectDate.indexOf("/")).toInt()
@@ -48,8 +48,8 @@ class AddSubject(private val context: Context) {
             Log.d("SubjectDate", jsonArray.getJSONObject(i).getString("subjectDate"))
         }
         try {
-            sqLite.deleteCalendar()
-            sqLite.insertCalender(calendarStudent.toString())
+            sqLite.deleteSchedule()
+            sqLite.insertSchedule(calendarStudent.toString())
         } catch (e: Exception) {
             context as WeekActivity
             context.runOnUiThread {

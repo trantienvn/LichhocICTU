@@ -4,10 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragment.SelectSemesterFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-
+    tools:context=".ui.fragment.SelectSemesterScheduleFragment"
+    android:background="@color/colorWhite">
 
     <LinearLayout
         android:id="@+id/linearLayout3"

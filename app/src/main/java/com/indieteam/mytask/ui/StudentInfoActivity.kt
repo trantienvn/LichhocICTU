@@ -111,12 +111,12 @@ class StudentInfoActivity : AppCompatActivity() {
         var valueDb = ""
         sqLite = SqLite(this)
         try {
-            valueDb = sqLite.readCalendar()
+            valueDb = sqLite.readSchedule()
             readDb = 1
-            Log.d("readdb", "readCalendar db done")
+            Log.d("readdb", "readSchedule db done")
         } catch (e: Exception) {
             readDb = 0
-            Log.d("readdb", "db is not exits, cannot readCalendar")
+            Log.d("readdb", "db is not exits, cannot readSchedule")
             Log.d("err", e.toString())
         }
 

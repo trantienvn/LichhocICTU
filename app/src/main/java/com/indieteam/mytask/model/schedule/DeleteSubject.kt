@@ -8,7 +8,7 @@ import org.json.JSONObject
 class DeleteSubject(context: Context) {
 
     private val sqLite = SqLite(context)
-    private val calendarStudent = JSONObject(sqLite.readCalendar())
+    private val calendarStudent = JSONObject(sqLite.readSchedule())
     var dateDeleted = ""
 
     fun delete(subjectId: String) {
@@ -25,8 +25,8 @@ class DeleteSubject(context: Context) {
 
         calendarStudent.remove("calendar")
         calendarStudent.put("calendar", newJsonArray)
-        sqLite.deleteCalendar()
-        sqLite.insertCalender(calendarStudent.toString())
+        sqLite.deleteSchedule()
+        sqLite.insertSchedule(calendarStudent.toString())
     }
 
 }

@@ -5,7 +5,7 @@ import android.content.Context
 import android.text.Html
 import android.util.Log
 import com.indieteam.mytask.collection.UrlAddress
-import com.indieteam.mytask.model.schedule.parseData.ParseExel
+import com.indieteam.mytask.model.schedule.parseData.ParseExcel
 import com.indieteam.mytask.model.SqLite
 import com.indieteam.mytask.ui.interface_.OnDownloadExcelListener
 import org.jsoup.Connection
@@ -25,7 +25,7 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
     private var err = 0
     private val sqlLite = SqLite(context)
     private var classContextName = ""
-    private var readExel = ParseExel(context)
+    private var readExel = ParseExcel(context)
     private val params = mutableMapOf<String, String>()
     private var emptyCalendar = false
     private var requestTime = 0
@@ -182,24 +182,26 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                                     dir.mkdirs()
 
                                 val file = File(context.filesDir, "exel/tkb_v2.xls")
+
                                 if (file.exists())
                                     file.delete()
 
                                 val fos = FileOutputStream(file)
                                 fos.write(response.bodyAsBytes())
                                 fos.close()
+
                                 // read
                                 readExel.studentSchedule()
-                                if (readExel.readExelCallBack == -1 || readExel.readExelCallBack == 0) {
+
+                                if (readExel.readExelCallBack == -1 || readExel.readExelCallBack == 0)
                                     onDownloadExcelListener.onThrow("Error read Excel", context)
-                                }
+
                             } catch (e: Exception) {
                                 onDownloadExcelListener.onThrow("Error file", context)
-
+                                e.printStackTrace()
                             }
-                        } else {
+                        } else
                             onDownloadExcelListener.onThrow("Cannot Download Excel", context)
-                        }
                     } catch (e: Exception) {
                         onDownloadExcelListener.onThrow("Mất kết nối", context)
                         e.printStackTrace()
@@ -224,10 +226,10 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
         readExel.exelToJson.jsonObject.put("info", readExel.infoObj)
         readExel.exelToJson.jsonObject.put("calendar", readExel.exelToJson.jsonArray)
         try {
-            sqlLite.deleteCalendar()
-            sqlLite.insertCalender(readExel.exelToJson.jsonObject.toString())
+            sqlLite.deleteSchedule()
+            sqlLite.insertSchedule(readExel.exelToJson.jsonObject.toString())
         } catch (e: Exception) {
-            Log.d("Error saveLocal", e.toString())
+            e.printStackTrace()
         }
     }
 }

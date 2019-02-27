@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ParseScheduleJson(val calendar: JSONObject) {
+class ParseScheduleJson(val schedule: JSONObject) {
     var subjectName = ArrayList<String>()
     var subjectTime = ArrayList<String>()
     var subjectPlace = ArrayList<String>()
@@ -20,7 +20,7 @@ class ParseScheduleJson(val calendar: JSONObject) {
         teacher = arrayListOf()
         subjectId = arrayListOf()
 
-        val calendarValue = calendar.getJSONArray("calendar")
+        val calendarValue = schedule.getJSONArray("calendar")
 
         for (i in 0 until calendarValue.length()) {
             if (key == calendarValue.getJSONObject(i).getString("subjectDate")) {
@@ -79,7 +79,7 @@ class ParseScheduleJson(val calendar: JSONObject) {
 
     fun initDots(): MutableMap<CalendarDay, String> {
         val dots = mutableMapOf<CalendarDay, String>()
-        val calendarValue = calendar.getJSONArray("calendar")
+        val calendarValue = schedule.getJSONArray("calendar")
         for (i in 0 until calendarValue.length()) {
             val simpleDateParse = SimpleDateFormat("dd/MM/yyyy")
             val calendar = Calendar.getInstance()

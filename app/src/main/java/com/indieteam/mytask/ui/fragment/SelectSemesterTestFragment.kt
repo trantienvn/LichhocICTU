@@ -10,19 +10,19 @@ import android.widget.BaseAdapter
 import android.widget.Toast
 
 import com.indieteam.mytask.R
-import com.indieteam.mytask.collection.TestScheduleCollection
+import com.indieteam.mytask.collection.TestScheduleSemesterCollection
 import com.indieteam.mytask.collection.TestScheduleTypeCollection
 import com.indieteam.mytask.model.schedule.domHTML.DomTestListSchedule
 import com.indieteam.mytask.model.schedule.domHTML.DomTestSchedule
+import com.indieteam.mytask.ui.WeekActivity
 import com.indieteam.mytask.ui.interface_.OnDomTestListScheduleListener
-import com.indieteam.mytask.ui.interface_.OnDomTestScheduleListener
 import kotlinx.android.synthetic.main.fragment_select_test_schedule.*
 import kotlinx.android.synthetic.main.item_semester.view.*
 import kotlinx.android.synthetic.main.item_type.view.*
 
-class SelectTestScheduleFragment : Fragment() {
+class SelectSemesterTestFragment : Fragment() {
 
-    private lateinit var testScheduleCollection: ArrayList<TestScheduleCollection>
+    private lateinit var testScheduleCollection: ArrayList<TestScheduleSemesterCollection>
     private lateinit var testScheduleTypeCollection: ArrayList<TestScheduleTypeCollection>
     private val adapter = Adapter()
     private val adapter2 = Adapter2()
@@ -76,9 +76,9 @@ class SelectTestScheduleFragment : Fragment() {
     }
 
     private val onDomTestListSchedule = object : OnDomTestListScheduleListener {
-        override fun onDone(testScheduleCollection: ArrayList<TestScheduleCollection>, testScheduleTypeCollection: ArrayList<TestScheduleTypeCollection>) {
-            this@SelectTestScheduleFragment.testScheduleCollection = testScheduleCollection
-            this@SelectTestScheduleFragment.testScheduleTypeCollection = testScheduleTypeCollection
+        override fun onDone(testScheduleSemesterCollection: ArrayList<TestScheduleSemesterCollection>, testScheduleTypeCollection: ArrayList<TestScheduleTypeCollection>) {
+            this@SelectSemesterTestFragment.testScheduleCollection = testScheduleSemesterCollection
+            this@SelectSemesterTestFragment.testScheduleTypeCollection = testScheduleTypeCollection
             requireActivity().runOnUiThread {
                 list_semester.adapter = adapter
                 list_type.adapter = adapter2
@@ -93,18 +93,6 @@ class SelectTestScheduleFragment : Fragment() {
         override fun onFail(t: String) {
         }
 
-    }
-
-    private val onDomTestSchedule = object : OnDomTestScheduleListener {
-        override fun onDone() {
-
-        }
-
-        override fun onFail(t: String) {
-        }
-
-        override fun onThrow(t: String) {
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -140,10 +128,9 @@ class SelectTestScheduleFragment : Fragment() {
                 val semesterValue = testScheduleCollection[pos].value
                 val typeValue = testScheduleTypeCollection[pos2].value
                 Toast.makeText(requireContext(), "$semesterValue $typeValue", Toast.LENGTH_SHORT).show()
-                DomTestSchedule(requireContext(), onDomTestSchedule, semesterValue, typeValue).start()
-            } else {
+                DomTestSchedule(requireContext(), (requireActivity() as WeekActivity).onDomTestSchedule, semesterValue, typeValue).start()
+            } else
                 Toast.makeText(requireContext(), "Hãy chọn cả 2", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 }

@@ -14,7 +14,7 @@ import com.indieteam.mytask.model.InternetState
 import com.indieteam.mytask.model.schedule.domHTML.DomSemesterSchedule
 import com.indieteam.mytask.model.SqLite
 import com.indieteam.mytask.ui.fragment.ProcessBarFragment
-import com.indieteam.mytask.ui.fragment.SelectSemesterFragment
+import com.indieteam.mytask.ui.fragment.SelectSemesterScheduleFragment
 import com.indieteam.mytask.ui.interface_.OnLoginListener
 import com.indieteam.mytask.ui.interface_.OnSemesterScheduleListener
 import kotlinx.android.synthetic.main.activity_login.*
@@ -83,7 +83,7 @@ class LoginActivity : AppCompatActivity() {
             bundle.putString("sessionUrl", sessionUrl)
             bundle.putString("signIn", signIn)
 
-            val selectSemesterFragment = SelectSemesterFragment()
+            val selectSemesterFragment = SelectSemesterScheduleFragment()
             selectSemesterFragment.arguments = bundle
 
             supportFragmentManager.findFragmentByTag("processBarLogin")?.let {
@@ -186,7 +186,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         init()
         try {
-            sqLite.readCalendar()
+            sqLite.readSchedule()
             readDb = 1
         } catch (e: Exception) {
             Log.d("Err", e.toString())

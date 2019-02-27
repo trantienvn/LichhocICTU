@@ -38,6 +38,7 @@ import com.indieteam.mytask.R
 import com.indieteam.mytask.ui.adapter.ScheduleAdapter
 import com.indieteam.mytask.model.ads.Ads
 import com.indieteam.mytask.collection.StudentCalendarCollection
+import com.indieteam.mytask.collection.TestScheduleCollection
 import com.indieteam.mytask.collection.TimeScheduleDetails
 import com.indieteam.mytask.model.InternetState
 import com.indieteam.mytask.model.schedule.domHTML.DomUpdateSchedule
@@ -48,6 +49,7 @@ import com.indieteam.mytask.model.schedule.domHTML.DomSemesterSchedule
 import com.indieteam.mytask.model.service.AppService
 import com.indieteam.mytask.model.SqLite
 import com.indieteam.mytask.ui.fragment.*
+import com.indieteam.mytask.ui.interface_.OnDomTestScheduleListener
 import com.indieteam.mytask.ui.interface_.OnLoginListener
 import com.indieteam.mytask.ui.interface_.OnSemesterScheduleListener
 import com.leinardi.android.speeddial.SpeedDialActionItem
@@ -67,30 +69,6 @@ import kotlin.collections.ArrayList
 @Suppress("DEPRECATION")
 class WeekActivity : AppCompatActivity() {
 
-    private val REQUEST_ACCOUNT = 1
-    private lateinit var sqLite: SqLite
-    private var scheduleJson: JSONObject? = null
-    var parseScheduleJson: ParseScheduleJson? = null
-    var dots = mutableMapOf<CalendarDay, String>()
-    var studentScheduleObjArr = ArrayList<StudentCalendarCollection>()
-    private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
-    private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
-    private lateinit var scheduleAdapter: ScheduleAdapter
-    private var isAccountPermission = 0
-    private val swipe = Swipe()
-    private lateinit var customSwipe: CustomSwipe
-    private var screenHeight = 0
-    private var statusBarHeight = 0
-    private var navigationBarHeight = 0
-    private var layoutCalendarMode = 0
-    lateinit var sharedPref: SharedPreferences
-    //private val background = listOf(R.drawable.bg_a, R.drawable.bg_b, R.drawable.bg_c, R.drawable.bg_i)
-    private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
-    private val timeDetails = TimeScheduleDetails()
-    private lateinit var internetState: InternetState
-    private lateinit var appNotification: AppNotification
-    private lateinit var addScheduleFragment: AddScheduleFragment
-
     // Google oauth2
     lateinit var credential: GoogleAccountCredential
     var scope = Scope("https://www.googleapis.com/auth/calendar")
@@ -108,6 +86,29 @@ class WeekActivity : AppCompatActivity() {
 
     //Ads
     private lateinit var ads: Ads
+
+    private val REQUEST_ACCOUNT = 1
+    private lateinit var sqLite: SqLite
+    private var scheduleJson: JSONObject? = null
+    var parseScheduleJson: ParseScheduleJson? = null
+    var dots = mutableMapOf<CalendarDay, String>()
+    var studentScheduleObjArr = ArrayList<StudentCalendarCollection>()
+    private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
+    private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
+    private lateinit var scheduleAdapter: ScheduleAdapter
+    private var isAccountPermission = 0
+    private val swipe = Swipe()
+    private lateinit var customSwipe: CustomSwipe
+    private var screenHeight = 0
+    private var statusBarHeight = 0
+    private var navigationBarHeight = 0
+    private var layoutCalendarMode = 0
+    lateinit var sharedPref: SharedPreferences
+    private val timeDetails = TimeScheduleDetails()
+    private lateinit var internetState: InternetState
+    private lateinit var appNotification: AppNotification
+    private lateinit var addScheduleFragment: AddScheduleFragment
+    val testScheduleCollection = ArrayList<TestScheduleCollection>()
 
     private val onLoginListener = object : OnLoginListener {
         override fun onLogin() {
@@ -145,15 +146,18 @@ class WeekActivity : AppCompatActivity() {
             bundle.putString("sessionUrl", sessionUrl)
             bundle.putString("signIn", signIn)
 
-            val selectSemesterFragment = SelectSemesterFragment()
+            val selectSemesterFragment = SelectSemesterScheduleFragment()
             selectSemesterFragment.arguments = bundle
 
             supportFragmentManager.findFragmentByTag("processBarUpdate")?.let {
                 supportFragmentManager.beginTransaction().remove(it)
                         .commit()
             }
-            supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, selectSemesterFragment, "selectSemesterFragment")
-                    .commit()
+
+            if (supportFragmentManager.findFragmentByTag("selectSemesterFragment") == null) {
+                supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, selectSemesterFragment, "selectSemesterFragment")
+                        .commit()
+            }
         }
 
         override fun onSemesterSchedule() {
@@ -175,6 +179,29 @@ class WeekActivity : AppCompatActivity() {
                 visible()
                 Toast.makeText(this@WeekActivity, t, Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    val onDomTestSchedule = object : OnDomTestScheduleListener {
+        override fun onDone(testScheduleCollection: ArrayList<TestScheduleCollection>) {
+            this@WeekActivity.testScheduleCollection.clear()
+            this@WeekActivity.testScheduleCollection.addAll(testScheduleCollection)
+            runOnUiThread {
+                if (supportFragmentManager.findFragmentByTag("selectTestScheduleFragment") != null) {
+                    supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("selectTestScheduleFragment")!!)
+                            .commit()
+                }
+                if (supportFragmentManager.findFragmentByTag("testScheduleFragment") == null) {
+                    supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, TestScheduleFragment(), "testScheduleFragment")
+                            .commit()
+                }
+            }
+        }
+
+        override fun onFail(t: String) {
+        }
+
+        override fun onThrow(t: String) {
         }
     }
 
@@ -313,42 +340,6 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        var quit = true
-        if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null) {
-            if (supportFragmentManager.findFragmentByTag("addScheduleFragment") != null) {
-                supportFragmentManager.beginTransaction().remove(addScheduleFragment)
-                        .commit()
-                visible()
-                quit = false
-            }
-            if (supportFragmentManager.findFragmentByTag("selectSemesterFragment") != null) {
-                supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("selectSemesterFragment")!!)
-                        .commit()
-                visible()
-                quit = false
-            }
-            if (supportFragmentManager.findFragmentByTag("updateCalendarFragment") != null) {
-                supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("updateCalendarFragment")!!)
-                        .commit()
-                visible()
-                quit = false
-            }
-            if (supportFragmentManager.findFragmentByTag("selectTestScheduleFragment") != null) {
-                supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("selectTestScheduleFragment")!!)
-                        .commit()
-                visible()
-                quit = false
-            }
-            if (quit) {
-                if (calendarView.selectedDate == CalendarDay.today())
-                    super.onBackPressed()
-                else
-                    toDay()
-            }
-        }
-    }
-
     private fun checkAccountPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(android.Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
@@ -409,9 +400,11 @@ class WeekActivity : AppCompatActivity() {
 
     private fun calendarSetting() {
         calendarView.topbarVisible = true
+
         calendarView.state().edit().setMinimumDate(dateStart)
                 .setMaximumDate(dateEnd)
                 .commit()
+
         view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 view.viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -430,6 +423,7 @@ class WeekActivity : AppCompatActivity() {
                 Log.d("view_height", view.height.toString())
             }
         })
+
         calendarView.currentDate = CalendarDay.today()
         calendarView.selectedDate = CalendarDay.today()
         calendarView.selectionMode = SELECTION_MODE_SINGLE
@@ -542,7 +536,7 @@ class WeekActivity : AppCompatActivity() {
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
-                        SpeedDialActionItem.Builder(R.id.fab_setting, R.drawable.ic_switch)
+                        SpeedDialActionItem.Builder(R.id.fab_calendar_mode, R.drawable.ic_switch)
                                 .setLabel("Tuần/Tháng")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -578,7 +572,7 @@ class WeekActivity : AppCompatActivity() {
 
         float_button.setOnActionSelectedListener { it ->
             when (it.id) {
-                R.id.fab_setting -> {
+                R.id.fab_calendar_mode -> {
                     if (layoutCalendarMode == 1) {
                         calendarView.layoutParams.height = ((screenHeight / 100f) * 21f).toInt()
                         content_layout.layoutParams.height = ((screenHeight - (screenHeight / 100f) * 21f) - view.height - statusBarHeight).toInt()
@@ -616,15 +610,14 @@ class WeekActivity : AppCompatActivity() {
                         if (isGooglePlayServicesAvailable()) {
                             checkAccountPermission()
                             if (isAccountPermission == 1) {
-                                if (sharedPref.getString("accSelected", "null") != "null") {
+                                val email = sqLite.readEmail()
+                                if (email.isNotBlank()) {
                                     appNotification.syncing()
-                                    sharedPref.edit().apply {
-                                        putBoolean("isSyncing", true)
-                                        apply()
-                                    }
+
                                     val syncGoogle = SyncToGoogleCalendar(this)
                                     syncGoogle.start()
-                                }
+                                } else
+                                    Toast.makeText(this, "accSelected is null", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } else {
@@ -633,25 +626,34 @@ class WeekActivity : AppCompatActivity() {
                 }
                 R.id.fab_test -> {
                     gone()
-                    supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, SelectTestScheduleFragment(), "selectTestScheduleFragment")
-                            .commit()
-                    supportFragmentManager.executePendingTransactions()
-                    supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
-                            .commit()
-                    supportFragmentManager.executePendingTransactions()
+                    if (supportFragmentManager.findFragmentByTag("selectSemesterFragment") == null) {
+                        supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, SelectSemesterTestFragment(), "selectTestScheduleFragment")
+                                .commit()
+                        supportFragmentManager.executePendingTransactions()
+                    }
+
+                    if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null) {
+                        supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
+                                .commit()
+                        supportFragmentManager.executePendingTransactions()
+                    }
+
                     supportFragmentManager.findFragmentByTag("processBarUpdate")?.apply {
                         process?.text = "Tải lịch thi..."
                     }
                 }
                 R.id.fab_update -> {
+                    gone()
                     if (internetState.state()) {
-                        supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
-                                .commit()
-                        supportFragmentManager.executePendingTransactions()
+                        if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null) {
+                            supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
+                                    .commit()
+                            supportFragmentManager.executePendingTransactions()
+                        }
+
                         supportFragmentManager.findFragmentByTag("processBarUpdate")?.apply {
                             process?.text = "Tải học kỳ..."
                         }
-                        gone()
                         try {
                             DomUpdateSchedule(this, sqLite.readCookie(), onLoginListener).start()
                         } catch (e: Exception) {
@@ -660,7 +662,7 @@ class WeekActivity : AppCompatActivity() {
                                 supportFragmentManager.beginTransaction().remove(it).commit()
                             }
                             Toast.makeText(this, "Err update", Toast.LENGTH_SHORT).show()
-                            Log.d("Err", e.toString())
+                            e.printStackTrace()
                         }
                     } else {
                         Toast.makeText(this, "Mất kết nối", Toast.LENGTH_SHORT).show()
@@ -673,7 +675,7 @@ class WeekActivity : AppCompatActivity() {
                 R.id.fab_logout -> {
                     if (internetState.state()) {
                         try {
-                            sqLite.deleteCalendar()
+                            sqLite.deleteSchedule()
                             sqLite.deleteInfo()
                             if (checkServiceRunning())
                                 stopService(Intent(this, AppService::class.java))
@@ -759,7 +761,7 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun checkCompatible(): Boolean {
-        val valueDb = sqLite.readCalendar()
+        val valueDb = sqLite.readSchedule()
         val studentCalendar = JSONObject(valueDb)
         val jsonArray = studentCalendar.getJSONArray("calendar")
 
@@ -768,6 +770,7 @@ class WeekActivity : AppCompatActivity() {
                 jsonArray.getJSONObject(i).getString("subjectId")
                 return true
             } catch (e: Exception) {
+                e.printStackTrace()
                 return false
             }
         }
@@ -780,12 +783,12 @@ class WeekActivity : AppCompatActivity() {
         var valueDb = ""
 
         try {
-            valueDb = sqLite.readCalendar()
+            valueDb = sqLite.readSchedule()
             readDb = 1
-            Log.d("readdb", "readCalendar db done")
+            Log.d("readdb", "readSchedule db done")
         } catch (e: Exception) {
             readDb = 0
-            Log.d("readdb", "db is not exits, cannot readCalendar")
+            Log.d("readdb", "db is not exits, cannot readSchedule")
             Log.d("err", e.toString())
         }
 
@@ -814,7 +817,7 @@ class WeekActivity : AppCompatActivity() {
 //            loadAds()
             } else {
                 try {
-                    sqLite.deleteCalendar()
+                    sqLite.deleteSchedule()
                     sqLite.deleteInfo()
                     if (checkServiceRunning())
                         stopService(Intent(this, AppService::class.java))
@@ -822,6 +825,31 @@ class WeekActivity : AppCompatActivity() {
                     Log.d("Err", e.toString())
                 }
                 moveToLogin()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            RC_SIGN_IN -> {
+                if (resultCode != Activity.RESULT_OK) {
+                    Toast.makeText(this@WeekActivity, "Oauth false", Toast.LENGTH_LONG).show()
+
+                } else {
+                    val email = GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email
+
+                    email?.let {
+                        credential.selectedAccountName = it
+                        //Toast.makeText(this, GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email, Toast.LENGTH_LONG).show()
+
+                        sqLite.updateEmail(it)
+                        appNotification.syncing()
+
+                        val syncGoogle = SyncToGoogleCalendar(this)
+                        syncGoogle.start()
+                    }
+                }
             }
         }
     }
@@ -834,32 +862,45 @@ class WeekActivity : AppCompatActivity() {
         run()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            RC_SIGN_IN -> {
-                if (resultCode != Activity.RESULT_OK && data != null) {
-                    //Toast.makeText(this@WeekActivity, "Oauth false", Toast.LENGTH_LONG).show()
-                    sharedPref.edit().apply {
-                        putBoolean("isSyncing", false)
-                        apply()
-                    }
-                } else {
-                    credential.selectedAccountName = GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email
-                    //Toast.makeText(this, GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email, Toast.LENGTH_LONG).show()
-                    sharedPref.edit().apply {
-                        putString("accSelected", GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email)
-                                .apply()
-                    }
-                    if (sharedPref.getString("accSelected", "null") != "null")
-                        appNotification.syncing()
-                    sharedPref.edit().apply {
-                        putBoolean("isSyncing", true)
-                        apply()
-                    }
-                    val syncGoogle = SyncToGoogleCalendar(this)
-                    syncGoogle.start()
-                }
+    override fun onBackPressed() {
+        var quit = true
+        if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null) {
+            if (supportFragmentManager.findFragmentByTag("addScheduleFragment") != null) {
+                supportFragmentManager.beginTransaction().remove(addScheduleFragment)
+                        .commit()
+                visible()
+                quit = false
+            }
+            if (supportFragmentManager.findFragmentByTag("selectSemesterFragment") != null) {
+                supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("selectSemesterFragment")!!)
+                        .commit()
+                visible()
+                quit = false
+            }
+            if (supportFragmentManager.findFragmentByTag("updateCalendarFragment") != null) {
+                supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("updateCalendarFragment")!!)
+                        .commit()
+                visible()
+                quit = false
+            }
+            if (supportFragmentManager.findFragmentByTag("selectTestScheduleFragment") != null) {
+                supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("selectTestScheduleFragment")!!)
+                        .commit()
+                visible()
+                quit = false
+            }
+            if (supportFragmentManager.findFragmentByTag("testScheduleFragment") != null) {
+                supportFragmentManager.beginTransaction().remove(supportFragmentManager.findFragmentByTag("testScheduleFragment")!!)
+                        .commit()
+                visible()
+                quit = false
+            }
+
+            if (quit) {
+                if (calendarView.selectedDate == CalendarDay.today())
+                    super.onBackPressed()
+                else
+                    toDay()
             }
         }
     }
