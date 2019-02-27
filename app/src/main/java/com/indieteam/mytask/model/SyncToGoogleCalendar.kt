@@ -1,7 +1,10 @@
 package com.indieteam.mytask.model
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.support.v4.content.ContextCompat.startActivity
 import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -14,6 +17,8 @@ import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.indieteam.mytask.collection.TimeScheduleDetails
 import com.indieteam.mytask.model.notification.AppNotification
+import com.indieteam.mytask.ui.LoginActivity
+import com.indieteam.mytask.ui.StudentInfoActivity
 import com.indieteam.mytask.ui.WeekActivity
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import org.json.JSONObject
@@ -23,7 +28,7 @@ import java.util.*
 
 
 @Suppress("DEPRECATION")
-class SyncToGoogleCalendar(val context: Context) : Thread() {
+class SyncToGoogleCalendar(val context: Context, activity: Activity) : Thread() {
 
     private var sqLite = SqLite(context)
     @SuppressLint("SimpleDateFormat")
@@ -31,7 +36,7 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
     private val date = "${CalendarDay.today().day}/${CalendarDay.today().month + 1}/${CalendarDay.today().year}"
     private val timeDetails = TimeScheduleDetails()
     private lateinit var service: com.google.api.services.calendar.Calendar
-    private var weekActivity = context as WeekActivity
+    private var weekActivity = activity as WeekActivity
     private var checkNet = InternetState(context)
     private var calendarId: String? = null
     private val appNotification = AppNotification(context)
@@ -40,11 +45,22 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
     private fun init() {
         weekActivity.apply {
             credential = GoogleAccountCredential.usingOAuth2(context, Collections.singleton(CalendarScopes.CALENDAR_EVENTS))
-            credential.selectedAccountName = sqLite.readEmail()
+            val email = sqLite.readEmail()
+            credential.selectedAccountName = email
             service = Calendar.Builder(httpTransport, jsonFactory, credential)
                     .setApplicationName(appName).build()
             this@SyncToGoogleCalendar.service = service
+
         }
+        this@SyncToGoogleCalendar.checkCalendarPermission()
+    }
+
+    fun signOut() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .build()
+        val mGoogleSignInClient = GoogleSignIn.getClient(context, gso)
+        mGoogleSignInClient.signOut()
+
     }
 
     private fun checkCalendarPermission() {
@@ -238,7 +254,6 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
 
     override fun run() {
         init()
-        checkCalendarPermission()
         this@SyncToGoogleCalendar.join()
     }
 }

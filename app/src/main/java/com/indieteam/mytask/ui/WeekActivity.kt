@@ -332,7 +332,7 @@ class WeekActivity : AppCompatActivity() {
         if (requestCode == REQUEST_ACCOUNT) {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 isAccountPermission = 1
-                val syncGoogle = SyncToGoogleCalendar(this)
+                val syncGoogle = SyncToGoogleCalendar(applicationContext, this)
                 syncGoogle.start()
             } else {
                 Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
@@ -524,13 +524,7 @@ class WeekActivity : AppCompatActivity() {
 
     private fun initFloatButton() {
         val listItem =
-                listOf(SpeedDialActionItem.Builder(R.id.fab_logout, R.drawable.ic_logout)
-                        .setLabel("Đ.xuất")
-                        .setLabelColor(Color.BLACK)
-                        .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
-                        .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
-                        .create(),
-                        SpeedDialActionItem.Builder(R.id.fab_donate, R.drawable.ic_info)
+                listOf(SpeedDialActionItem.Builder(R.id.fab_donate, R.drawable.ic_info)
                                 .setLabel("G.thiệu")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -606,6 +600,8 @@ class WeekActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.fab_sync_google -> {
+                    val syncGoogle = SyncToGoogleCalendar(applicationContext, this)
+
                     if (internetState.state()) {
                         if (isGooglePlayServicesAvailable()) {
                             checkAccountPermission()
@@ -613,11 +609,8 @@ class WeekActivity : AppCompatActivity() {
                                 val email = sqLite.readEmail()
                                 if (email.isNotBlank()) {
                                     appNotification.syncing()
-
-                                    val syncGoogle = SyncToGoogleCalendar(this)
-                                    syncGoogle.start()
-                                } else
-                                    Toast.makeText(this, "accSelected is null", Toast.LENGTH_SHORT).show()
+                                }
+                                syncGoogle.start()
                             }
                         }
                     } else {
@@ -671,21 +664,6 @@ class WeekActivity : AppCompatActivity() {
                 R.id.fab_donate -> {
                     val intent = Intent(this, AboutActivity::class.java)
                     startActivity(intent)
-                }
-                R.id.fab_logout -> {
-                    if (internetState.state()) {
-                        try {
-                            sqLite.deleteSchedule()
-                            sqLite.deleteInfo()
-                            if (checkServiceRunning())
-                                stopService(Intent(this, AppService::class.java))
-                        } catch (e: Exception) {
-                            Log.d("Err", e.toString())
-                        }
-                        moveToLogin()
-                    } else {
-                        Toast.makeText(this, "Đang giữ lịch an toàn khi ngoại tuyến", Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
             false //false to close float button
@@ -834,10 +812,10 @@ class WeekActivity : AppCompatActivity() {
         when (requestCode) {
             RC_SIGN_IN -> {
                 if (resultCode != Activity.RESULT_OK) {
-                    Toast.makeText(this@WeekActivity, "Oauth false", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@WeekActivity, "Chưa chọn tài khoản để đồng bộ", Toast.LENGTH_LONG).show()
 
                 } else {
-                    val email = GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email
+                    val email = GoogleSignIn.getClient(applicationContext, gso).silentSignIn().result?.email
 
                     email?.let {
                         credential.selectedAccountName = it
@@ -846,7 +824,7 @@ class WeekActivity : AppCompatActivity() {
                         sqLite.updateEmail(it)
                         appNotification.syncing()
 
-                        val syncGoogle = SyncToGoogleCalendar(this)
+                        val syncGoogle = SyncToGoogleCalendar(applicationContext, this)
                         syncGoogle.start()
                     }
                 }

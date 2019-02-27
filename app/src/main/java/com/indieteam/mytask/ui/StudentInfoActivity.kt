@@ -1,6 +1,10 @@
 package com.indieteam.mytask.ui
 
 import android.annotation.SuppressLint
+import android.app.ActivityManager
+import android.content.Context
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -8,8 +12,12 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import com.indieteam.mytask.R
+import com.indieteam.mytask.model.GoogleSignOut
+import com.indieteam.mytask.model.InternetState
 import com.indieteam.mytask.model.ads.Ads
 import com.indieteam.mytask.model.SqLite
+import com.indieteam.mytask.model.SyncToGoogleCalendar
+import com.indieteam.mytask.model.service.AppService
 import com.indieteam.mytask.ui.fragment.QrFragment
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import kotlinx.android.synthetic.main.activity_student_info.*
@@ -27,6 +35,7 @@ class StudentInfoActivity : AppCompatActivity() {
     private val bundle = Bundle()
     private val qrFragment = QrFragment()
     private lateinit var ads: Ads
+    private lateinit var internetState: InternetState
 
     override fun onBackPressed() {
         if (supportFragmentManager.findFragmentByTag("qrFragment") != null) {
@@ -53,13 +62,16 @@ class StudentInfoActivity : AppCompatActivity() {
     }
 
     private var countClick = 0
-    private fun genQr() {
+
+    private fun menu() {
+        internetState = InternetState(this)
 
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_gen_qr, R.drawable.ic_gen_qr_code)
-                        .setLabel("Tạo QR")
-                        .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
-                        .create()
+                                .setLabel("Tạo QR")
+                                .setLabelColor(Color.BLACK)
+                                .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
+                                .create()
                 )
         gen_qr_btn.addAllActionItems(listItem)
 
@@ -102,6 +114,29 @@ class StudentInfoActivity : AppCompatActivity() {
                 }
             }
             false
+        }
+
+        logout.setOnClickListener {
+            if (internetState.state()) {
+                try {
+                    sqLite.deleteSchedule()
+                    sqLite.deleteInfo()
+                    if (checkServiceRunning())
+                        stopService(Intent(this, AppService::class.java))
+
+                    GoogleSignOut(applicationContext).signOut()
+
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+                    startActivity(intent)
+                    finish()
+                } catch (e: Exception) {
+                    Log.d("Err", e.toString())
+                }
+            } else {
+                Toast.makeText(this, "Đang giữ lịch an toàn khi ngoại tuyến", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -161,11 +196,28 @@ class StudentInfoActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkServiceRunning(): Boolean {
+        try {
+            val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            for (services in manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (AppService::class.java.name == services.service.className) {
+                    Log.d("service", "running")
+                    Log.d("service_name", services.service.className.toString())
+                    return true
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        Log.d("service", "not running")
+        return false
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_student_info)
         readInfo()
-        genQr()
+        menu()
 //        if (Build.VERSION.SDK_INT >= 21)
 //            loadAds()
     }
