@@ -223,7 +223,6 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
                         insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeWinterArr[firstTime].timeIn, timeDetails.timeWinterArr[firstTime].timeOut)
                 }
             }
-
         }
 
         weekActivity.apply {
@@ -234,7 +233,6 @@ class SyncToGoogleCalendar(val context: Context) : Thread() {
         }
 
         appNotification.syncDone()
-
     }
 
 

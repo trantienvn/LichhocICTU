@@ -128,12 +128,29 @@ class StudentInfoActivity : AppCompatActivity() {
             className = infoObj.getString("className").trim()
             courseName = infoObj.getString("courseName").trim()
             majorsName = infoObj.getString("majorsName").trim()
-            student_name.text = studentName
-            student_id.text = "Mã sinh viên: $studentId"
-            class_name.text = "Lớp: $className"
-            course_name.text = "Khóa: $courseName"
-            majors_name.text = "Ngành: $majorsName"
+            student_name.text = customTrim(studentName)
+            student_id.text = "Mã sinh viên: ${customTrim(studentId)}"
+            class_name.text = "Lớp: ${customTrim(className)}"
+            course_name.text = "Khóa: ${customTrim(courseName)}"
+            majors_name.text = "Ngành: ${customTrim(majorsName)}"
         }
+    }
+
+    private fun customTrim(input: String): String {
+        var result = ""
+        var count = 0
+        for (i in input) {
+            if (i.toString() != " "){
+                count = 0
+                result += i.toString()
+            } else {
+                if (count == 0)
+                    result += " "
+
+                count++
+            }
+        }
+        return result.trim()
     }
 
     private fun loadAds() {
