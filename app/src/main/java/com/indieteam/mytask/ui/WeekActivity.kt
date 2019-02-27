@@ -543,7 +543,7 @@ class WeekActivity : AppCompatActivity() {
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_update, R.drawable.ic_update)
-                                .setLabel("C.nhật lịch")
+                                .setLabel("C.nhật lịch học")
                                 .setLabelColor(Color.BLACK)
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -613,31 +613,33 @@ class WeekActivity : AppCompatActivity() {
                                 syncGoogle.start()
                             }
                         }
-                    } else {
+                    } else
                         Toast.makeText(this, "Mất kết nối", Toast.LENGTH_SHORT).show()
-                    }
                 }
                 R.id.fab_test -> {
-                    gone()
-                    if (supportFragmentManager.findFragmentByTag("selectSemesterFragment") == null) {
-                        supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, SelectSemesterTestFragment(), "selectTestScheduleFragment")
-                                .commit()
-                        supportFragmentManager.executePendingTransactions()
-                    }
+                    if (internetState.state()) {
+                        gone()
+                        if (supportFragmentManager.findFragmentByTag("selectSemesterFragment") == null) {
+                            supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, SelectSemesterTestFragment(), "selectTestScheduleFragment")
+                                    .commit()
+                            supportFragmentManager.executePendingTransactions()
+                        }
 
-                    if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null) {
-                        supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
-                                .commit()
-                        supportFragmentManager.executePendingTransactions()
-                    }
+                        if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null) {
+                            supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
+                                    .commit()
+                            supportFragmentManager.executePendingTransactions()
+                        }
 
-                    supportFragmentManager.findFragmentByTag("processBarUpdate")?.apply {
-                        process?.text = "Tải lịch thi..."
-                    }
+                        supportFragmentManager.findFragmentByTag("processBarUpdate")?.apply {
+                            process?.text = "Tải lịch thi..."
+                        }
+                    } else
+                        Toast.makeText(this, "Mất kết nối", Toast.LENGTH_SHORT).show()
                 }
                 R.id.fab_update -> {
-                    gone()
                     if (internetState.state()) {
+                        gone()
                         if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null) {
                             supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, ProcessBarFragment(), "processBarUpdate")
                                     .commit()
@@ -657,9 +659,8 @@ class WeekActivity : AppCompatActivity() {
                             Toast.makeText(this, "Err update", Toast.LENGTH_SHORT).show()
                             e.printStackTrace()
                         }
-                    } else {
+                    } else
                         Toast.makeText(this, "Mất kết nối", Toast.LENGTH_SHORT).show()
-                    }
                 }
                 R.id.fab_donate -> {
                     val intent = Intent(this, AboutActivity::class.java)
