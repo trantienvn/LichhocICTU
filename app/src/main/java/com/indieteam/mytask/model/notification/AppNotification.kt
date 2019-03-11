@@ -132,7 +132,7 @@ class AppNotification(val context: Context) {
             val notification = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.drawable.ic_next_day_64)
                     .setContentTitle("Đang theo dõi lịch học")
-                    .setContentText("Lỗi tải lịch lên Google Calendar")
+                    .setContentText("Lỗi tải lịch lên Google Calendar. Hãy thử lại")
                     .setColor(Color.parseColor("#2c73b3"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)

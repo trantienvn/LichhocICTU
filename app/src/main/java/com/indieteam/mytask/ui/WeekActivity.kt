@@ -9,7 +9,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteConstraintException
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Point
 import android.os.Build
@@ -52,6 +51,7 @@ import com.indieteam.mytask.ui.fragment.*
 import com.indieteam.mytask.ui.interface_.OnDomTestScheduleListener
 import com.indieteam.mytask.ui.interface_.OnLoginListener
 import com.indieteam.mytask.ui.interface_.OnSemesterScheduleListener
+import com.indieteam.mytask.ui.interface_.OnSyncListener
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
@@ -90,7 +90,7 @@ class WeekActivity : AppCompatActivity() {
     private lateinit var sqLite: SqLite
     private var scheduleJson: JSONObject? = null
     var parseScheduleJson: ParseScheduleJson? = null
-    var dots = mutableMapOf<CalendarDay, String>()
+    var dots = mutableMapOf<CalendarDay, Int>()
     var studentScheduleObjArr = ArrayList<StudentCalendarCollection>()
     private val dateStart = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) - 1, 0, 1)
     private val dateEnd = CalendarDay.from(Calendar.getInstance().get(Calendar.YEAR) + 1, 11, 31)
@@ -108,6 +108,8 @@ class WeekActivity : AppCompatActivity() {
     private lateinit var appNotification: AppNotification
     private lateinit var addScheduleFragment: AddScheduleFragment
     val testScheduleCollection = ArrayList<TestScheduleCollection>()
+
+    private lateinit var googleCalendar: GoogleCalendar
 
     private val onLoginListener = object : OnLoginListener {
         override fun onLogin() {
@@ -204,6 +206,26 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
+    private val onSyncListener = object : OnSyncListener {
+        override fun onDone(m: String) {
+            runOnUiThread {
+                Toast.makeText(this@WeekActivity, m, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        override fun onState(s: String) {
+            runOnUiThread {
+                Toast.makeText(this@WeekActivity, s, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        override fun onFail(t: String, m: String) {
+            runOnUiThread {
+                Toast.makeText(this@WeekActivity, m, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     inner class OnSwipeListener : com.github.pwittchen.swipe.library.rx2.SwipeListener {
         private var startTouchY = 0f
 
@@ -267,7 +289,7 @@ class WeekActivity : AppCompatActivity() {
 
     }
 
-    inner class DrawDots(private val colors: List<Int>, private val text: String) : LineBackgroundSpan {
+    inner class DrawDots(private val colors: List<Int>, private val length: Int) : LineBackgroundSpan {
 
         override fun drawBackground(c: Canvas, p: Paint,
                                     left: Int, right: Int, top: Int,
@@ -275,29 +297,29 @@ class WeekActivity : AppCompatActivity() {
                                     charSequence: CharSequence,
                                     start: Int, end: Int, lineNum: Int) {
             val lastColor = p.color
-            var length = 0
-            if (text.length == 1) {
+            var newLength = 0
+            if (length == 1) {
                 p.color = colors[0]
-                length = text.length
+                newLength = length
             }
-            if (text.length == 2) {
+            if (length == 2) {
                 p.color = colors[1]
-                length = text.length
+                newLength = length
             }
-            if (text.length in 3..5) {
+            if (length in 3..5) {
                 p.color = colors[2]
-                length = text.length
+                newLength = length
             }
-            if (text.length > 5) {
+            if (length > 5) {
                 p.color = colors[2]
-                length = 5
+                newLength = 5
             }
             var totalWidth = 0f
-            for (i in 0 until length)
+            for (i in 0 until newLength)
                 if (i != 0)
                     totalWidth += (right.toFloat() / 100f) * 7.5f // 7.5 is space (percent) margin left of dots
             var cX = right / 2f - totalWidth / 2
-            for (i in 0 until length) {
+            for (i in 0 until newLength) {
                 c.drawCircle(cX, bottom.toFloat() + (bottom.toFloat() / 100f) * 10f, (right.toFloat() / 100f) * 2.1f, p)
                 cX += (right.toFloat() / 100f) * 7.5f
             }
@@ -305,7 +327,7 @@ class WeekActivity : AppCompatActivity() {
         }
     }
 
-    inner class EventDecorator(private val mode: String, private val colors: List<Int>, val date: CalendarDay, private val dot: String) : DayViewDecorator {
+    inner class EventDecorator(private val mode: String, private val colors: List<Int>, val date: CalendarDay, private val dot: Int) : DayViewDecorator {
         override fun shouldDecorate(day: CalendarDay): Boolean {
             return date == day
         }
@@ -331,13 +353,27 @@ class WeekActivity : AppCompatActivity() {
         if (requestCode == REQUEST_ACCOUNT) {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 isAccountPermission = 1
-                val syncGoogle = GoogleCalendar(applicationContext, this)
-                syncGoogle.start()
+                googleCalendar = GoogleCalendar(applicationContext, this, onSyncListener)
+                googleCalendar.start()
             } else {
                 Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
             }
         }
     }
+
+    private fun setCalendarDots() {
+        for (i in dots) {
+            calendarView.addDecorator(
+                    EventDecorator("Dots",
+                            listOf(resources.getColor(R.color.colorWhite), resources.getColor(R.color.colorBlueWhite), resources.getColor(R.color.colorGreen)),
+                            i.key, i.value))
+        }
+    }
+
+    private fun drawBackgroundToday() {
+        calendarView.addDecorator(EventDecorator("ToDay", listOf(resources.getColor(R.color.colorGrayDark)), CalendarDay.today(), -1))
+    }
+
 
     private fun checkAccountPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
@@ -371,6 +407,8 @@ class WeekActivity : AppCompatActivity() {
         ads = Ads(this)
         appNotification = AppNotification(this)
         modifyDialog = ModifyDialog(this)
+
+        googleCalendar = GoogleCalendar(applicationContext, this, onSyncListener)
     }
 
     fun preDate() {
@@ -426,19 +464,6 @@ class WeekActivity : AppCompatActivity() {
         calendarView.currentDate = CalendarDay.today()
         calendarView.selectedDate = CalendarDay.today()
         calendarView.selectionMode = SELECTION_MODE_SINGLE
-    }
-
-    private fun setCalendarDots() {
-        for (i in dots) {
-            calendarView.addDecorator(
-                    EventDecorator("Dots",
-                            listOf(resources.getColor(R.color.colorWhite), resources.getColor(R.color.colorBlueWhite), resources.getColor(R.color.colorGreen)),
-                            i.key, i.value))
-        }
-    }
-
-    private fun drawBackgroundToday() {
-        calendarView.addDecorator(EventDecorator("ToDay", listOf(resources.getColor(R.color.colorGrayDark)), CalendarDay.today(), "null"))
     }
 
     private fun calenderEvents() {
@@ -516,9 +541,9 @@ class WeekActivity : AppCompatActivity() {
         val googleApiAvailability = GoogleApiAvailability.getInstance()
         val status = googleApiAvailability.isGooglePlayServicesAvailable(this)
         if (status != ConnectionResult.SUCCESS) {
-            if (googleApiAvailability.isUserResolvableError(status)) {
+            if (googleApiAvailability.isUserResolvableError(status))
                 googleApiAvailability.getErrorDialog(this, status, 2404).show()
-            }
+
             return false
         }
         return true
@@ -602,7 +627,6 @@ class WeekActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.fab_sync_google -> {
-                    val syncGoogle = GoogleCalendar(applicationContext, this)
 
                     if (internetState.state()) {
                         if (isGooglePlayServicesAvailable()) {
@@ -612,7 +636,8 @@ class WeekActivity : AppCompatActivity() {
                                 if (email.isNotBlank()) {
                                     appNotification.syncing()
                                 }
-                                syncGoogle.start()
+                                googleCalendar = GoogleCalendar(applicationContext, this, onSyncListener)
+                                googleCalendar.start()
                             }
                         }
                     } else
@@ -827,8 +852,8 @@ class WeekActivity : AppCompatActivity() {
                         sqLite.updateEmail(it)
                         appNotification.syncing()
 
-                        val syncGoogle = GoogleCalendar(applicationContext, this)
-                        syncGoogle.start()
+                        googleCalendar = GoogleCalendar(applicationContext, this, onSyncListener)
+                        googleCalendar.start()
                     }
                 }
             }

@@ -77,8 +77,8 @@ class ParseScheduleJson(val schedule: JSONObject) {
         }
     }
 
-    fun initDots(): MutableMap<CalendarDay, String> {
-        val dots = mutableMapOf<CalendarDay, String>()
+    fun initDots(): MutableMap<CalendarDay, Int> {
+        val dots = mutableMapOf<CalendarDay, Int>()
         val calendarValue = schedule.getJSONArray("calendar")
         for (i in 0 until calendarValue.length()) {
             val simpleDateParse = SimpleDateFormat("dd/MM/yyyy")
@@ -90,12 +90,14 @@ class ParseScheduleJson(val schedule: JSONObject) {
             val calendarDay = CalendarDay.from(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
 
             if (dots.isEmpty()) {
-                dots[calendarDay] = "."
+                dots[calendarDay] = 1
             } else {
-                if (dots.containsKey(calendarDay))
-                    dots[calendarDay] = dots[calendarDay] + "."
-                else
-                    dots[calendarDay] = "."
+                if (dots.containsKey(calendarDay)) {
+                    var value = dots[calendarDay]!!.toInt()
+                    value++
+                    dots[calendarDay] = value
+                } else
+                    dots[calendarDay] = 1
             }
         }
         return dots

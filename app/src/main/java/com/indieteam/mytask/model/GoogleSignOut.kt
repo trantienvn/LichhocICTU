@@ -11,6 +11,5 @@ class GoogleSignOut(val context: Context) {
                 .build()
         val mGoogleSignInClient = GoogleSignIn.getClient(context, gso)
         mGoogleSignInClient.signOut()
-
     }
 }

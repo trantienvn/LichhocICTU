@@ -16,6 +16,7 @@ import com.google.api.services.calendar.model.EventDateTime
 import com.indieteam.mytask.collection.TimeScheduleDetails
 import com.indieteam.mytask.model.notification.AppNotification
 import com.indieteam.mytask.ui.WeekActivity
+import com.indieteam.mytask.ui.interface_.OnSyncListener
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import org.json.JSONObject
 import java.io.IOException
@@ -23,7 +24,7 @@ import java.util.*
 
 
 @Suppress("DEPRECATION")
-class GoogleCalendar(val context: Context, activity: Activity) : Thread() {
+class GoogleCalendar(private val context: Context, activity: Activity, private val onSyncListener: OnSyncListener) : Thread() {
 
     private var sqLite = SqLite(context)
     @SuppressLint("SimpleDateFormat")
@@ -33,6 +34,7 @@ class GoogleCalendar(val context: Context, activity: Activity) : Thread() {
     private var checkNet = InternetState(context)
     private var calendarId: String? = null
     private val appNotification = AppNotification(context)
+    private var error = false
 
 
     private fun init() {
@@ -46,14 +48,6 @@ class GoogleCalendar(val context: Context, activity: Activity) : Thread() {
 
         }
         this@GoogleCalendar.checkCalendarPermission()
-    }
-
-    fun signOut() {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .build()
-        val mGoogleSignInClient = GoogleSignIn.getClient(context, gso)
-        mGoogleSignInClient.signOut()
-
     }
 
     private fun checkCalendarPermission() {
@@ -81,14 +75,8 @@ class GoogleCalendar(val context: Context, activity: Activity) : Thread() {
             calendarId = insert.id
         } catch (e: IOException) {
             e.printStackTrace()
-            weekActivity.apply {
-                runOnUiThread {
-                    Toast.makeText(weekActivity, "Lỗi insert calendar", Toast.LENGTH_SHORT).show()
-                    appNotification.syncFail()
-                }
-            }
             appNotification.syncFail()
-            this@GoogleCalendar.join()
+            error = true
         }
     }
 
@@ -97,13 +85,9 @@ class GoogleCalendar(val context: Context, activity: Activity) : Thread() {
             service.calendars().delete(id).execute()
         } catch (e: IOException) {
             e.printStackTrace()
-            weekActivity.apply {
-                runOnUiThread {
-                    Toast.makeText(weekActivity, "Lỗi delete calendar", Toast.LENGTH_SHORT).show()
-                    appNotification.syncFail()
-                }
-            }
-            this@GoogleCalendar.join()
+            onSyncListener.onFail(e.toString(), "Lỗi xóa lịch")
+            appNotification.syncFail()
+            error = true
         }
     }
 
@@ -120,12 +104,10 @@ class GoogleCalendar(val context: Context, activity: Activity) : Thread() {
                 pageToken = calendarList.nextPageToken
             } while (pageToken != null)
         } catch (e: Exception) {
-            weekActivity.apply {
-                runOnUiThread {
-                    Toast.makeText(weekActivity, "Lỗi đọc calendar", Toast.LENGTH_SHORT).show()
-                    appNotification.syncFail()
-                }
-            }
+            e.printStackTrace()
+            onSyncListener.onFail(e.toString(), "Lỗi đọc lịch")
+            appNotification.syncFail()
+            error = true
         }
     }
 
@@ -164,13 +146,9 @@ class GoogleCalendar(val context: Context, activity: Activity) : Thread() {
             service.events().insert(id, event).execute()
         } catch (e: IOException) {
             e.printStackTrace()
-            weekActivity.apply {
-                runOnUiThread {
-                    Toast.makeText(weekActivity, "Lỗi insert event", Toast.LENGTH_SHORT).show()
-                    appNotification.syncFail()
-                }
-            }
-            this@GoogleCalendar.join()
+            onSyncListener.onFail(e.toString(), "Lỗi chèn sự kiện")
+            appNotification.syncFail()
+            error = true
         }
     }
 
@@ -178,24 +156,17 @@ class GoogleCalendar(val context: Context, activity: Activity) : Thread() {
         val jsonObjects = JSONObject(sqLite.readSchedule())
         val jsonArr = jsonObjects.getJSONArray("calendar")
 
-        weekActivity.apply {
-            runOnUiThread {
-                Toast.makeText(this, "Đang tải lịch lên Google Calendar trong nền", Toast.LENGTH_SHORT).show()
-            }
-        }
+        onSyncListener.onState("Đang tải lịch lên Google Calendar")
 
         findCalendarExist()
         insertCalendar()
 
         for (i in 0 until jsonArr.length()) {
             if (!checkNet.state()) {
-                weekActivity.apply {
-                    runOnUiThread {
-                        Toast.makeText(weekActivity, "Mất kết nối", Toast.LENGTH_SHORT).show()
-                        appNotification.syncFail()
-                    }
-                }
-                this@GoogleCalendar.join()
+                onSyncListener.onState("Mất kết nối")
+                appNotification.syncFail()
+                error = true
+                break
             }
 
             val subjectName = jsonArr.getJSONObject(i).getString("subjectName")
@@ -235,14 +206,11 @@ class GoogleCalendar(val context: Context, activity: Activity) : Thread() {
             }
         }
 
-        weekActivity.apply {
-            runOnUiThread {
-                Toast.makeText(weekActivity, "Đã tải lịch lên Google Calendar", Toast.LENGTH_SHORT).show()
-                Log.d("Sync", "Done")
-            }
+        if (!error) {
+            onSyncListener.onDone("Đã tải lịch lên Google Calendar")
+            Log.d("Sync", "Done")
+            appNotification.syncDone()
         }
-
-        appNotification.syncDone()
     }
 
 
