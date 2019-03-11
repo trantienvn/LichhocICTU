@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragment.SelectSemesterTestFragment"
-    android:background="@color/colorWhite">
+    android:background="@drawable/gradien_color">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -27,10 +27,10 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Chọn học kỳ"
-            android:textColor="@color/colorBlue"
+            android:textColor="@color/colorWhite"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:background="@color/colorGray"/>
+            android:background="@drawable/gradien_color"/>
 
         <ListView
             android:id="@+id/list_semester"
@@ -60,10 +60,10 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Chọn lịch"
-            android:textColor="@color/colorBlue"
+            android:textColor="@color/colorWhite"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:background="@color/colorGray"
+            android:background="@drawable/gradien_color"
             android:layout_marginTop="15dp"/>
 
         <ListView

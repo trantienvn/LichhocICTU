@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragment.SelectSemesterScheduleFragment"
-    android:background="@color/colorWhite">
+    android:background="@drawable/gradien_color">
 
     <LinearLayout
         android:id="@+id/linearLayout3"
@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="Chọn học kỳ"
-            android:textColor="@color/colorBlue"
+            android:textColor="@color/colorWhite"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -32,8 +32,8 @@
         android:id="@+id/list_semester"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:divider="@color/colorWhite"
         android:scrollbars="none"
+        android:divider="@color/colorWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="percent"
         app:layout_constraintHeight_percent="0.9"

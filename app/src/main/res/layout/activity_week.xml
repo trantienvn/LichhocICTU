@@ -13,18 +13,19 @@
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/colorWhite"
+        android:background="@drawable/gradien_color"
         android:elevation="2dp"
         android:paddingBottom="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.21"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:mcv_arrowColor="@color/colorWhite"
+        app:mcv_arrowColor="@color/colorPurple"
         app:mcv_calendarMode="week"
         app:mcv_firstDayOfWeek="sunday"
         app:mcv_headerTextAppearance="@style/calendarHeader"
-        app:mcv_selectionColor="@color/colorGrayDark"
+        app:mcv_dateTextAppearance="@style/dateTextAppearance"
+        app:mcv_selectionColor="@color/colorYellowDark"
         app:mcv_showOtherDates="none"
         app:mcv_showWeekDays="true"
         app:mcv_tileHeight="match_parent"
@@ -70,8 +71,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="percent"
-        app:layout_constraintHeight_percent="1">
+        app:layout_constraintHeight_percent="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.leinardi.android.speeddial.SpeedDialView
             android:id="@+id/float_button"
@@ -83,9 +88,9 @@
             android:layout_gravity="bottom|end"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="5dp"
-            app:sdMainFabClosedBackgroundColor="@color/colorBlue"
+            app:sdMainFabClosedBackgroundColor="@color/colorPurpleDark"
             app:sdMainFabClosedSrc="@drawable/ic_more"
-            app:sdMainFabOpenedBackgroundColor="@color/colorBlue" />
+            app:sdMainFabOpenedBackgroundColor="@color/colorPurpleDark" />
 
         <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/ads_bottom"

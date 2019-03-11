@@ -4,19 +4,19 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorBlue</item>
-        <item name="colorPrimaryDark">@color/colorGray</item>
+        <item name="colorPrimaryDark">@color/colorPurpleDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="InfoStudentTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorBlue</item>
-        <item name="colorPrimaryDark">@color/colorGray</item>
+        <item name="colorPrimaryDark">@color/colorPurpleDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="colorProcessBar" parent="ThemeOverlay.AppCompat.Light">
-        <item name="colorAccent">@color/colorBlue</item>
+        <item name="colorAccent">@color/colorWhite</item>
     </style>
 
     <style name="colorTintEditText" parent="Theme.AppCompat">
@@ -28,13 +28,19 @@
     <style name="calendarHeader">
         <item name="android:textSize">15sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textColor">@color/colorWhite</item>
     </style>
 
     <style name="calendarWeekHeader">
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="dateTextAppearance">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/colorWhite</item>
     </style>
 
 </resources>

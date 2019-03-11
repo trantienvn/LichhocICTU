@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.AboutActivity"
-    android:background="@color/colorWhite">
+    android:background="@drawable/gradien_color">
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Hỗ trợ chúng tôi, Donate tại"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/colorWhite"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -39,8 +39,8 @@
                 android:layout_height="wrap_content"
                 android:autoLink="web"
                 android:text="https://unghotoi.com/1541598877es8ou"
-                android:textColor="@color/colorBlue"
-                android:textColorLink="@color/colorBlue" />
+                android:textColor="@color/colorBlueWhite"
+                android:textColorLink="@color/colorBlueWhite" />
         </LinearLayout>
 
         <LinearLayout
@@ -53,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TKB ICTU"
-                android:textColor="@color/colorBlack"
+                android:textColor="@color/colorWhite"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -61,7 +61,8 @@
                 android:id="@+id/version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Version" />
+                android:text="Version"
+                android:textColor="@color/colorWhite" />
 
         </LinearLayout>
 
@@ -76,12 +77,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Developer"
-                android:textColor="@color/colorBlack" />
+                android:textColor="@color/colorWhite" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="IndieTeam" />
+                android:text="IndieTeam"
+                android:textColor="@color/colorWhite" />
 
         </LinearLayout>
 
@@ -93,7 +95,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="IndieTeam"
-        android:textColor="@color/colorBlue"
+        android:textColor="@color/colorWhite"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="5dp"/>

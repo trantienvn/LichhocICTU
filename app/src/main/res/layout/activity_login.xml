@@ -8,14 +8,13 @@
     android:paddingLeft="15dp"
     android:paddingBottom="15dp"
     android:paddingTop="15dp"
-    android:background="@color/colorWhite"
+    android:background="@drawable/gradien_color"
     tools:context=".ui.LoginActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorWhite"
         android:layout_marginEnd="15dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
@@ -30,28 +29,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:backgroundTint="@color/colorBlue"
+            android:backgroundTint="@color/colorWhite"
             android:ems="10"
             android:hint="Mã sinh viên"
             android:theme="@style/colorTintEditText"
             android:inputType="textCapCharacters"
             android:textAllCaps="true"
-            android:textColor="@color/colorBlue"
-            android:textColorHint="@color/colorBlue"
-            android:textCursorDrawable="@color/colorBlue"/>
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
+            android:textCursorDrawable="@color/colorWhite"/>
 
         <EditText
             android:id="@+id/text_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
-            android:backgroundTint="@color/colorBlue"
+            android:backgroundTint="@color/colorWhite"
             android:hint="Mật khẩu"
             android:theme="@style/colorTintEditText"
             android:inputType="textPassword"
-            android:textColor="@color/colorBlue"
-            android:textColorHint="@color/colorBlue"
-            android:textCursorDrawable="@color/colorBlue" />
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
+            android:textCursorDrawable="@color/colorWhite" />
     </LinearLayout>
 
     <Button
@@ -76,7 +75,7 @@
         android:layout_centerHorizontal="true"
         android:gravity="center"
         android:text="IndieTeam"
-        android:textColor="@color/colorBlue"
+        android:textColor="@color/colorWhite"
         android:textSize="10sp" />
 
 </RelativeLayout>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragment.AddScheduleFragment"
-    android:background="@color/colorWhite">
+    android:background="@drawable/gradien_color">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textSize="20sp"
-            android:textColor="@color/colorBlueDark"
+            android:textColor="@color/colorWhite"
             android:text="Thêm lịch học"
             android:gravity="center"
             android:layout_marginTop="15dp"
@@ -35,10 +35,10 @@
             android:layout_marginBottom="5dp"
             android:hint="Môn học"
             android:inputType="text"
-            android:backgroundTint="@color/colorBlue"
-            android:textColor="@color/colorBlue"
-            android:textColorHint="@color/colorBlue"
-            android:textCursorDrawable="@color/colorBlue"/>
+            android:backgroundTint="@color/colorWhite"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
+            android:textCursorDrawable="@color/colorWhite"/>
 
         <EditText
             android:id="@+id/new_subject_place"
@@ -47,10 +47,10 @@
             android:layout_marginBottom="5dp"
             android:hint="Địa điểm"
             android:inputType="text"
-            android:backgroundTint="@color/colorBlue"
-            android:textColor="@color/colorBlue"
-            android:textColorHint="@color/colorBlue"
-            android:textCursorDrawable="@color/colorBlue"/>
+            android:backgroundTint="@color/colorWhite"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
+            android:textCursorDrawable="@color/colorWhite"/>
 
         <EditText
             android:id="@+id/new_subject_teacher"
@@ -59,10 +59,10 @@
             android:layout_marginBottom="15dp"
             android:hint="Giảng viên"
             android:inputType="text"
-            android:backgroundTint="@color/colorBlue"
-            android:textColor="@color/colorBlue"
-            android:textColorHint="@color/colorBlue"
-            android:textCursorDrawable="@color/colorBlue"/>
+            android:backgroundTint="@color/colorWhite"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
+            android:textCursorDrawable="@color/colorWhite"/>
 
         <EditText
             android:id="@+id/new_subject_date"
@@ -71,17 +71,17 @@
             android:layout_marginBottom="15dp"
             android:hint="dd/mm/yyyy"
             android:editable="false"
-            android:backgroundTint="@color/colorBlue"
+            android:backgroundTint="@color/colorGray"
             android:textColor="@color/colorGray"
             android:textColorHint="@color/colorGray"
-            android:textCursorDrawable="@color/colorBlue"/>
+            android:textCursorDrawable="@color/colorWhite"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textSize="17sp"
-            android:textColor="@color/colorBlueDark"
+            android:textColor="@color/colorWhite"
             android:text="Tiết:"
             android:layout_marginBottom="5dp"/>
 
@@ -96,8 +96,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="1"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue" />
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite" />
 
             <CheckBox
                 android:id="@+id/t_2"
@@ -105,8 +105,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="2"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
             <CheckBox
                 android:id="@+id/t_3"
@@ -114,8 +114,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="3"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
             <CheckBox
                 android:id="@+id/t_4"
@@ -123,8 +123,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="4"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
             <CheckBox
                 android:id="@+id/t_5"
@@ -132,8 +132,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="5"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
             <CheckBox
                 android:id="@+id/t_6"
@@ -141,8 +141,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="6"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
         </LinearLayout>
 
@@ -157,8 +157,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="7"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
             <CheckBox
                 android:id="@+id/t_8"
@@ -166,8 +166,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="8"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
             <CheckBox
                 android:id="@+id/t_9"
@@ -175,8 +175,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="9"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
             <CheckBox
                 android:id="@+id/t_10"
@@ -184,8 +184,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="10"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
             <CheckBox
                 android:id="@+id/t_11"
@@ -193,8 +193,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="11"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
             <CheckBox
                 android:id="@+id/t_12"
@@ -202,8 +202,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="12"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
         </LinearLayout>
 
@@ -218,8 +218,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="13"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
             <CheckBox
                 android:id="@+id/t_14"
@@ -227,8 +227,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="14"
-                android:textColor="@color/colorBlue"
-                android:buttonTint="@color/colorBlue"/>
+                android:textColor="@color/colorWhite"
+                android:buttonTint="@color/colorWhite"/>
 
             <CheckBox
                 android:layout_width="0dp"
@@ -266,7 +266,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:layout_marginBottom="5dp"
-            android:textColor="@color/colorBlueDark"
+            android:textColor="@color/colorWhite"
             android:text="Đang thêm..."
             android:gravity="center"
             android:visibility="invisible"/>

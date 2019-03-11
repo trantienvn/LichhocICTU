@@ -182,7 +182,7 @@ class AppNotification(val context: Context) {
         return NotificationCompat.Builder(context, "App Notification")
                 .setSmallIcon(R.drawable.ic_date_range_256)
                 .setContentTitle("Đang theo dõi lịch học")
-                .setColor(Color.parseColor("#2c73b3"))
+                .setColor(Color.parseColor("#9C27B0"))
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                 .setAutoCancel(false)

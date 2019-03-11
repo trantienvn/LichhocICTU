@@ -42,7 +42,7 @@ class SelectSemesterScheduleFragment : Fragment() {
             val value = semesterArray.getJSONObject(position).get(key).toString()
             view.semester_name.text = key
             if (value == sharedPreferences.getString("semesterSelected", ""))
-                view.background = resources.getDrawable(R.color.colorGray)
+                view.background = resources.getDrawable(R.color.colorPurpleDark)
             Log.d("value", key)
             return view
         }

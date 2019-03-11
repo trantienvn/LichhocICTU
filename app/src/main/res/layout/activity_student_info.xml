@@ -5,7 +5,7 @@
     android:id="@+id/info_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
+    android:background="@drawable/gradien_color"
     tools:context=".ui.StudentInfoActivity">
 
     <LinearLayout
@@ -29,7 +29,7 @@
             android:elevation="2dp"
             android:scaleType="fitCenter"
             android:layout_marginLeft="10dp"
-            android:src="@drawable/ic_profile" />
+            android:src="@drawable/ic_profile_lager" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -44,7 +44,7 @@
                 android:gravity="left|center_vertical"
                 android:layout_weight="3"
                 android:text="Name: "
-                android:textColor="@color/colorBlueDark"
+                android:textColor="@color/colorWhite"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_marginLeft="15dp"/>
@@ -56,7 +56,7 @@
                 android:gravity="left|top"
                 android:layout_weight="2"
                 android:text="Đăng xuất"
-                android:textColor="@color/colorBlue"
+                android:textColor="@color/colorWhite"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:layout_marginLeft="15dp"/>
@@ -100,6 +100,7 @@
                     android:layout_gravity="left|center_vertical"
                     android:layout_marginBottom="10dp"
                     android:text="Id: "
+                    android:textColor="@color/colorWhite"
                     android:textSize="16sp" />
 
                 <TextView
@@ -109,6 +110,7 @@
                     android:layout_gravity="left|center_vertical"
                     android:layout_marginBottom="10dp"
                     android:text="Class Name: "
+                    android:textColor="@color/colorWhite"
                     android:textSize="16sp" />
 
                 <TextView
@@ -118,6 +120,7 @@
                     android:layout_gravity="left|center_vertical"
                     android:layout_marginBottom="10dp"
                     android:text="Course Name: "
+                    android:textColor="@color/colorWhite"
                     android:textSize="16sp" />
 
                 <TextView
@@ -127,24 +130,12 @@
                     android:layout_gravity="left|center_vertical"
                     android:layout_marginBottom="10dp"
                     android:text="Majors Name: "
+                    android:textColor="@color/colorWhite"
                     android:textSize="16sp" />
 
             </LinearLayout>
 
         </ScrollView>
-
-        <com.leinardi.android.speeddial.SpeedDialView
-            android:id="@+id/gen_qr_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:elevation="2.5dp"
-            android:gravity="center"
-            app:sdMainFabClosedBackgroundColor="@color/colorBlue"
-            app:sdMainFabClosedSrc="@drawable/ic_more"
-            app:sdMainFabOpenedBackgroundColor="@color/colorBlue" />
 
         <com.google.android.gms.ads.AdView
             xmlns:ads="http://schemas.android.com/apk/res-auto"

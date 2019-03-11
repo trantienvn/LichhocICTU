@@ -3,8 +3,6 @@ package com.indieteam.mytask.model
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.support.v4.content.ContextCompat.startActivity
 import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -17,23 +15,18 @@ import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
 import com.indieteam.mytask.collection.TimeScheduleDetails
 import com.indieteam.mytask.model.notification.AppNotification
-import com.indieteam.mytask.ui.LoginActivity
-import com.indieteam.mytask.ui.StudentInfoActivity
 import com.indieteam.mytask.ui.WeekActivity
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import org.json.JSONObject
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 
 
 @Suppress("DEPRECATION")
-class SyncToGoogleCalendar(val context: Context, activity: Activity) : Thread() {
+class GoogleCalendar(val context: Context, activity: Activity) : Thread() {
 
     private var sqLite = SqLite(context)
     @SuppressLint("SimpleDateFormat")
-    private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy")
-    private val date = "${CalendarDay.today().day}/${CalendarDay.today().month + 1}/${CalendarDay.today().year}"
     private val timeDetails = TimeScheduleDetails()
     private lateinit var service: com.google.api.services.calendar.Calendar
     private var weekActivity = activity as WeekActivity
@@ -49,10 +42,10 @@ class SyncToGoogleCalendar(val context: Context, activity: Activity) : Thread() 
             credential.selectedAccountName = email
             service = Calendar.Builder(httpTransport, jsonFactory, credential)
                     .setApplicationName(appName).build()
-            this@SyncToGoogleCalendar.service = service
+            this@GoogleCalendar.service = service
 
         }
-        this@SyncToGoogleCalendar.checkCalendarPermission()
+        this@GoogleCalendar.checkCalendarPermission()
     }
 
     fun signOut() {
@@ -95,7 +88,7 @@ class SyncToGoogleCalendar(val context: Context, activity: Activity) : Thread() 
                 }
             }
             appNotification.syncFail()
-            this@SyncToGoogleCalendar.join()
+            this@GoogleCalendar.join()
         }
     }
 
@@ -110,7 +103,7 @@ class SyncToGoogleCalendar(val context: Context, activity: Activity) : Thread() 
                     appNotification.syncFail()
                 }
             }
-            this@SyncToGoogleCalendar.join()
+            this@GoogleCalendar.join()
         }
     }
 
@@ -136,10 +129,11 @@ class SyncToGoogleCalendar(val context: Context, activity: Activity) : Thread() 
         }
     }
 
-    private fun insertEvents(id: String, summaryEvent: String, location: String, date: String, timeStart: String, timeEnd: String) {
+    private fun insertEvents(id: String, summaryEvent: String, location: String, date: String, timeStart: String, timeEnd: String, teacher: String) {
         val event = Event()
                 .setSummary(summaryEvent)
                 .setLocation(location)
+                .setDescription(teacher)
 
         var day = date.substring(0, date.indexOf("/"))
         var month = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"))
@@ -176,7 +170,7 @@ class SyncToGoogleCalendar(val context: Context, activity: Activity) : Thread() 
                     appNotification.syncFail()
                 }
             }
-            this@SyncToGoogleCalendar.join()
+            this@GoogleCalendar.join()
         }
     }
 
@@ -201,14 +195,14 @@ class SyncToGoogleCalendar(val context: Context, activity: Activity) : Thread() 
                         appNotification.syncFail()
                     }
                 }
-                this@SyncToGoogleCalendar.join()
+                this@GoogleCalendar.join()
             }
 
             val subjectName = jsonArr.getJSONObject(i).getString("subjectName")
             val subjectDate = jsonArr.getJSONObject(i).getString("subjectDate")
             val subjectTime = jsonArr.getJSONObject(i).getString("subjectTime")
             val subjectPlace = jsonArr.getJSONObject(i).getString("subjectPlace")
-            //val teacher = jsonArr.getJSONObject(i).getString("teacher")
+            val teacher = jsonArr.getJSONObject(i).getString("teacher")
 
             val day = subjectDate.substring(0, subjectDate.indexOf("/")).toInt()
             val month = subjectDate.substring(subjectDate.indexOf("/") + 1, subjectDate.lastIndexOf("/")).toInt()
@@ -223,20 +217,20 @@ class SyncToGoogleCalendar(val context: Context, activity: Activity) : Thread() 
                 if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
                         CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date) {
                     if (calendarId != null)
-                        insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeSummerArr[firstTime].timeIn, timeDetails.timeSummerArr[endTime].timeOut)
+                        insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeSummerArr[firstTime].timeIn, timeDetails.timeSummerArr[endTime].timeOut, "Teacher: $teacher")
                 } else {
                     if (calendarId != null)
-                        insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeWinterArr[firstTime].timeIn, timeDetails.timeWinterArr[endTime].timeOut)
+                        insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeWinterArr[firstTime].timeIn, timeDetails.timeWinterArr[endTime].timeOut, "Teacher: $teacher")
                 }
             } else {
                 firstTime = subjectTime.toInt() - 1
                 if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
                         CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date) {
                     if (calendarId != null)
-                        insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeSummerArr[firstTime].timeIn, timeDetails.timeSummerArr[firstTime].timeOut)
+                        insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeSummerArr[firstTime].timeIn, timeDetails.timeSummerArr[firstTime].timeOut, "Teacher: $teacher")
                 } else {
                     if (calendarId != null)
-                        insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeWinterArr[firstTime].timeIn, timeDetails.timeWinterArr[firstTime].timeOut)
+                        insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeWinterArr[firstTime].timeIn, timeDetails.timeWinterArr[firstTime].timeOut, "Teacher: $teacher")
                 }
             }
         }
@@ -254,6 +248,6 @@ class SyncToGoogleCalendar(val context: Context, activity: Activity) : Thread() 
 
     override fun run() {
         init()
-        this@SyncToGoogleCalendar.join()
+        this@GoogleCalendar.join()
     }
 }

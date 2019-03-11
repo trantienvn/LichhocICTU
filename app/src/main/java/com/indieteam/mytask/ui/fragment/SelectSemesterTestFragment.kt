@@ -108,18 +108,18 @@ class SelectSemesterTestFragment : Fragment() {
         list_semester.setOnItemClickListener { parent, view, position, id ->
             for (i in 0 until parent.childCount) {
                 val itemView = parent.getChildAt(i) as View
-                itemView.background = resources.getDrawable(R.color.colorWhite)
+                itemView.setBackgroundResource(0)
             }
-            view.background = resources.getDrawable(R.color.colorGray)
+            view.background = resources.getDrawable(R.color.colorPurpleDark)
             pos = position
         }
 
         list_type.setOnItemClickListener { parent, view, position, id ->
             for (i in 0 until parent.childCount) {
                 val itemView = parent.getChildAt(i) as View
-                itemView.background = resources.getDrawable(R.color.colorWhite)
+                itemView.setBackgroundResource(0)
             }
-            view.background = resources.getDrawable(R.color.colorGray)
+            view.background = resources.getDrawable(R.color.colorPurpleDark)
             pos2 = position
         }
 

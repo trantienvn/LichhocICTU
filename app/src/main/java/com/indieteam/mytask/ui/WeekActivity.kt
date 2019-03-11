@@ -42,7 +42,7 @@ import com.indieteam.mytask.collection.TestScheduleCollection
 import com.indieteam.mytask.collection.TimeScheduleDetails
 import com.indieteam.mytask.model.InternetState
 import com.indieteam.mytask.model.schedule.domHTML.DomUpdateSchedule
-import com.indieteam.mytask.model.SyncToGoogleCalendar
+import com.indieteam.mytask.model.GoogleCalendar
 import com.indieteam.mytask.model.schedule.parseData.ParseScheduleJson
 import com.indieteam.mytask.model.notification.AppNotification
 import com.indieteam.mytask.model.schedule.domHTML.DomSemesterSchedule
@@ -61,7 +61,6 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView.SELECTI
 import kotlinx.android.synthetic.main.activity_week.*
 import kotlinx.android.synthetic.main.fragment_process_bar.*
 import org.json.JSONObject
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -332,7 +331,7 @@ class WeekActivity : AppCompatActivity() {
         if (requestCode == REQUEST_ACCOUNT) {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 isAccountPermission = 1
-                val syncGoogle = SyncToGoogleCalendar(applicationContext, this)
+                val syncGoogle = GoogleCalendar(applicationContext, this)
                 syncGoogle.start()
             } else {
                 Toast.makeText(this@WeekActivity, "Permissions is not granted", Toast.LENGTH_LONG).show()
@@ -431,7 +430,10 @@ class WeekActivity : AppCompatActivity() {
 
     private fun setCalendarDots() {
         for (i in dots) {
-            calendarView.addDecorator(EventDecorator("Dots", listOf(resources.getColor(R.color.colorBlue), resources.getColor(R.color.colorOrange), resources.getColor(R.color.colorRed)), i.key, i.value))
+            calendarView.addDecorator(
+                    EventDecorator("Dots",
+                            listOf(resources.getColor(R.color.colorWhite), resources.getColor(R.color.colorBlueWhite), resources.getColor(R.color.colorGreen)),
+                            i.key, i.value))
         }
     }
 
@@ -600,7 +602,7 @@ class WeekActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.fab_sync_google -> {
-                    val syncGoogle = SyncToGoogleCalendar(applicationContext, this)
+                    val syncGoogle = GoogleCalendar(applicationContext, this)
 
                     if (internetState.state()) {
                         if (isGooglePlayServicesAvailable()) {
@@ -825,7 +827,7 @@ class WeekActivity : AppCompatActivity() {
                         sqLite.updateEmail(it)
                         appNotification.syncing()
 
-                        val syncGoogle = SyncToGoogleCalendar(applicationContext, this)
+                        val syncGoogle = GoogleCalendar(applicationContext, this)
                         syncGoogle.start()
                     }
                 }
@@ -846,6 +848,13 @@ class WeekActivity : AppCompatActivity() {
         if (supportFragmentManager.findFragmentByTag("processBarUpdate") == null) {
             if (supportFragmentManager.findFragmentByTag("addScheduleFragment") != null) {
                 supportFragmentManager.beginTransaction().remove(addScheduleFragment)
+                        .commit()
+                visible()
+                quit = false
+            }
+            if (supportFragmentManager.findFragmentByTag("updateScheduleFragment") != null) {
+                val fragment = supportFragmentManager.findFragmentByTag("updateScheduleFragment")
+                supportFragmentManager.beginTransaction().remove(fragment!!)
                         .commit()
                 visible()
                 quit = false

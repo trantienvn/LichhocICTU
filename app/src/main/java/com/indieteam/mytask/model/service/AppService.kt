@@ -24,9 +24,9 @@ class AppService : Service() {
     private lateinit var parseScheduleJson: ParseScheduleJson
     private val calendarForTomorrow = Calendar.getInstance()!!
     private lateinit var calendarNow: Calendar
-    private var result = ""
     private lateinit var appNotification: AppNotification
-    private var countNotification = 0
+    private var pushNotification = false
+
     private lateinit var sharedPreferences: SharedPreferences
 
     init {
@@ -39,50 +39,50 @@ class AppService : Service() {
             calendarNow = Calendar.getInstance()!!
             Log.d("hour", calendarNow.get(Calendar.HOUR_OF_DAY).toString() + " " + calendarNow.get(Calendar.MINUTE))
             if (calendarNow.get(Calendar.HOUR_OF_DAY) == 20 && calendarNow.get(Calendar.MINUTE) == 0) {
-                if (countNotification == 0) {
+                if (!pushNotification) {
                     pushNotification()
-                    countNotification++
+                    pushNotification = true
                 }
             } else
-                countNotification = 0
+                pushNotification = false
         }
     }
 
 
     private fun pushNotification() {
         var numberSubjects = 0
-        result = ""
+        var result = ""
         val date = "${calendarForTomorrow.get(Calendar.DAY_OF_MONTH)}/${calendarForTomorrow.get(Calendar.MONTH) + 1}/${calendarForTomorrow.get(Calendar.YEAR)}"
         sqLite = SqLite(this)
         try {
             valueDb = sqLite.readSchedule()
+            if (valueDb.isNotBlank()) {
+                calendarJson = JSONObject(valueDb)
+                parseScheduleJson = ParseScheduleJson(calendarJson)
+                parseScheduleJson.getSubject(date)
+                if (parseScheduleJson.subjectName.isNotEmpty() && parseScheduleJson.subjectPlace.isNotEmpty() &&
+                        parseScheduleJson.subjectTime.isNotEmpty() && parseScheduleJson.teacher.isNotEmpty()) {
+                    if (parseScheduleJson.subjectName.size == parseScheduleJson.subjectPlace.size &&
+                            parseScheduleJson.subjectName.size == parseScheduleJson.subjectTime.size &&
+                            parseScheduleJson.subjectName.size == parseScheduleJson.teacher.size) {
+                        for (i in 0 until parseScheduleJson.subjectName.size) {
+                            numberSubjects++
+                            result += "$numberSubjects. " + "${parseScheduleJson.subjectName[i]} (${parseScheduleJson.subjectTime[i]})\n"
+                        }
+                    }
+                } else {
+                    result += "Nghỉ \n"
+                }
+                result = result.substring(0, result.lastIndexOf("\n"))
+                Log.d("AppService_Log", "Date $date: $result")
+                appNotification = AppNotification(this)
+                appNotification.scheduleToday(result, numberSubjects.toString())
+
+            } else {
+                Log.d("AppService_Log", "null")
+            }
         } catch (e: Exception) {
             e.printStackTrace()
-        }
-        if (valueDb.isNotBlank()) {
-            calendarJson = JSONObject(valueDb)
-            parseScheduleJson = ParseScheduleJson(calendarJson)
-            parseScheduleJson.getSubject(date)
-            if (parseScheduleJson.subjectName.isNotEmpty() && parseScheduleJson.subjectPlace.isNotEmpty() &&
-                    parseScheduleJson.subjectTime.isNotEmpty() && parseScheduleJson.teacher.isNotEmpty()) {
-                if (parseScheduleJson.subjectName.size == parseScheduleJson.subjectPlace.size &&
-                        parseScheduleJson.subjectName.size == parseScheduleJson.subjectTime.size &&
-                        parseScheduleJson.subjectName.size == parseScheduleJson.teacher.size) {
-                    for (i in 0 until parseScheduleJson.subjectName.size) {
-                        numberSubjects++
-                        result += "$numberSubjects. " + "${parseScheduleJson.subjectName[i]} (${parseScheduleJson.subjectTime[i]})\n"
-                    }
-                }
-            } else {
-                result += "Nghỉ \n"
-            }
-            result = result.substring(0, result.lastIndexOf("\n"))
-            Log.d("AppService_Log", "Date $date: $result")
-            appNotification = AppNotification(this)
-            appNotification.scheduleToday(result, numberSubjects.toString())
-
-        } else {
-            Log.d("AppService_Log", "null")
         }
     }
 
