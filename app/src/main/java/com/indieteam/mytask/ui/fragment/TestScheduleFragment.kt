@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import com.indieteam.mytask.R
@@ -51,7 +52,7 @@ class TestScheduleFragment : Fragment() {
             val tableRow = TableRow(requireContext())
 
             val subjectName = i.subjectsName.trim()
-            val dateTime = "${i.contestTime.trim()},layout ${i.contestDate.trim()}"
+            val dateTime = "${i.contestTime.trim()}, ${i.contestDate.trim()}"
             val place = i.contestRoom.trim()
             val studentContestId = i.studentContestId.trim()
 
@@ -64,7 +65,7 @@ class TestScheduleFragment : Fragment() {
             subjectView.setTextColor(requireContext().resources.getColor(R.color.colorWhite))
             subjectView.gravity = Gravity.CENTER
             subjectView.textSize = 12f
-            subjectView.layoutParams = TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 2f)
+            subjectView.layoutParams = TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.5f)
 
             dateTimeView.text = dateTime
             dateTimeView.setTextColor(requireContext().resources.getColor(R.color.colorWhite))
@@ -84,12 +85,22 @@ class TestScheduleFragment : Fragment() {
             studentContestIdView.textSize = 12f
             studentContestIdView.layoutParams = TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
 
+            val viewLine = View(requireContext())
+            val viewLayoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 5)
+            viewLine.layoutParams = viewLayoutParams
+            viewLine.background = requireContext().resources.getDrawable(R.color.colorWhite)
+
             tableRow.addView(subjectView)
             tableRow.addView(dateTimeView)
             tableRow.addView(placeView)
             tableRow.addView(studentContestIdView)
+            val tablelayoutParams = TableLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            tablelayoutParams.setMargins(0, 50, 0, 50)
+            tableRow.layoutParams = tablelayoutParams
+
 
             table_layout.addView(tableRow)
+            table_layout.addView(viewLine)
         }
     }
 }
