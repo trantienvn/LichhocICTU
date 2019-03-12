@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.util.Log
+import com.indieteam.mytask.collection.NotificationID
 import com.indieteam.mytask.model.notification.AppNotification
 import com.indieteam.mytask.model.schedule.parseData.ParseScheduleJson
 import com.indieteam.mytask.model.SqLite
@@ -93,13 +94,13 @@ class AppService : Service() {
             val channelName = "App Notification"
             val channelId = "App Notification"
             val description = ""
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_LOW
             val chanel = NotificationChannel(channelId, channelName, importance)
             chanel.description = description
-            val notificationManager = this.getSystemService(NotificationManager::class.java)
+            val notificationManager = getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(chanel)
 
-            startForeground(1, appNotification.foreground().build())
+            startForeground(NotificationID.foreground, appNotification.foreground().build())
         }
     }
 

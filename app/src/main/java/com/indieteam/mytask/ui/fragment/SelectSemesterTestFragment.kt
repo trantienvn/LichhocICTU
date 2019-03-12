@@ -127,7 +127,7 @@ class SelectSemesterTestFragment : Fragment() {
             if (pos > -1 && pos2 > -1) {
                 val semesterValue = testScheduleCollection[pos].value
                 val typeValue = testScheduleTypeCollection[pos2].value
-                Toast.makeText(requireContext(), "$semesterValue $typeValue", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "$semesterValue $typeValue", Toast.LENGTH_SHORT).show()
                 DomTestSchedule(requireContext(), (requireActivity() as WeekActivity).onDomTestSchedule, semesterValue, typeValue).start()
             } else
                 Toast.makeText(requireContext(), "Hãy chọn cả 2", Toast.LENGTH_SHORT).show()

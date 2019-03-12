@@ -576,7 +576,7 @@ class WeekActivity : AppCompatActivity() {
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_test, R.drawable.ic_schedule_24dp)
-                                .setLabel("Xem lịch thi")
+                                .setLabel("Lịch thi (Beta)")
                                 .setLabelColor(resources.getColor(R.color.colorPurple2))
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
@@ -634,7 +634,7 @@ class WeekActivity : AppCompatActivity() {
                             if (isAccountPermission == 1) {
                                 val email = sqLite.readEmail()
                                 if (email.isNotBlank()) {
-                                    appNotification.syncing()
+                                    appNotification.syncStart()
                                 }
                                 googleCalendar = GoogleCalendar(applicationContext, this, onSyncListener)
                                 googleCalendar.start()
@@ -850,7 +850,7 @@ class WeekActivity : AppCompatActivity() {
                         //Toast.makeText(this, GoogleSignIn.getClient(this@WeekActivity, gso).silentSignIn().result?.email, Toast.LENGTH_LONG).show()
 
                         sqLite.updateEmail(it)
-                        appNotification.syncing()
+                        appNotification.syncStart()
 
                         googleCalendar = GoogleCalendar(applicationContext, this, onSyncListener)
                         googleCalendar.start()

@@ -35,6 +35,7 @@ class GoogleCalendar(private val context: Context, activity: Activity, private v
     private var calendarId: String? = null
     private val appNotification = AppNotification(context)
     private var error = false
+    private var uploaded = 0
 
 
     private fun init() {
@@ -204,6 +205,12 @@ class GoogleCalendar(private val context: Context, activity: Activity, private v
                         insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeWinterArr[firstTime].timeIn, timeDetails.timeWinterArr[firstTime].timeOut, "Teacher: $teacher")
                 }
             }
+
+            if (!error) {
+                uploaded++
+                appNotification.syncing(uploaded, jsonArr.length())
+            }
+
         }
 
         if (!error) {

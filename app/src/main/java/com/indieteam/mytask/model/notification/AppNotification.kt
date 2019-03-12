@@ -10,6 +10,7 @@ import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import com.indieteam.mytask.R
+import com.indieteam.mytask.collection.NotificationID
 import com.indieteam.mytask.ui.WeekActivity
 
 class AppNotification(val context: Context) {
@@ -25,7 +26,7 @@ class AppNotification(val context: Context) {
 
         //set channelId
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_HIGH
             val chanel = NotificationChannel(channelId, channelName, importance)
             chanel.description = description
             val notificationManager = context.getSystemService(NotificationManager::class.java)
@@ -36,8 +37,9 @@ class AppNotification(val context: Context) {
             "Có $numberSubjects môn"
         else
             "Nghỉ"
+
         val notification = NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_next_day_256)
+                .setSmallIcon(R.drawable.ic_next_day_64)
                 .setContentTitle("Ngày mai")
                 .setContentText(badgeContent)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(contents))
@@ -49,39 +51,72 @@ class AppNotification(val context: Context) {
                 .setAutoCancel(true) // remove notification after touch
 
         //show
-        NotificationManagerCompat.from(context).notify(2, notification.build())
+        NotificationManagerCompat.from(context).notify(NotificationID.subject, notification.build())
     }
 
-    fun syncing() {
+    fun syncStart() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelName = "App Notification"
             val channelId = "App Notification"
             val description = ""
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_LOW
             val chanel = NotificationChannel(channelId, channelName, importance)
             chanel.description = description
 
             val notification = NotificationCompat.Builder(context, channelId)
-                    .setSmallIcon(R.drawable.ic_next_day_64)
+                    .setSmallIcon(R.drawable.ic_cloud_upload_24dp)
                     .setContentTitle("Đang tải lịch lên Google Calendar...")
-                    .setColor(Color.parseColor("#2c73b3"))
+                    .setColor(Color.parseColor("#9C27B0"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                     .setAutoCancel(false) // remove notification after touch
 
-            NotificationManagerCompat.from(context).notify(1, notification.build())
+            NotificationManagerCompat.from(context).notify(NotificationID.foreground, notification.build())
         } else {
             val channelId = "App Notification"
 
             val notification = NotificationCompat.Builder(context, channelId)
-                    .setSmallIcon(R.drawable.ic_next_day_64)
+                    .setSmallIcon(R.drawable.ic_cloud_upload_24dp)
                     .setContentTitle("Đang tải lịch lên Google Calendar...")
-                    .setColor(Color.parseColor("#2c73b3"))
+                    .setColor(Color.parseColor("#9C27B0"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                     .setAutoCancel(false) // remove notification after touch
 
-            NotificationManagerCompat.from(context).notify(3, notification.build())
+            NotificationManagerCompat.from(context).notify(NotificationID.beforeSdkOREO, notification.build())
+        }
+    }
+
+    fun syncing(now: Int, total: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelName = "App Notification"
+            val channelId = "App Notification"
+            val description = ""
+            val importance = NotificationManager.IMPORTANCE_LOW
+            val chanel = NotificationChannel(channelId, channelName, importance)
+            chanel.description = description
+
+            val notification = NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(R.drawable.ic_cloud_upload_24dp)
+                    .setContentTitle("Tải lên: $now/$total sự kiện")
+                    .setColor(Color.parseColor("#9C27B0"))
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                    .setAutoCancel(false) // remove notification after touch
+
+            NotificationManagerCompat.from(context).notify(NotificationID.foreground, notification.build())
+        } else {
+            val channelId = "App Notification"
+
+            val notification = NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(R.drawable.ic_cloud_upload_24dp)
+                    .setContentTitle("Tải lên: $now/$total sự kiện")
+                    .setColor(Color.parseColor("#9C27B0"))
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
+                    .setAutoCancel(false) // remove notification after touch
+
+            NotificationManagerCompat.from(context).notify(NotificationID.beforeSdkOREO, notification.build())
         }
     }
 
@@ -90,7 +125,7 @@ class AppNotification(val context: Context) {
             val channelName = "App Notification"
             val channelId = "App Notification"
             val description = ""
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_LOW
             val chanel = NotificationChannel(channelId, channelName, importance)
             chanel.description = description
 
@@ -98,12 +133,12 @@ class AppNotification(val context: Context) {
                     .setSmallIcon(R.drawable.ic_next_day_64)
                     .setContentTitle("Đang theo dõi lịch học")
                     .setContentText("Đã tải lịch lên Google Calendar")
-                    .setColor(Color.parseColor("#2c73b3"))
+                    .setColor(Color.parseColor("#9C27B0"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                     .setAutoCancel(false) // remove notification after touch
 
-            NotificationManagerCompat.from(context).notify(1, notification.build())
+            NotificationManagerCompat.from(context).notify(NotificationID.foreground, notification.build())
         } else {
             val channelId = "App Notification"
 
@@ -111,12 +146,12 @@ class AppNotification(val context: Context) {
                     .setSmallIcon(R.drawable.ic_next_day_64)
                     .setContentTitle("Đang theo dõi lịch học")
                     .setContentText("Đã tải lịch lên Google Calendar")
-                    .setColor(Color.parseColor("#2c73b3"))
+                    .setColor(Color.parseColor("#9C27B0"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                     .setAutoCancel(false) // remove notification after touch
 
-            NotificationManagerCompat.from(context).notify(3, notification.build())
+            NotificationManagerCompat.from(context).notify(NotificationID.beforeSdkOREO, notification.build())
         }
     }
 
@@ -125,7 +160,7 @@ class AppNotification(val context: Context) {
             val channelName = "App Notification"
             val channelId = "App Notification"
             val description = ""
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_LOW
             val chanel = NotificationChannel(channelId, channelName, importance)
             chanel.description = description
 
@@ -133,12 +168,12 @@ class AppNotification(val context: Context) {
                     .setSmallIcon(R.drawable.ic_next_day_64)
                     .setContentTitle("Đang theo dõi lịch học")
                     .setContentText("Lỗi tải lịch lên Google Calendar. Hãy thử lại")
-                    .setColor(Color.parseColor("#2c73b3"))
+                    .setColor(Color.parseColor("#9C27B0"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                     .setAutoCancel(false)
 
-            NotificationManagerCompat.from(context).notify(1, notification.build())
+            NotificationManagerCompat.from(context).notify(NotificationID.foreground, notification.build())
         } else {
             val channelId = "App Notification"
 
@@ -146,22 +181,22 @@ class AppNotification(val context: Context) {
                     .setSmallIcon(R.drawable.ic_next_day_64)
                     .setContentTitle("Đang theo dõi lịch học")
                     .setContentText("Lỗi tải lịch lên Google Calendar")
-                    .setColor(Color.parseColor("#2c73b3"))
+                    .setColor(Color.parseColor("#9C27B0"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                     .setAutoCancel(false)
 
-            NotificationManagerCompat.from(context).notify(3, notification.build())
+            NotificationManagerCompat.from(context).notify(NotificationID.beforeSdkOREO, notification.build())
         }
     }
 
     fun firebaseNotification(title: String?, body: String?) {
-        val channelName = "App Notification"
-        val channelId = "App Notification"
+        val channelName = "Messenger Notification"
+        val channelId = "Messenger Notification"
         val description = ""
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_HIGH
             val chanel = NotificationChannel(channelId, channelName, importance)
             chanel.description = description
         }
@@ -170,12 +205,12 @@ class AppNotification(val context: Context) {
                 .setSmallIcon(R.drawable.ic_message_64)
                 .setContentTitle(title)
                 .setContentText(body)
-                .setColor(Color.parseColor("#2c73b3"))
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setColor(Color.parseColor("#9C27B0"))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                 .setVibrate(longArrayOf(1))
 
-        NotificationManagerCompat.from(context).notify(4, notification.build())
+        NotificationManagerCompat.from(context).notify(NotificationID.firebase, notification.build())
     }
 
     fun foreground(): NotificationCompat.Builder {
