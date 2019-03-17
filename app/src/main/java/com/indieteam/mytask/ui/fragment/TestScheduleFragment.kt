@@ -51,7 +51,8 @@ class TestScheduleFragment : Fragment() {
 
             val tableRow = TableRow(requireContext())
 
-            val subjectName = i.subjectsName.trim()
+            val level = i.subjectsLevel.trim()
+            val subjectName = "${i.subjectsName.trim()} [$level TC]"
             val dateTime = "${i.contestTime.trim()}, ${i.contestDate.trim()}"
             val place = i.contestRoom.trim()
             val studentContestId = i.studentContestId.trim()

@@ -39,7 +39,7 @@ class AppNotification(val context: Context) {
             "Nghỉ"
 
         val notification = NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.ic_next_day_64)
+                .setSmallIcon(R.drawable.ic_schedule_24dp)
                 .setContentTitle("Ngày mai")
                 .setContentText(badgeContent)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(contents))
@@ -130,7 +130,7 @@ class AppNotification(val context: Context) {
             chanel.description = description
 
             val notification = NotificationCompat.Builder(context, channelId)
-                    .setSmallIcon(R.drawable.ic_next_day_64)
+                    .setSmallIcon(R.drawable.ic_schedule_24dp)
                     .setContentTitle("Đang theo dõi lịch học")
                     .setContentText("Đã tải lịch lên Google Calendar")
                     .setColor(Color.parseColor("#9C27B0"))
@@ -143,7 +143,7 @@ class AppNotification(val context: Context) {
             val channelId = "App Notification"
 
             val notification = NotificationCompat.Builder(context, channelId)
-                    .setSmallIcon(R.drawable.ic_next_day_64)
+                    .setSmallIcon(R.drawable.ic_schedule_24dp)
                     .setContentTitle("Đang theo dõi lịch học")
                     .setContentText("Đã tải lịch lên Google Calendar")
                     .setColor(Color.parseColor("#9C27B0"))
@@ -165,7 +165,7 @@ class AppNotification(val context: Context) {
             chanel.description = description
 
             val notification = NotificationCompat.Builder(context, channelId)
-                    .setSmallIcon(R.drawable.ic_next_day_64)
+                    .setSmallIcon(R.drawable.ic_schedule_24dp)
                     .setContentTitle("Đang theo dõi lịch học")
                     .setContentText("Lỗi tải lịch lên Google Calendar. Hãy thử lại")
                     .setColor(Color.parseColor("#9C27B0"))
@@ -178,7 +178,7 @@ class AppNotification(val context: Context) {
             val channelId = "App Notification"
 
             val notification = NotificationCompat.Builder(context, channelId)
-                    .setSmallIcon(R.drawable.ic_next_day_64)
+                    .setSmallIcon(R.drawable.ic_schedule_24dp)
                     .setContentTitle("Đang theo dõi lịch học")
                     .setContentText("Lỗi tải lịch lên Google Calendar")
                     .setColor(Color.parseColor("#9C27B0"))
@@ -215,7 +215,7 @@ class AppNotification(val context: Context) {
 
     fun foreground(): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, "App Notification")
-                .setSmallIcon(R.drawable.ic_date_range_256)
+                .setSmallIcon(R.drawable.ic_schedule_24dp)
                 .setContentTitle("Đang theo dõi lịch học")
                 .setColor(Color.parseColor("#9C27B0"))
                 .setPriority(NotificationCompat.PRIORITY_LOW)

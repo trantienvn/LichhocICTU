@@ -513,15 +513,15 @@ class WeekActivity : AppCompatActivity() {
                             if (subjectTime[j].indexOf(",") > -1) {
                                 firstTime = subjectTime[j].substring(0, subjectTime[j].indexOf(",")).toInt() - 1
                                 endTime = subjectTime[j].substring(subjectTime[j].lastIndexOf(",") + 1, subjectTime[j].length).toInt() - 1
-                                if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
-                                        CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date)
+                                if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 4, 15).date &&
+                                        CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 10, 15).date)
                                     studentScheduleObjArr.add(StudentCalendarCollection(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
                                 else
                                     studentScheduleObjArr.add(StudentCalendarCollection(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[endTime].timeOut})", subjectPlace[j], teacher[j]))
                             } else {
                                 firstTime = subjectTime[j].toInt() - 1
-                                if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
-                                        CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date)
+                                if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 4, 15).date &&
+                                        CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 10, 15).date)
                                     studentScheduleObjArr.add(StudentCalendarCollection(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeSummerArr[firstTime].timeIn} -> ${timeDetails.timeSummerArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
                                 else
                                     studentScheduleObjArr.add(StudentCalendarCollection(subjectName[j], /*subjectDate[j]*/"", subjectTime[j] + " (${timeDetails.timeWinterArr[firstTime].timeIn} -> ${timeDetails.timeWinterArr[firstTime].timeOut})", subjectPlace[j], teacher[j]))
@@ -837,11 +837,12 @@ class WeekActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        Log.d("ResultCode", "$resultCode")
+        Log.d("ResultOk", "${Activity.RESULT_OK}")
         when (requestCode) {
             RC_SIGN_IN -> {
                 if (resultCode != Activity.RESULT_OK) {
                     Toast.makeText(this@WeekActivity, "Chưa chọn tài khoản để đồng bộ", Toast.LENGTH_LONG).show()
-
                 } else {
                     val email = GoogleSignIn.getClient(applicationContext, gso).silentSignIn().result?.email
 
