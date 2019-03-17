@@ -553,7 +553,7 @@ class WeekActivity : AppCompatActivity() {
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_donate, R.drawable.ic_info)
                                 .setLabel("G.thiệu")
-                                .setLabelColor(resources.getColor(R.color.colorPurple2))
+                                .setLabelColor(resources.getColor(R.color.colorPurpleDark))
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
@@ -565,7 +565,7 @@ class WeekActivity : AppCompatActivity() {
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_sync_google, R.drawable.ic_cloud_upload_24dp)
                                 .setLabel("Tải lên Google Calendar")
-                                .setLabelColor(resources.getColor(R.color.colorPurple2))
+                                .setLabelColor(resources.getColor(R.color.colorPurpleDark))
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
@@ -577,7 +577,7 @@ class WeekActivity : AppCompatActivity() {
                                 .create(),
 //                        SpeedDialActionItem.Builder(R.id.fab_test, R.drawable.ic_schedule_24dp)
 //                                .setLabel("Lịch thi (Beta)")
-//                                .setLabelColor(resources.getColor(R.color.colorPurple2))
+//                                .setLabelColor(resources.getColor(R.color.colorPurpleDark))
 //                                .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
 //                                .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
 //                                .create(),

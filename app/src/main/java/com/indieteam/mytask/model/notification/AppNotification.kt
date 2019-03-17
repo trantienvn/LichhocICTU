@@ -65,7 +65,7 @@ class AppNotification(val context: Context) {
 
             val notification = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.drawable.ic_cloud_upload_24dp)
-                    .setContentTitle("Đang tải lịch lên Google Calendar...")
+                    .setContentTitle("Đang chuẩn bị...")
                     .setColor(Color.parseColor("#9C27B0"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
@@ -77,7 +77,7 @@ class AppNotification(val context: Context) {
 
             val notification = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.drawable.ic_cloud_upload_24dp)
-                    .setContentTitle("Đang tải lịch lên Google Calendar...")
+                    .setContentTitle("Đang chuẩn bị...")
                     .setColor(Color.parseColor("#9C27B0"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
@@ -98,11 +98,12 @@ class AppNotification(val context: Context) {
 
             val notification = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.drawable.ic_cloud_upload_24dp)
-                    .setContentTitle("Tải lên: $now/$total sự kiện")
+                    .setContentTitle("Đã tải: $now/$total sự kiện")
                     .setColor(Color.parseColor("#9C27B0"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                     .setAutoCancel(false) // remove notification after touch
+                    .setOnlyAlertOnce(true) // mute sound
 
             NotificationManagerCompat.from(context).notify(NotificationID.foreground, notification.build())
         } else {
@@ -110,11 +111,12 @@ class AppNotification(val context: Context) {
 
             val notification = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.drawable.ic_cloud_upload_24dp)
-                    .setContentTitle("Tải lên: $now/$total sự kiện")
+                    .setContentTitle("Đã tải: $now/$total sự kiện")
                     .setColor(Color.parseColor("#9C27B0"))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                     .setAutoCancel(false) // remove notification after touch
+                    .setOnlyAlertOnce(true) // mute sound
 
             NotificationManagerCompat.from(context).notify(NotificationID.beforeSdkOREO, notification.build())
         }
