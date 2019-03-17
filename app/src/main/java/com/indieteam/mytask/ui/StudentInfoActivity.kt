@@ -17,6 +17,7 @@ import com.indieteam.mytask.model.InternetState
 import com.indieteam.mytask.model.ads.Ads
 import com.indieteam.mytask.model.SqLite
 import com.indieteam.mytask.model.service.AppService
+import com.indieteam.mytask.model.service.ServiceState
 import com.indieteam.mytask.ui.fragment.QrFragment
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import kotlinx.android.synthetic.main.activity_student_info.*
@@ -86,7 +87,7 @@ class StudentInfoActivity : AppCompatActivity() {
                 try {
                     sqLite.deleteSchedule()
                     sqLite.deleteInfo()
-                    if (checkServiceRunning())
+                    if (ServiceState(this).isAppServiceRunning())
                         stopService(Intent(this, AppService::class.java))
 
                     GoogleSignOut(applicationContext).signOut()
@@ -159,23 +160,6 @@ class StudentInfoActivity : AppCompatActivity() {
         ads.apply {
             loadBottomAds(ads_bottom)
         }
-    }
-
-    private fun checkServiceRunning(): Boolean {
-        try {
-            val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-            for (services in manager.getRunningServices(Integer.MAX_VALUE)) {
-                if (AppService::class.java.name == services.service.className) {
-                    Log.d("service", "running")
-                    Log.d("service_name", services.service.className.toString())
-                    return true
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        Log.d("service", "not running")
-        return false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

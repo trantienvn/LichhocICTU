@@ -575,12 +575,12 @@ class WeekActivity : AppCompatActivity() {
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
-                        SpeedDialActionItem.Builder(R.id.fab_test, R.drawable.ic_schedule_24dp)
-                                .setLabel("Lịch thi (Beta)")
-                                .setLabelColor(resources.getColor(R.color.colorPurple2))
-                                .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
-                                .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
-                                .create(),
+//                        SpeedDialActionItem.Builder(R.id.fab_test, R.drawable.ic_schedule_24dp)
+//                                .setLabel("Lịch thi (Beta)")
+//                                .setLabelColor(resources.getColor(R.color.colorPurple2))
+//                                .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
+//                                .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
+//                                .create(),
                         SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_profile)
                                 .setLabel("C.nhân/QR")
                                 .setLabelColor(resources.getColor(R.color.colorPurpleDark))
@@ -774,6 +774,7 @@ class WeekActivity : AppCompatActivity() {
         for (i in 0 until jsonArray.length()) {
             try {
                 jsonArray.getJSONObject(i).getString("subjectId")
+                sqLite.readEmail()
                 return true
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -823,8 +824,7 @@ class WeekActivity : AppCompatActivity() {
 //            loadAds()
             } else {
                 try {
-                    sqLite.deleteSchedule()
-                    sqLite.deleteInfo()
+                    sqLite.dropAll()
                     if (checkServiceRunning())
                         stopService(Intent(this, AppService::class.java))
                 } catch (e: Exception) {

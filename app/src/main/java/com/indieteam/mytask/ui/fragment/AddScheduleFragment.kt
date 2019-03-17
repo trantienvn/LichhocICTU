@@ -10,6 +10,8 @@ import android.widget.CheckBox
 import android.widget.Toast
 import com.indieteam.mytask.R
 import com.indieteam.mytask.model.schedule.AddSubject
+import com.indieteam.mytask.model.service.AppService
+import com.indieteam.mytask.model.service.ServiceState
 import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.fragment_add_schedule.*
 
@@ -96,6 +98,8 @@ class AddScheduleFragment : Fragment() {
                                         .add(subjectName, subjectPlace, subjectTeacher, time, subjectDate)
                                 val intent = Intent(requireActivity(), WeekActivity::class.java)
                                 intent.putExtra("date", subjectDate)
+                                if (ServiceState(requireContext()).isAppServiceRunning())
+                                    requireContext().stopService(Intent(context, AppService::class.java))
                                 startActivity(intent)
                                 requireActivity().finish()
                             } else

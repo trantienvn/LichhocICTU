@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View.GONE
 import com.indieteam.mytask.R
 import com.indieteam.mytask.model.schedule.DeleteSubject
+import com.indieteam.mytask.model.service.AppService
+import com.indieteam.mytask.model.service.ServiceState
 import com.indieteam.mytask.ui.WeekActivity
 import kotlinx.android.synthetic.main.dialog_modify.view.*
 
@@ -45,6 +47,10 @@ class ModifyDialog(private val context: Context) {
             deleteSubject.delete(subjectId)
             val intent = Intent(context, WeekActivity::class.java)
             intent.putExtra("date", deleteSubject.dateDeleted)
+
+            if (ServiceState(context).isAppServiceRunning())
+                context.stopService(Intent(context, AppService::class.java))
+
             context.startActivity(intent)
             context.finish()
         }
