@@ -59,10 +59,16 @@ class GoogleCalendar(private val context: Context, activity: Activity, private v
                     .build()
             mGoogleSignInClient = GoogleSignIn.getClient(context, gso)
             signInIntent = mGoogleSignInClient.signInIntent
-            if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(context), scope, scope2))
-                startActivityForResult(signInIntent, RC_SIGN_IN)
-            else
-                sync()
+
+            try {
+                if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(context), scope, scope2) && sqLite.readEmail().isBlank())
+                    startActivityForResult(signInIntent, RC_SIGN_IN)
+                else
+                    sync()
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+
         }
     }
 

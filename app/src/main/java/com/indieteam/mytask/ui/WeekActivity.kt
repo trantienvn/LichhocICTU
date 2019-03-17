@@ -42,6 +42,7 @@ import com.indieteam.mytask.collection.TimeScheduleDetails
 import com.indieteam.mytask.model.InternetState
 import com.indieteam.mytask.model.schedule.domHTML.DomUpdateSchedule
 import com.indieteam.mytask.model.GoogleCalendar
+import com.indieteam.mytask.model.GoogleSignOut
 import com.indieteam.mytask.model.schedule.parseData.ParseScheduleJson
 import com.indieteam.mytask.model.notification.AppNotification
 import com.indieteam.mytask.model.schedule.domHTML.DomSemesterSchedule
@@ -827,10 +828,12 @@ class WeekActivity : AppCompatActivity() {
                     sqLite.dropAll()
                     if (checkServiceRunning())
                         stopService(Intent(this, AppService::class.java))
+
+                    GoogleSignOut(applicationContext).signOut()
+                    moveToLogin()
                 } catch (e: Exception) {
                     Log.d("Err", e.toString())
                 }
-                moveToLogin()
             }
         }
     }
