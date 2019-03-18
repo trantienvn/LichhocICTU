@@ -192,8 +192,8 @@ class GoogleCalendar(private val context: Context, activity: Activity, private v
             if (subjectTime.indexOf(",") > -1) {
                 firstTime = subjectTime.substring(0, subjectTime.indexOf(",")).toInt() - 1
                 endTime = subjectTime.substring(subjectTime.lastIndexOf(",") + 1, subjectTime.length).toInt() - 1
-                if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 3, 15).date &&
-                        CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 9, 15).date) {
+                if (CalendarDay.from(2020, month, day).date >= CalendarDay.from(2020, 4, 15).date &&
+                        CalendarDay.from(2020, month, day).date < CalendarDay.from(2020, 10, 15).date) {
                     if (calendarId != null)
                         insertEvents(calendarId!!, subjectName, subjectPlace, subjectDate, timeDetails.timeSummerArr[firstTime].timeIn, timeDetails.timeSummerArr[endTime].timeOut, "Teacher: $teacher")
                 } else {
