@@ -20,7 +20,6 @@ import kotlin.concurrent.scheduleAtFixedRate
 class AppService : Service() {
 
     private lateinit var sqLite: SqLite
-    private var valueDb = ""
     private lateinit var calendarJson: JSONObject
     private lateinit var parseScheduleJson: ParseScheduleJson
     private val calendarForTomorrow = Calendar.getInstance()!!
@@ -56,7 +55,7 @@ class AppService : Service() {
         val date = "${calendarForTomorrow.get(Calendar.DAY_OF_MONTH)}/${calendarForTomorrow.get(Calendar.MONTH) + 1}/${calendarForTomorrow.get(Calendar.YEAR)}"
         sqLite = SqLite(this)
         try {
-            valueDb = sqLite.readSchedule()
+            val valueDb = sqLite.readSchedule()
             if (valueDb.isNotBlank()) {
                 calendarJson = JSONObject(valueDb)
                 parseScheduleJson = ParseScheduleJson(calendarJson)
