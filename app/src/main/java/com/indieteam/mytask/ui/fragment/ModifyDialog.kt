@@ -48,8 +48,8 @@ class ModifyDialog(private val context: Context) {
             val intent = Intent(context, WeekActivity::class.java)
             intent.putExtra("date", deleteSubject.dateDeleted)
 
-            if (ServiceState(context).isAppServiceRunning())
-                context.stopService(Intent(context, AppService::class.java))
+            /*if (ServiceState(context).isAppServiceRunning())
+                context.stopService(Intent(context, AppService::class.java))*/
 
             context.startActivity(intent)
             context.finish()

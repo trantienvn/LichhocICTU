@@ -152,8 +152,8 @@ class UpdateScheduleFragment : Fragment() {
 
                             val intent = Intent(requireActivity(), WeekActivity::class.java)
                             intent.putExtra("date", subjectDate)
-                            if (ServiceState(requireContext()).isAppServiceRunning())
-                                requireContext().stopService(Intent(context, AppService::class.java))
+                            /*if (ServiceState(requireContext()).isAppServiceRunning())
+                                requireContext().stopService(Intent(context, AppService::class.java))*/
                             startActivity(intent)
                             requireActivity().finish()
                         } else {

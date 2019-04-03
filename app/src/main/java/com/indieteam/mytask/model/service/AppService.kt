@@ -68,17 +68,16 @@ class AppService : Service() {
                             result += "$numberSubjects. " + "${parseScheduleJson.subjectName[i]} (${parseScheduleJson.subjectTime[i]})\n"
                         }
                     }
-                } else {
+                } else
                     result += "Nghỉ \n"
-                }
+
                 result = result.substring(0, result.lastIndexOf("\n"))
-                Log.d("AppService_Log", "Date $date: $result")
+                Log.d("Tomorrow", "Date $date: $result")
                 appNotification = AppNotification(this)
                 appNotification.scheduleToday(result, numberSubjects.toString())
 
-            } else {
-                Log.d("AppService_Log", "null")
-            }
+            } else
+                Log.d("Tomorrow", "")
         } catch (e: Exception) {
             e.printStackTrace()
         }

@@ -98,18 +98,16 @@ class AddScheduleFragment : Fragment() {
                                         .add(subjectName, subjectPlace, subjectTeacher, time, subjectDate)
                                 val intent = Intent(requireActivity(), WeekActivity::class.java)
                                 intent.putExtra("date", subjectDate)
-                                if (ServiceState(requireContext()).isAppServiceRunning())
-                                    requireContext().stopService(Intent(context, AppService::class.java))
+                                /*if (ServiceState(requireContext()).isAppServiceRunning())
+                                    requireContext().stopService(Intent(context, AppService::class.java))*/
                                 startActivity(intent)
                                 requireActivity().finish()
                             } else
                                 Toast.makeText(requireContext(), "Ngày không xác định", Toast.LENGTH_LONG).show()
-                        } else {
+                        } else
                             Toast.makeText(requireContext(), "Tiết học phải được đánh dấu liền mạch", Toast.LENGTH_LONG).show()
-                        }
-                    } else {
+                    } else
                         Toast.makeText(requireContext(), "Hãy nhập đủ thông tin", Toast.LENGTH_LONG).show()
-                    }
                 }
             }
         }
