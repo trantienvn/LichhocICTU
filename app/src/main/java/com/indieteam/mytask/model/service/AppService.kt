@@ -22,38 +22,36 @@ class AppService : Service() {
     private lateinit var sqLite: SqLite
     private lateinit var calendarJson: JSONObject
     private lateinit var parseScheduleJson: ParseScheduleJson
-    private val calendarForTomorrow = Calendar.getInstance()!!
-    private lateinit var calendarNow: Calendar
     private lateinit var appNotification: AppNotification
     private var pushNotification = false
 
     private lateinit var sharedPreferences: SharedPreferences
 
-    init {
-        calendarForTomorrow.set(calendarForTomorrow.get(Calendar.YEAR), calendarForTomorrow.get(Calendar.MONTH), calendarForTomorrow.get(Calendar.DAY_OF_MONTH))
-        calendarForTomorrow.add(Calendar.DAY_OF_MONTH, 1)
-    }
-
     private fun checkTimeBackground() {
-        Timer().scheduleAtFixedRate(0, 20000) {
-            calendarNow = Calendar.getInstance()!!
-            Log.d("hour", calendarNow.get(Calendar.HOUR_OF_DAY).toString() + " " + calendarNow.get(Calendar.MINUTE))
-            if (calendarNow.get(Calendar.HOUR_OF_DAY) == 20 && calendarNow.get(Calendar.MINUTE) == 0) {
+        Timer().scheduleAtFixedRate(0, 5000) {
+            val calendar = Calendar.getInstance()!!
+            Log.d("Time Now", calendar.get(Calendar.HOUR_OF_DAY).toString() + ":" + calendar.get(Calendar.MINUTE))
+            if (calendar.get(Calendar.HOUR_OF_DAY) == 20 && calendar.get(Calendar.MINUTE) == 0) {
                 if (!pushNotification) {
-                    pushNotification()
+                    pushSubjectTomorrowNotification()
                     pushNotification = true
                 }
+
             } else
                 pushNotification = false
         }
     }
 
 
-    private fun pushNotification() {
+    private fun pushSubjectTomorrowNotification() {
+        val calendar = Calendar.getInstance()
+        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+        calendar.add(Calendar.DAY_OF_MONTH, 1)
         var numberSubjects = 0
         var result = ""
-        val date = "${calendarForTomorrow.get(Calendar.DAY_OF_MONTH)}/${calendarForTomorrow.get(Calendar.MONTH) + 1}/${calendarForTomorrow.get(Calendar.YEAR)}"
+        val date = "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
         sqLite = SqLite(this)
+
         try {
             val valueDb = sqLite.readSchedule()
             if (valueDb.isNotBlank()) {
