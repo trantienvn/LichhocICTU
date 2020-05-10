@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradien_color"
-    tools:context=".ui.fragment.TestScheduleFragment">
+    tools:context=".views.fragments.TestScheduleFragment">
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/table_layout"

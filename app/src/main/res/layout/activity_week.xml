@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
-    tools:context=".ui.WeekActivity"
+    tools:context=".views.WeekActivity"
     tools:layout_editor_absoluteY="25dp">
 
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -78,16 +78,6 @@
             app:sdMainFabClosedBackgroundColor="@color/colorBlue"
             app:sdMainFabClosedSrc="@drawable/ic_menu_24dp"
             app:sdMainFabOpenedBackgroundColor="@color/colorBlue" />
-
-        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/ads_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:visibility="gone"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-1117482668766229/2522668559" />
-
     </RelativeLayout>
 
 

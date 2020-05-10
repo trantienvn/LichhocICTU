@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
-    tools:context=".ui.StudentInfoActivity">
+    tools:context=".views.StudentInfoActivity">
 
     <LinearLayout
         android:id="@+id/header_profile"
@@ -29,7 +29,7 @@
             android:layout_weight="2"
             android:elevation="2dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_profile_lager" />
+            android:src="@drawable/ic_gen_qr_code" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -57,7 +57,7 @@
                 android:layout_weight="2"
                 android:gravity="left|top"
                 android:text="Đăng xuất"
-                android:textColor="@color/colorBlue"
+                android:textColor="@color/colorOrange"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -132,20 +132,7 @@
                     android:text="Majors Name: "
                     android:textColor="@color/colorBlue"
                     android:textSize="16sp" />
-
             </LinearLayout>
-
         </ScrollView>
-
-        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/ads_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignRight="@+id/float_button"
-            android:layout_alignParentBottom="true"
-            android:visibility="gone"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-1117482668766229/2522668559" />
-
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
