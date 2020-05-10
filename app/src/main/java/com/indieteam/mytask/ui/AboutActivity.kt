@@ -1,8 +1,8 @@
 package com.indieteam.mytask.ui
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
+import androidx.appcompat.app.AppCompatActivity
 import com.indieteam.mytask.R
 import kotlinx.android.synthetic.main.activity_about.*
 import java.lang.Exception

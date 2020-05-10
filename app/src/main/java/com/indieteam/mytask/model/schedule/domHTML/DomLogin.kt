@@ -49,7 +49,6 @@ class DomLogin(val context: Context, private val userName: String, private val p
                     .execute()
             val location = response.header("Location")
             sessionUrl = location.substring(location.indexOf("S(") + 2, location.indexOf("))"))
-            Log.d("sessionUrlInLogin", sessionUrl)
 
             if (sessionUrl.isNotBlank()) {
                 val response2 = Jsoup.connect(UrlAddress.loginSession(sessionUrl))
@@ -58,8 +57,6 @@ class DomLogin(val context: Context, private val userName: String, private val p
 
                 val inputTags = response2.parse().select("input")
                 for (i in inputTags) {
-//                    Log.d("name", i.attr("name"))
-//                    Log.d("value", i.`val`())
                     when (i.attr("name")) {
                         "__EVENTTARGET" -> __EVENTTARGET = i.`val`()
                         "__EVENTARGUMENT" -> __EVENTARGUMENT = i.`val`()
@@ -75,6 +72,8 @@ class DomLogin(val context: Context, private val userName: String, private val p
                         "hidTrainingSystemId" -> hidTrainingSystemId = i.`val`()
                     }
                 }
+
+                Log.d("1", "1")
 
                 val response3 = Jsoup.connect(UrlAddress.loginSession(sessionUrl))
                         .data("__EVENTTARGET", __EVENTTARGET)

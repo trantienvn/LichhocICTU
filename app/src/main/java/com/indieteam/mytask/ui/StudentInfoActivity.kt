@@ -6,15 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.indieteam.mytask.R
 import com.indieteam.mytask.model.GoogleSignOut
 import com.indieteam.mytask.model.InternetState
-import com.indieteam.mytask.model.ads.Ads
 import com.indieteam.mytask.model.SqLite
 import com.indieteam.mytask.model.service.AppService
 import com.indieteam.mytask.model.service.ServiceState
@@ -34,7 +33,6 @@ class StudentInfoActivity : AppCompatActivity() {
     private lateinit var majorsName: String
     private val bundle = Bundle()
     private val qrFragment = QrFragment()
-    private lateinit var ads: Ads
     private lateinit var internetState: InternetState
 
     override fun onBackPressed() {
@@ -141,7 +139,7 @@ class StudentInfoActivity : AppCompatActivity() {
         var result = ""
         var count = 0
         for (i in input) {
-            if (i.toString() != " "){
+            if (i.toString() != " ") {
                 count = 0
                 result += i.toString()
             } else {
@@ -154,13 +152,6 @@ class StudentInfoActivity : AppCompatActivity() {
         return result.trim()
     }
 
-    private fun loadAds() {
-        ads = Ads(this)
-
-        ads.apply {
-            loadBottomAds(ads_bottom)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

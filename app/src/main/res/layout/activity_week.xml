@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/calendar_root_view"
@@ -13,47 +13,36 @@
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@drawable/gradien_color"
         android:elevation="2dp"
         android:paddingBottom="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.21"
+        app:layout_constraintHeight_percent="0.12"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:mcv_arrowColor="@color/colorPurple"
+        app:mcv_arrowColor="@color/colorBlue"
         app:mcv_calendarMode="week"
-        app:mcv_firstDayOfWeek="sunday"
-        app:mcv_headerTextAppearance="@style/calendarHeader"
         app:mcv_dateTextAppearance="@style/dateTextAppearance"
-        app:mcv_selectionColor="@color/colorYellowDark"
-        app:mcv_showOtherDates="none"
+        app:mcv_firstDayOfWeek="monday"
+        app:mcv_headerTextAppearance="@style/calendarHeader"
+        app:mcv_selectionColor="@color/colorGrayDark"
+        app:mcv_showOtherDates="all"
         app:mcv_showWeekDays="true"
         app:mcv_tileHeight="match_parent"
         app:mcv_titleAnimationOrientation="horizontal"
         app:mcv_weekDayTextAppearance="@style/calendarWeekHeader" />
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/colorWhite"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.02"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
-
-
     <RelativeLayout
         android:id="@+id/content_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:background="@color/colorWhite"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.77"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.88"
+        app:layout_constraintTop_toBottomOf="@+id/calendarView"
+        tools:layout_editor_absoluteX="0dp">
 
         <ListView
             android:id="@+id/calender_list_view"
@@ -62,9 +51,7 @@
             android:background="@color/colorWhite"
             android:divider="@color/colorWhite"
             android:dividerHeight="10dp"
-            android:scrollbars="none">
-        </ListView>
-
+            android:scrollbars="none" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -88,9 +75,9 @@
             android:layout_gravity="bottom|end"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="5dp"
-            app:sdMainFabClosedBackgroundColor="@color/colorPurpleDark"
-            app:sdMainFabClosedSrc="@drawable/ic_more"
-            app:sdMainFabOpenedBackgroundColor="@color/colorPurpleDark" />
+            app:sdMainFabClosedBackgroundColor="@color/colorBlue"
+            app:sdMainFabClosedSrc="@drawable/ic_menu_24dp"
+            app:sdMainFabOpenedBackgroundColor="@color/colorBlue" />
 
         <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/ads_bottom"
@@ -104,4 +91,4 @@
     </RelativeLayout>
 
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

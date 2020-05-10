@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/info_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradien_color"
+    android:background="@color/colorWhite"
     tools:context=".ui.StudentInfoActivity">
 
     <LinearLayout
@@ -25,10 +25,10 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
+            android:layout_marginLeft="10dp"
             android:layout_weight="2"
             android:elevation="2dp"
             android:scaleType="fitCenter"
-            android:layout_marginLeft="10dp"
             android:src="@drawable/ic_profile_lager" />
 
         <LinearLayout
@@ -41,25 +41,25 @@
                 android:id="@+id/student_name"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:gravity="left|center_vertical"
+                android:layout_marginLeft="15dp"
                 android:layout_weight="3"
+                android:gravity="left|center_vertical"
                 android:text="Name: "
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/colorBlue"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginLeft="15dp"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:gravity="left|top"
+                android:layout_marginLeft="15dp"
                 android:layout_weight="2"
+                android:gravity="left|top"
                 android:text="Đăng xuất"
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/colorBlue"
                 android:textSize="15sp"
-                android:textStyle="bold"
-                android:layout_marginLeft="15dp"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -100,7 +100,7 @@
                     android:layout_gravity="left|center_vertical"
                     android:layout_marginBottom="10dp"
                     android:text="Id: "
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorBlue"
                     android:textSize="16sp" />
 
                 <TextView
@@ -110,7 +110,7 @@
                     android:layout_gravity="left|center_vertical"
                     android:layout_marginBottom="10dp"
                     android:text="Class Name: "
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorBlue"
                     android:textSize="16sp" />
 
                 <TextView
@@ -120,7 +120,7 @@
                     android:layout_gravity="left|center_vertical"
                     android:layout_marginBottom="10dp"
                     android:text="Course Name: "
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorBlue"
                     android:textSize="16sp" />
 
                 <TextView
@@ -130,23 +130,22 @@
                     android:layout_gravity="left|center_vertical"
                     android:layout_marginBottom="10dp"
                     android:text="Majors Name: "
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@color/colorBlue"
                     android:textSize="16sp" />
 
             </LinearLayout>
 
         </ScrollView>
 
-        <com.google.android.gms.ads.AdView
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
+        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/ads_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-1117482668766229/2522668559"
             android:layout_alignRight="@+id/float_button"
-            android:visibility="gone"/>
+            android:layout_alignParentBottom="true"
+            android:visibility="gone"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-1117482668766229/2522668559" />
 
     </RelativeLayout>
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

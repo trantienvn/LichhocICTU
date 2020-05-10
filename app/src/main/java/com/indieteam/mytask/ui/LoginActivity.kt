@@ -5,10 +5,10 @@ import android.content.SharedPreferences
 import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.indieteam.mytask.R
 import com.indieteam.mytask.model.InternetState
 import com.indieteam.mytask.model.schedule.domHTML.DomSemesterSchedule

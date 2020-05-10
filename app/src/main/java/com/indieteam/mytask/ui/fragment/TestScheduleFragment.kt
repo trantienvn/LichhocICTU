@@ -1,7 +1,6 @@
 package com.indieteam.mytask.ui.fragment
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -11,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.indieteam.mytask.R
 import com.indieteam.mytask.collection.TestScheduleCollection
 import com.indieteam.mytask.ui.WeekActivity

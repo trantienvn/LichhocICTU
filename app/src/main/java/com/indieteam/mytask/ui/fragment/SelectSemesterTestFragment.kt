@@ -2,12 +2,12 @@ package com.indieteam.mytask.ui.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 
 import com.indieteam.mytask.R
 import com.indieteam.mytask.collection.TestScheduleSemesterCollection

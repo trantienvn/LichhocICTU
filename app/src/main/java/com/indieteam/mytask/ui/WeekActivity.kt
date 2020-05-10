@@ -14,8 +14,7 @@ import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import android.text.style.LineBackgroundSpan
 import android.util.Log
 import android.view.MotionEvent
@@ -23,6 +22,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewTreeObserver
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.github.pwittchen.swipe.library.rx2.Swipe
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -35,7 +35,6 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.json.gson.GsonFactory
 import com.indieteam.mytask.R
 import com.indieteam.mytask.ui.adapter.ScheduleAdapter
-import com.indieteam.mytask.model.ads.Ads
 import com.indieteam.mytask.collection.StudentCalendarCollection
 import com.indieteam.mytask.collection.TestScheduleCollection
 import com.indieteam.mytask.collection.TimeScheduleDetails
@@ -81,12 +80,7 @@ class WeekActivity : AppCompatActivity() {
     lateinit var gso: GoogleSignInOptions
     lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var signInIntent: Intent
-
     lateinit var modifyDialog: ModifyDialog
-
-    //Ads
-    private lateinit var ads: Ads
-
     private val REQUEST_ACCOUNT = 1
     private lateinit var sqLite: SqLite
     private var scheduleJson: JSONObject? = null
@@ -100,6 +94,7 @@ class WeekActivity : AppCompatActivity() {
     private val swipe = Swipe()
     private lateinit var customSwipe: CustomSwipe
     private var screenHeight = 0
+    private var calendarHeight = 0
     private var statusBarHeight = 0
     private var navigationBarHeight = 0
     private var layoutCalendarMode = 0
@@ -108,8 +103,9 @@ class WeekActivity : AppCompatActivity() {
     private lateinit var internetState: InternetState
     private lateinit var appNotification: AppNotification
     private lateinit var addScheduleFragment: AddScheduleFragment
-    val testScheduleCollection = ArrayList<TestScheduleCollection>()
-
+    private val testScheduleCollection = ArrayList<TestScheduleCollection>()
+    private val monthHeightRatio = 35f
+    private val weekHeightRatio = 12f
     private lateinit var googleCalendar: GoogleCalendar
 
     private val onLoginListener = object : OnLoginListener {
@@ -124,7 +120,6 @@ class WeekActivity : AppCompatActivity() {
             }
             DomSemesterSchedule(this@WeekActivity, sessionUrl, cookie, onSemesterScheduleListener).start()
         }
-
 
         override fun onFail() {
         }
@@ -231,21 +226,17 @@ class WeekActivity : AppCompatActivity() {
         private var startTouchY = 0f
 
         override fun onSwipedUp(event: MotionEvent?): Boolean {
-            //Toast.makeText(this@WeekActivity, "Swiped up", Toast.LENGTH_SHORT).show()
             return true
         }
 
         override fun onSwipedDown(event: MotionEvent?): Boolean {
-            //Toast.makeText(this@WeekActivity, "Swiped down", Toast.LENGTH_SHORT).show()
             return true
         }
 
         override fun onSwipingUp(event: MotionEvent?) {
-            //Toast.makeText(this@WeekActivity, "Swiping right", Toast.LENGTH_SHORT).show()
         }
 
         override fun onSwipedRight(event: MotionEvent?): Boolean {
-            //Toast.makeText(this@WeekActivity, "Swiped right", Toast.LENGTH_SHORT).show()
             if (startTouchY > content_layout.y && event!!.y > content_layout.y) {
                 customSwipe.right()
             }
@@ -261,7 +252,6 @@ class WeekActivity : AppCompatActivity() {
                 }
             }
             countSwipeLeft++
-            //Toast.makeText(this@WeekActivity, "Swiping left", Toast.LENGTH_SHORT).show()
         }
 
         private var countSwipeRight = 0
@@ -272,15 +262,12 @@ class WeekActivity : AppCompatActivity() {
                 }
             }
             countSwipeRight++
-            //Toast.makeText(this@WeekActivity, "Swiping right", Toast.LENGTH_SHORT).show()
         }
 
         override fun onSwipingDown(event: MotionEvent?) {
-            //Toast.makeText(this@WeekActivity, "Swiping down", Toast.LENGTH_SHORT).show()
         }
 
         override fun onSwipedLeft(event: MotionEvent?): Boolean {
-            //Toast.makeText(this@WeekActivity, "Swipe left", Toast.LENGTH_SHORT).show()
             if (startTouchY > content_layout.y && event!!.y > content_layout.y) {
                 customSwipe.left()
             }
@@ -336,8 +323,11 @@ class WeekActivity : AppCompatActivity() {
         override fun decorate(view: DayViewFacade) {
             if (mode == "Dots")
                 view.addSpan(DrawDots(colors, dot))
-            if (mode == "ToDay")
-                view.setBackgroundDrawable(resources.getDrawable(R.drawable.shape_bg_cal_today))
+            if (mode == "ToDay") {
+                view.apply {
+                    setBackgroundDrawable(resources.getDrawable(R.drawable.shape_bg_cal_today))
+                }
+            }
         }
     }
 
@@ -366,7 +356,7 @@ class WeekActivity : AppCompatActivity() {
         for (i in dots) {
             calendarView.addDecorator(
                     EventDecorator("Dots",
-                            listOf(resources.getColor(R.color.colorWhite), resources.getColor(R.color.colorBlueWhite), resources.getColor(R.color.colorGreen)),
+                            listOf(resources.getColor(R.color.colorBlue), resources.getColor(R.color.colorBlueDark), resources.getColor(R.color.colorOrange)),
                             i.key, i.value))
         }
     }
@@ -405,7 +395,6 @@ class WeekActivity : AppCompatActivity() {
         scheduleAdapter = ScheduleAdapter(this@WeekActivity, studentScheduleObjArr)
         calender_list_view.adapter = scheduleAdapter
         internetState = InternetState(this)
-        ads = Ads(this)
         appNotification = AppNotification(this)
         modifyDialog = ModifyDialog(this)
 
@@ -437,34 +426,44 @@ class WeekActivity : AppCompatActivity() {
     }
 
     private fun calendarSetting() {
-        calendarView.topbarVisible = true
+        calendarView.topbarVisible = false
 
         calendarView.state().edit().setMinimumDate(dateStart)
                 .setMaximumDate(dateEnd)
                 .commit()
 
-        view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        calendar_root_view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                view.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                //view.height //height is ready?
+                calendar_root_view.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 if (layoutCalendarMode == 0) {
+                    setCalendarWeekHeight()
                     calendarView.state().edit()
                             .setCalendarDisplayMode(CalendarMode.WEEKS)
                             .commit()
                 } else {
-                    calendarView.layoutParams.height = (screenHeight / 2.3).toInt()
-                    content_layout.layoutParams.height = (screenHeight - (screenHeight / 2.3f) - view.height - statusBarHeight).toInt()
+                    setCalendarMonthHeight()
                     calendarView.state().edit()
                             .setCalendarDisplayMode(CalendarMode.MONTHS)
                             .commit()
                 }
-                Log.d("view_height", view.height.toString())
             }
         })
 
         calendarView.currentDate = CalendarDay.today()
         calendarView.selectedDate = CalendarDay.today()
         calendarView.selectionMode = SELECTION_MODE_SINGLE
+    }
+
+    private fun setCalendarWeekHeight() {
+        calendarHeight = ((screenHeight / 100) * weekHeightRatio).toInt();
+        calendarView.layoutParams.height = calendarHeight;
+        content_layout.layoutParams.height = screenHeight - calendarHeight - statusBarHeight
+    }
+
+    private fun setCalendarMonthHeight() {
+        calendarHeight = ((screenHeight / 100) * monthHeightRatio).toInt();
+        calendarView.layoutParams.height = calendarHeight
+        content_layout.layoutParams.height = screenHeight - calendarHeight - statusBarHeight
     }
 
     private fun calenderEvents() {
@@ -482,12 +481,7 @@ class WeekActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction().add(R.id.calendar_root_view, addScheduleFragment, "addScheduleFragment")
                     .commit()
         }
-        calendarView.setOnMonthChangedListener { materialCalendarView, calendarDay ->
-            /*object: CalendarView(this) {
-                fun setTitleFormatter(){
-                    return
-                }
-            }*/
+        calendarView.setOnMonthChangedListener { _, calendarDay ->
             calendarView.setTitleFormatter { "Tháng ${calendarDay.month + 1} Năm ${calendarDay.year}" }
         }
     }
@@ -553,26 +547,26 @@ class WeekActivity : AppCompatActivity() {
     private fun initFloatButton() {
         val listItem =
                 listOf(SpeedDialActionItem.Builder(R.id.fab_donate, R.drawable.ic_info)
-                                .setLabel("G.thiệu")
-                                .setLabelColor(resources.getColor(R.color.colorPurpleDark))
-                                .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
-                                .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
-                                .create(),
+                        .setLabel("G.thiệu")
+                        .setLabelColor(resources.getColor(R.color.colorBlue))
+                        .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
+                        .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
+                        .create(),
                         SpeedDialActionItem.Builder(R.id.fab_calendar_mode, R.drawable.ic_switch)
                                 .setLabel("Tuần/Tháng")
-                                .setLabelColor(resources.getColor(R.color.colorPurpleDark))
+                                .setLabelColor(resources.getColor(R.color.colorBlue))
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_sync_google, R.drawable.ic_cloud_upload_24dp)
                                 .setLabel("Tải lên Google Calendar")
-                                .setLabelColor(resources.getColor(R.color.colorPurpleDark))
+                                .setLabelColor(resources.getColor(R.color.colorBlue))
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
                         SpeedDialActionItem.Builder(R.id.fab_update, R.drawable.ic_update)
                                 .setLabel("C.nhật lịch học")
-                                .setLabelColor(resources.getColor(R.color.colorPurpleDark))
+                                .setLabelColor(resources.getColor(R.color.colorBlue))
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create(),
@@ -584,7 +578,7 @@ class WeekActivity : AppCompatActivity() {
 //                                .create(),
                         SpeedDialActionItem.Builder(R.id.fab_info, R.drawable.ic_profile)
                                 .setLabel("C.nhân/QR")
-                                .setLabelColor(resources.getColor(R.color.colorPurpleDark))
+                                .setLabelColor(resources.getColor(R.color.colorBlue))
                                 .setLabelBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .setFabBackgroundColor(resources.getColor(R.color.colorWhite))
                                 .create()
@@ -596,8 +590,7 @@ class WeekActivity : AppCompatActivity() {
             when (it.id) {
                 R.id.fab_calendar_mode -> {
                     if (layoutCalendarMode == 1) {
-                        calendarView.layoutParams.height = ((screenHeight / 100f) * 21f).toInt()
-                        content_layout.layoutParams.height = ((screenHeight - (screenHeight / 100f) * 21f) - view.height - statusBarHeight).toInt()
+                        setCalendarWeekHeight()
                         calendarView.state().edit()
                                 .setCalendarDisplayMode(CalendarMode.WEEKS)
                                 .commit()
@@ -609,8 +602,7 @@ class WeekActivity : AppCompatActivity() {
                         }
                         layoutCalendarMode = sharedPref.getInt("CalendarMode", 0)
                     } else {
-                        calendarView.layoutParams.height = (screenHeight / 2.3f).toInt()
-                        content_layout.layoutParams.height = (screenHeight - (screenHeight / 2.3f) - view.height - statusBarHeight).toInt()
+                        setCalendarMonthHeight()
                         calendarView.state().edit()
                                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                                 .commit()
@@ -701,14 +693,12 @@ class WeekActivity : AppCompatActivity() {
 
     fun gone() {
         calendarView.visibility = GONE
-        view.visibility = GONE
         content_layout.visibility = GONE
         float_button.visibility = GONE
     }
 
     fun visible() {
         calendarView.visibility = VISIBLE
-        view.visibility = VISIBLE
         content_layout.visibility = VISIBLE
         float_button.visibility = VISIBLE
     }
@@ -758,13 +748,6 @@ class WeekActivity : AppCompatActivity() {
         }
         Log.d("service", "not running")
         return false
-    }
-
-    private fun loadAds() {
-        ads = Ads(this)
-        ads.apply {
-            loadBottomAds(ads_bottom)
-        }
     }
 
     private fun checkCompatible(): Boolean {

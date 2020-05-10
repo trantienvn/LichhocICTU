@@ -5,13 +5,13 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.indieteam.mytask.R
 import com.indieteam.mytask.model.schedule.domHTML.DomDownloadExcel
 import com.indieteam.mytask.ui.LoginActivity
@@ -42,7 +42,7 @@ class SelectSemesterScheduleFragment : Fragment() {
             val value = semesterArray.getJSONObject(position).get(key).toString()
             view.semester_name.text = key
             if (value == sharedPreferences.getString("semesterSelected", ""))
-                view.background = resources.getDrawable(R.color.colorPurpleDark)
+                view.background = resources.getDrawable(R.color.colorGrayDark)
             Log.d("value", key)
             return view
         }
@@ -145,6 +145,7 @@ class SelectSemesterScheduleFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
+        Log.d("dm", "dm")
         return inflater.inflate(R.layout.fragment_select_semester, container, false)
     }
 

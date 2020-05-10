@@ -2,12 +2,12 @@ package com.indieteam.mytask.ui.fragment
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.indieteam.mytask.R
 import com.indieteam.mytask.model.schedule.AddSubject
 import com.indieteam.mytask.model.service.AppService
