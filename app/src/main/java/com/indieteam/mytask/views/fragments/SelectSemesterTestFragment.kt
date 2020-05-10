@@ -110,7 +110,7 @@ class SelectSemesterTestFragment : Fragment() {
                 val itemView = parent.getChildAt(i) as View
                 itemView.setBackgroundResource(0)
             }
-            view.background = resources.getDrawable(R.color.colorPurpleDark)
+            view.background = resources.getDrawable(R.color.colorBlue)
             pos = position
         }
 
@@ -119,7 +119,7 @@ class SelectSemesterTestFragment : Fragment() {
                 val itemView = parent.getChildAt(i) as View
                 itemView.setBackgroundResource(0)
             }
-            view.background = resources.getDrawable(R.color.colorPurpleDark)
+            view.background = resources.getDrawable(R.color.colorBlue)
             pos2 = position
         }
 
