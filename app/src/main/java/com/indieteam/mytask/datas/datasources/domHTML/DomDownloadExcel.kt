@@ -53,9 +53,16 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
 
                 val html = response.parse()
 
-                for (i in html.select("input")) {
-                    params[i.attr("name")] = i.`val`()
+                for (input in html.select("input[type=hidden]")) {
+                    params[input.attr("name")] = input.`val`()
                 }
+                val drpTermSelect = html.selectFirst("select[name=drpTerm]");
+                val selectedOption = drpTermSelect.selectFirst("option[selected]");
+                params["drpTerm"] = selectedOption..`val`();
+
+                val drpTypeSelect = html.selectFirst("select[name=drpType]");
+                val selectedOptionType = drpTypeSelect.selectFirst("option[selected]");
+                params["drpType"] = selectedOptionType.`val`();
             } catch (e: Exception) {
                 onDownloadExcelListener.onThrow("Mất kết nối", context)
                 e.printStackTrace()
@@ -75,6 +82,8 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                             .data("drpTerm", drpTerm)
                             .data("drpType", "K")
                             .data("drpSemester", semesterSelected)
+                            .data("txtTuNgay", "")
+                            .data("txtDenNgay", "")
                             .cookie("SignIn", signIn)
                             .method(Connection.Method.POST)
                             .ignoreContentType(true)
@@ -85,6 +94,8 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                             .data("PageHeader1${characterDolla}drpNgonNgu", pageHeader1drpNgonNgu)
                             .data("drpType", "K")
                             .data("drpSemester", semesterSelected)
+                            .data("txtTuNgay", "")
+                            .data("txtDenNgay", "")
                             .cookie("SignIn", signIn)
                             .method(Connection.Method.POST)
                             .ignoreContentType(true)
@@ -169,6 +180,8 @@ class DomDownloadExcel(val context: Context, private val sessionUrl: String, pri
                                 .data("drpSemester", semesterSelected)
                                 .data("drpTerm", drpTerm)
                                 .data("drpType", "K")
+                                .data("txtTuNgay", "")
+                                .data("txtDenNgay", "")
                                 .data("btnView", "Xuất file Excel")
                                 .cookie("SignIn", signIn)
                                 .method(Connection.Method.POST)
